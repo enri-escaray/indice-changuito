@@ -111,9 +111,72 @@
   th, td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--grilla); }
   th { color: var(--tinta-2); font-weight: 500; white-space: nowrap; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  td .sec { display: block; color: var(--tenue); font-size: 12px; }
   tr.general td { font-weight: 600; }
-  details summary { cursor: pointer; color: var(--azul); font-size: 14px; margin-top: 12px; }
+
+  .oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .filtros { display: grid; gap: 10px; }
+  .buscar { position: relative; display: block; }
+  .buscar svg {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; fill: none; stroke: var(--tenue); stroke-width: 1.75; stroke-linecap: round;
+  }
+  .buscar input {
+    width: 100%; height: 42px; padding: 0 12px 0 36px;
+    font: inherit; color: var(--tinta); background: var(--pagina);
+    border: 1px solid var(--borde); border-radius: 10px;
+  }
+  .buscar input::placeholder { color: var(--tenue); }
+  .buscar input:focus { outline: 2px solid var(--azul); outline-offset: 1px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .chip {
+    font: inherit; font-size: 13px; line-height: 1.3; padding: 5px 11px; cursor: pointer;
+    border-radius: 999px; border: 1px solid var(--borde); background: transparent; color: var(--tinta-2);
+  }
+  .chip .n { margin-left: 6px; color: var(--tenue); font-variant-numeric: tabular-nums; }
+  .chip:hover { background: color-mix(in srgb, var(--tinta) 5%, transparent); }
+  .chip[aria-pressed="true"] { background: var(--tinta); border-color: var(--tinta); color: var(--superficie); }
+  .chip[aria-pressed="true"] .n { color: inherit; opacity: 0.7; }
+  .chip:focus-visible, .productos summary:focus-visible, .barra-resultados select:focus-visible, .enlace:focus-visible {
+    outline: 2px solid var(--azul); outline-offset: 2px;
+  }
+  .separador { width: 1px; height: 20px; background: var(--grilla); margin: 0 4px; }
+  .barra-resultados {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px;
+    margin: 14px 0 4px; font-size: 13px; color: var(--tinta-2);
+  }
+  .barra-resultados select {
+    font: inherit; font-size: 13px; color: var(--tinta); margin-left: 6px; padding: 4px 8px;
+    background: var(--pagina); border: 1px solid var(--borde); border-radius: 8px;
+  }
+  .productos { list-style: none; margin: 0; padding: 0; }
+  .productos > li { border-top: 1px solid var(--grilla); }
+  .productos summary {
+    list-style: none; display: grid; grid-template-columns: 1fr auto 16px; gap: 12px; align-items: center;
+    padding: 10px 6px; margin: 0 -6px; border-radius: 8px; cursor: pointer;
+  }
+  .productos summary::-webkit-details-marker { display: none; }
+  .productos summary:hover { background: color-mix(in srgb, var(--tinta) 4%, transparent); }
+  .productos .nombre { font-weight: 500; }
+  .productos .meta { font-size: 12px; color: var(--tenue); margin-top: 1px; }
+  .productos .desde { text-align: right; white-space: nowrap; }
+  .productos .desde strong { display: block; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .productos .desde span { font-size: 12px; color: var(--tinta-2); }
+  .chev { width: 16px; height: 16px; fill: none; stroke: var(--tenue); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; transition: transform 120ms; }
+  details[open] .chev { transform: rotate(180deg); }
+  .por-tienda { list-style: none; margin: 0; padding: 2px 0 4px; }
+  .por-tienda li { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 13px; }
+  .por-tienda li + li { border-top: 1px solid var(--grilla); }
+  .por-tienda .valor { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .por-tienda s { color: var(--tenue); margin-right: 6px; }
+  .por-tienda .mejor { font-weight: 600; }
+  .marca {
+    display: inline-block; font-size: 11px; font-weight: 500; line-height: 1.4; padding: 0 6px; margin-left: 6px;
+    border: 1px solid var(--borde); border-radius: 4px; color: var(--tinta-2); vertical-align: 1px;
+  }
+  .ean { font-size: 12px; color: var(--tenue); margin: 2px 0 12px; font-variant-numeric: tabular-nums; }
+  .sin-resultados { padding: 20px 0; color: var(--tinta-2); font-size: 14px; }
+  .enlace { font: inherit; color: var(--azul); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+  @media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
 
   footer { margin-top: 32px; font-size: 13px; color: var(--tinta-2); }
   footer h2 { font-size: 15px; color: var(--tinta); }
@@ -144,6 +207,31 @@
     <div class="grafico" id="tiendas"></div>
   </section>
 
+  <section class="tarjeta" id="buscador">
+    <h2>Buscá un producto</h2>
+    <p class="bajada" id="bajada-productos"></p>
+    <div class="filtros">
+      <label class="buscar">
+        <span class="oculto">Buscar producto</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        <input type="search" id="q" placeholder="Yerba, leche, aceite…" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
+    </div>
+    <div class="barra-resultados">
+      <span id="contador" aria-live="polite"></span>
+      <label>Ordenar por
+        <select id="orden">
+          <option value="categoria">Categoría</option>
+          <option value="diferencia">Mayor diferencia entre súper</option>
+          <option value="precio">Menor precio</option>
+          <option value="aumento">Mayor aumento</option>
+        </select>
+      </label>
+    </div>
+    <ul class="productos" id="productos"></ul>
+  </section>
+
   <section class="tarjeta">
     <h2>Variación por categoría</h2>
     <p class="bajada" id="bajada-categorias"></p>
@@ -156,11 +244,6 @@
     <div id="mensual"></div>
   </section>
 
-  <section class="tarjeta">
-    <h2>Dónde conviene comprar cada producto</h2>
-    <p class="bajada" id="bajada-productos"></p>
-    <div id="productos"></div>
-  </section>
 
   <footer>
     <h2>Cómo se calcula</h2>
@@ -175,7 +258,7 @@
   </footer>
 </main>
 
-<script type="application/json" id="datos">{"repositorio": null, "actualizado": "2026-10-20", "inicio": "2026-10-20", "dias": 1, "productos_canasta": 49, "precios_hoy": 279, "promos_hoy": 8, "tiendas_hoy": 6, "destacado": {"tipo": "inicio", "valor": 279}, "serie": [{"fecha": "2026-10-20", "valor": 100.0}], "categorias": [{"nombre": "Pan, harinas y cereales", "peso": 18.0, "valor": 0.0}, {"nombre": "Lácteos", "peso": 16.0, "valor": 0.0}, {"nombre": "Aceites", "peso": 5.0, "valor": 0.0}, {"nombre": "Conservas y tomate", "peso": 5.0, "valor": 0.0}, {"nombre": "Azúcar y dulces", "peso": 8.0, "valor": 0.0}, {"nombre": "Condimentos y almacén", "peso": 5.0, "valor": 0.0}, {"nombre": "Bebidas sin alcohol", "peso": 11.0, "valor": 0.0}, {"nombre": "Yerba, café y té", "peso": 8.0, "valor": 0.0}, {"nombre": "Limpieza", "peso": 13.0, "valor": 0.0}, {"nombre": "Higiene personal", "peso": 11.0, "valor": 0.0}], "mensual": {"meses": ["2026-10"], "dias": [1], "series": [{"id": "general", "nombre": "Índice general", "variaciones": [null]}, {"id": "pan_cereales", "nombre": "Pan, harinas y cereales", "variaciones": [null]}, {"id": "lacteos", "nombre": "Lácteos", "variaciones": [null]}, {"id": "aceites", "nombre": "Aceites", "variaciones": [null]}, {"id": "conservas", "nombre": "Conservas y tomate", "variaciones": [null]}, {"id": "azucar_dulces", "nombre": "Azúcar y dulces", "variaciones": [null]}, {"id": "almacen", "nombre": "Condimentos y almacén", "variaciones": [null]}, {"id": "bebidas", "nombre": "Bebidas sin alcohol", "variaciones": [null]}, {"id": "infusiones", "nombre": "Yerba, café y té", "variaciones": [null]}, {"id": "limpieza", "nombre": "Limpieza", "variaciones": [null]}, {"id": "higiene", "nombre": "Higiene personal", "variaciones": [null]}]}, "tiendas": [{"nombre": "Día", "valor": -2.68}, {"nombre": "Vea", "valor": -1.53}, {"nombre": "Carrefour", "valor": -1.43}, {"nombre": "Más Online", "valor": -0.75}, {"nombre": "Jumbo", "valor": 2.84}, {"nombre": "Disco", "valor": 3.36}], "productos": [{"nombre": "Fideos spaghetti Matarazzo 500 g", "categoria": "Pan, harinas y cereales", "barata": "Vea", "min": 1990.0, "cara": "Día", "max": 2200.0, "brecha": 10.6, "tiendas": 6}, {"nombre": "Fideos tirabuzón al huevo Lucchetti 500 g", "categoria": "Pan, harinas y cereales", "barata": "Vea", "min": 2290.0, "cara": "Disco", "max": 2400.0, "brecha": 4.8, "tiendas": 5}, {"nombre": "Arroz largo fino Gallo 1 kg", "categoria": "Pan, harinas y cereales", "barata": "Vea", "min": 2390.0, "cara": "Carrefour", "max": 2619.0, "brecha": 9.6, "tiendas": 5}, {"nombre": "Arroz largo fino Lucchetti 1 kg", "categoria": "Pan, harinas y cereales", "barata": "Carrefour", "min": 2132.0, "cara": "Disco", "max": 2350.0, "brecha": 10.2, "tiendas": 6}, {"nombre": "Harina 000 Favorita 1 kg", "categoria": "Pan, harinas y cereales", "barata": "Vea", "min": 990.0, "cara": "Día", "max": 1300.0, "brecha": 31.3, "tiendas": 6}, {"nombre": "Harina 0000 Morixe 1 kg", "categoria": "Pan, harinas y cereales", "barata": "Más Online", "min": 1299.0, "cara": "Disco", "max": 1650.0, "brecha": 27.0, "tiendas": 6}, {"nombre": "Pan lactal blanco 315 g", "categoria": "Pan, harinas y cereales", "barata": "Jumbo", "min": 3400.0, "cara": "Día", "max": 3615.0, "brecha": 6.3, "tiendas": 6}, {"nombre": "Galletitas Criollitas 499 g", "categoria": "Pan, harinas y cereales", "barata": "Carrefour", "min": 3389.0, "cara": "Disco", "max": 3700.0, "brecha": 9.2, "tiendas": 6}, {"nombre": "Galletitas Oreo 118 g", "categoria": "Pan, harinas y cereales", "barata": "Vea", "min": 2490.0, "cara": "Disco", "max": 2650.0, "brecha": 6.4, "tiendas": 6}, {"nombre": "Polenta Presto Pronta 490 g", "categoria": "Pan, harinas y cereales", "barata": "Día", "min": 1768.0, "cara": "Disco", "max": 1900.0, "brecha": 7.5, "tiendas": 6}, {"nombre": "Avena tradicional Quaker 280 g", "categoria": "Pan, harinas y cereales", "barata": "Carrefour", "min": 2260.0, "cara": "Disco", "max": 2450.0, "brecha": 8.4, "tiendas": 4}, {"nombre": "Leche entera La Serenísima sachet 1 l", "categoria": "Lácteos", "barata": "Vea", "min": 1990.0, "cara": "Jumbo", "max": 2103.0, "brecha": 5.7, "tiendas": 6}, {"nombre": "Leche entera larga vida La Serenísima 1 l", "categoria": "Lácteos", "barata": "Carrefour", "min": 3060.0, "cara": "Jumbo", "max": 3200.0, "brecha": 4.6, "tiendas": 6}, {"nombre": "Yogur cremoso frutilla La Serenísima", "categoria": "Lácteos", "barata": "Carrefour", "min": 1380.0, "cara": "Disco", "max": 1600.0, "brecha": 15.9, "tiendas": 6}, {"nombre": "Queso crema Casancrem 290 g", "categoria": "Lácteos", "barata": "Vea", "min": 5990.0, "cara": "Más Online", "max": 5999.0, "brecha": 0.2, "tiendas": 6}, {"nombre": "Manteca La Serenísima 200 g", "categoria": "Lácteos", "barata": "Vea", "min": 4990.0, "cara": "Más Online", "max": 5019.0, "brecha": 0.6, "tiendas": 6}, {"nombre": "Dulce de leche La Serenísima 400 g", "categoria": "Lácteos", "barata": "Vea", "min": 3990.0, "cara": "Disco", "max": 4300.0, "brecha": 7.8, "tiendas": 6}, {"nombre": "Queso rallado La Serenísima 70 g", "categoria": "Lácteos", "barata": "Vea", "min": 3690.0, "cara": "Carrefour", "max": 3700.0, "brecha": 0.3, "tiendas": 5}, {"nombre": "Aceite de girasol Natura 1,5 l", "categoria": "Aceites", "barata": "Más Online", "min": 5899.0, "cara": "Carrefour", "max": 7469.0, "brecha": 26.6, "tiendas": 6}, {"nombre": "Aceite de girasol Cocinero 1,5 l", "categoria": "Aceites", "barata": "Vea", "min": 6890.0, "cara": "Disco", "max": 6950.0, "brecha": 0.9, "tiendas": 6}, {"nombre": "Aceite de oliva Cocinero 500 ml", "categoria": "Aceites", "barata": "Vea", "min": 13590.0, "cara": "Día", "max": 14060.0, "brecha": 3.5, "tiendas": 6}, {"nombre": "Puré de tomate Arcor 520 g", "categoria": "Conservas y tomate", "barata": "Más Online", "min": 899.0, "cara": "Carrefour", "max": 1220.0, "brecha": 35.7, "tiendas": 6}, {"nombre": "Tomate perita Arcor 400 g", "categoria": "Conservas y tomate", "barata": "Carrefour", "min": 1579.0, "cara": "Jumbo", "max": 1700.0, "brecha": 7.7, "tiendas": 6}, {"nombre": "Choclo cremoso Arcor 300 g", "categoria": "Conservas y tomate", "barata": "Carrefour", "min": 2059.0, "cara": "Jumbo", "max": 2250.0, "brecha": 9.3, "tiendas": 4}, {"nombre": "Azúcar Ledesma 1 kg", "categoria": "Azúcar y dulces", "barata": "Vea", "min": 1590.0, "cara": "Más Online", "max": 1639.0, "brecha": 3.1, "tiendas": 6}, {"nombre": "Mermelada de damasco Arcor 454 g", "categoria": "Azúcar y dulces", "barata": "Vea", "min": 3290.0, "cara": "Disco", "max": 3600.0, "brecha": 9.4, "tiendas": 6}, {"nombre": "Cacao Nesquik 360 g", "categoria": "Azúcar y dulces", "barata": "Carrefour", "min": 5100.0, "cara": "Más Online", "max": 6519.0, "brecha": 27.8, "tiendas": 6}, {"nombre": "Chocolate Milka con leche 55 g", "categoria": "Azúcar y dulces", "barata": "Día", "min": 5140.0, "cara": "Jumbo", "max": 5450.0, "brecha": 6.0, "tiendas": 4}, {"nombre": "Sal fina Celusal 500 g", "categoria": "Condimentos y almacén", "barata": "Vea", "min": 1549.0, "cara": "Más Online", "max": 1799.0, "brecha": 16.1, "tiendas": 6}, {"nombre": "Caldo de verdura Knorr x6", "categoria": "Condimentos y almacén", "barata": "Carrefour", "min": 1869.0, "cara": "Disco", "max": 2100.0, "brecha": 12.4, "tiendas": 6}, {"nombre": "Mayonesa Hellmann's 237 g", "categoria": "Condimentos y almacén", "barata": "Carrefour", "min": 1795.0, "cara": "Disco", "max": 2000.0, "brecha": 11.4, "tiendas": 5}, {"nombre": "Coca-Cola 2,25 l", "categoria": "Bebidas sin alcohol", "barata": "Vea", "min": 5990.0, "cara": "Carrefour", "max": 6000.0, "brecha": 0.2, "tiendas": 6}, {"nombre": "Agua mineral Villavicencio 2 l", "categoria": "Bebidas sin alcohol", "barata": "Más Online", "min": 2559.0, "cara": "Día", "max": 3200.0, "brecha": 25.0, "tiendas": 5}, {"nombre": "Jugo en polvo Tang naranja", "categoria": "Bebidas sin alcohol", "barata": "Disco", "min": 586.0, "cara": "Carrefour", "max": 595.0, "brecha": 1.5, "tiendas": 5}, {"nombre": "Agua saborizada Aquarius pera 2,25 l", "categoria": "Bebidas sin alcohol", "barata": "Más Online", "min": 3849.0, "cara": "Disco", "max": 4100.0, "brecha": 6.5, "tiendas": 6}, {"nombre": "Yerba Playadito 1 kg", "categoria": "Yerba, café y té", "barata": "Vea", "min": 5190.0, "cara": "Más Online", "max": 5289.0, "brecha": 1.9, "tiendas": 6}, {"nombre": "Yerba Taragüi 1 kg", "categoria": "Yerba, café y té", "barata": "Día", "min": 3790.0, "cara": "Disco", "max": 5950.0, "brecha": 57.0, "tiendas": 6}, {"nombre": "Café molido La Virginia 500 g", "categoria": "Yerba, café y té", "barata": "Vea", "min": 14490.0, "cara": "Jumbo", "max": 15450.0, "brecha": 6.6, "tiendas": 5}, {"nombre": "Té Taragüi x50", "categoria": "Yerba, café y té", "barata": "Vea", "min": 2290.0, "cara": "Disco", "max": 2500.0, "brecha": 9.2, "tiendas": 6}, {"nombre": "Mate cocido La Tranquera x25", "categoria": "Yerba, café y té", "barata": "Carrefour", "min": 1229.0, "cara": "Disco", "max": 1350.0, "brecha": 9.8, "tiendas": 6}, {"nombre": "Lavandina Ayudín 1 l", "categoria": "Limpieza", "barata": "Vea", "min": 1290.0, "cara": "Más Online", "max": 1649.0, "brecha": 27.8, "tiendas": 6}, {"nombre": "Detergente Magistral 500 ml", "categoria": "Limpieza", "barata": "Vea", "min": 4390.0, "cara": "Disco", "max": 5509.0, "brecha": 25.5, "tiendas": 6}, {"nombre": "Jabón en polvo Ala 800 g", "categoria": "Limpieza", "barata": "Vea", "min": 3290.0, "cara": "Disco", "max": 3700.0, "brecha": 12.5, "tiendas": 6}, {"nombre": "Papel higiénico Higienol x4", "categoria": "Limpieza", "barata": "Carrefour", "min": 2499.0, "cara": "Disco", "max": 2800.0, "brecha": 12.0, "tiendas": 6}, {"nombre": "Suavizante Vivere 900 ml", "categoria": "Limpieza", "barata": "Carrefour", "min": 2459.25, "cara": "Disco", "max": 3600.0, "brecha": 46.4, "tiendas": 6}, {"nombre": "Jabón de tocador Dove x3", "categoria": "Higiene personal", "barata": "Carrefour", "min": 7655.0, "cara": "Vea", "max": 7890.0, "brecha": 3.1, "tiendas": 6}, {"nombre": "Shampoo Sedal 190 ml", "categoria": "Higiene personal", "barata": "Carrefour", "min": 4275.0, "cara": "Disco", "max": 4800.0, "brecha": 12.3, "tiendas": 5}, {"nombre": "Pasta dental Colgate 90 g", "categoria": "Higiene personal", "barata": "Carrefour", "min": 4146.15, "cara": "Disco", "max": 4450.0, "brecha": 7.3, "tiendas": 5}, {"nombre": "Desodorante Rexona aerosol 150 ml", "categoria": "Higiene personal", "barata": "Día", "min": 3840.0, "cara": "Más Online", "max": 5129.0, "brecha": 33.6, "tiendas": 6}]}</script>
+<script type="application/json" id="datos">{"repositorio": "https://github.com/enri-escaray/indice-changuito", "actualizado": "2026-10-20", "inicio": "2026-10-20", "dias": 1, "productos_canasta": 49, "precios_hoy": 278, "promos_hoy": 8, "tiendas_hoy": 6, "destacado": {"tipo": "inicio", "valor": 278}, "serie": [{"fecha": "2026-10-20", "valor": 100.0}], "categorias": [{"id": "pan_cereales", "nombre": "Pan, harinas y cereales", "peso": 18.0, "valor": 0.0}, {"id": "lacteos", "nombre": "Lácteos", "peso": 16.0, "valor": 0.0}, {"id": "aceites", "nombre": "Aceites", "peso": 5.0, "valor": 0.0}, {"id": "conservas", "nombre": "Conservas y tomate", "peso": 5.0, "valor": 0.0}, {"id": "azucar_dulces", "nombre": "Azúcar y dulces", "peso": 8.0, "valor": 0.0}, {"id": "almacen", "nombre": "Condimentos y almacén", "peso": 5.0, "valor": 0.0}, {"id": "bebidas", "nombre": "Bebidas sin alcohol", "peso": 11.0, "valor": 0.0}, {"id": "infusiones", "nombre": "Yerba, café y té", "peso": 8.0, "valor": 0.0}, {"id": "limpieza", "nombre": "Limpieza", "peso": 13.0, "valor": 0.0}, {"id": "higiene", "nombre": "Higiene personal", "peso": 11.0, "valor": 0.0}], "mensual": {"meses": ["2026-10"], "dias": [1], "series": [{"id": "general", "nombre": "Índice general", "variaciones": [null]}, {"id": "pan_cereales", "nombre": "Pan, harinas y cereales", "variaciones": [null]}, {"id": "lacteos", "nombre": "Lácteos", "variaciones": [null]}, {"id": "aceites", "nombre": "Aceites", "variaciones": [null]}, {"id": "conservas", "nombre": "Conservas y tomate", "variaciones": [null]}, {"id": "azucar_dulces", "nombre": "Azúcar y dulces", "variaciones": [null]}, {"id": "almacen", "nombre": "Condimentos y almacén", "variaciones": [null]}, {"id": "bebidas", "nombre": "Bebidas sin alcohol", "variaciones": [null]}, {"id": "infusiones", "nombre": "Yerba, café y té", "variaciones": [null]}, {"id": "limpieza", "nombre": "Limpieza", "variaciones": [null]}, {"id": "higiene", "nombre": "Higiene personal", "variaciones": [null]}]}, "tiendas": [{"nombre": "Día", "valor": -2.75}, {"nombre": "Vea", "valor": -1.53}, {"nombre": "Carrefour", "valor": -1.36}, {"nombre": "Más Online", "valor": -0.75}, {"nombre": "Jumbo", "valor": 2.77}, {"nombre": "Disco", "valor": 3.3}], "productos": [{"ean": "7790070336309", "nombre": "Fideos spaghetti Matarazzo 500 g", "categoria": "pan_cereales", "barata": "Vea", "min": 1990.0, "cara": "Día", "max": 2200.0, "brecha": 10.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1990.0, "lista": 1990.0}, {"tienda": "Carrefour", "precio": 2099.0, "lista": 2099.0}, {"tienda": "Jumbo", "precio": 2099.0, "lista": 2099.0}, {"tienda": "Disco", "precio": 2099.0, "lista": 2099.0}, {"tienda": "Más Online", "precio": 2199.0, "lista": 2199.0}, {"tienda": "Día", "precio": 2200.0, "lista": 2200.0}]}, {"ean": "7790070337085", "nombre": "Fideos tirabuzón al huevo Lucchetti 500 g", "categoria": "pan_cereales", "barata": "Vea", "min": 2290.0, "cara": "Disco", "max": 2400.0, "brecha": 4.8, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Vea", "precio": 2290.0, "lista": 2290.0}, {"tienda": "Carrefour", "precio": 2299.0, "lista": 2299.0}, {"tienda": "Más Online", "precio": 2299.0, "lista": 2299.0}, {"tienda": "Jumbo", "precio": 2350.0, "lista": 2350.0}, {"tienda": "Disco", "precio": 2400.0, "lista": 2400.0}]}, {"ean": "7790070431448", "nombre": "Arroz largo fino Gallo 1 kg", "categoria": "pan_cereales", "barata": "Vea", "min": 2390.0, "cara": "Carrefour", "max": 2619.0, "brecha": 9.6, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Vea", "precio": 2390.0, "lista": 2390.0}, {"tienda": "Disco", "precio": 2400.0, "lista": 2400.0}, {"tienda": "Jumbo", "precio": 2400.0, "lista": 2400.0}, {"tienda": "Carrefour", "precio": 2619.0, "lista": 2619.0}, {"tienda": "Más Online", "precio": 2619.0, "lista": 2619.0}]}, {"ean": "7790070431486", "nombre": "Arroz largo fino Lucchetti 1 kg", "categoria": "pan_cereales", "barata": "Carrefour", "min": 2132.0, "cara": "Disco", "max": 2350.0, "brecha": 10.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 2132.0, "lista": 2132.0}, {"tienda": "Día", "precio": 2135.0, "lista": 2135.0}, {"tienda": "Más Online", "precio": 2139.0, "lista": 2139.0}, {"tienda": "Vea", "precio": 2290.0, "lista": 2290.0}, {"tienda": "Jumbo", "precio": 2350.0, "lista": 2350.0}, {"tienda": "Disco", "precio": 2350.0, "lista": 2350.0}]}, {"ean": "7790070562258", "nombre": "Harina 000 Favorita 1 kg", "categoria": "pan_cereales", "barata": "Vea", "min": 990.0, "cara": "Día", "max": 1300.0, "brecha": 31.3, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 990.0, "lista": 990.0}, {"tienda": "Carrefour", "precio": 1299.0, "lista": 1299.0}, {"tienda": "Más Online", "precio": 1299.0, "lista": 1299.0}, {"tienda": "Día", "precio": 1300.0, "lista": 1300.0}, {"tienda": "Jumbo", "precio": 1300.0, "lista": 1300.0}, {"tienda": "Disco", "precio": 1300.0, "lista": 1300.0}]}, {"ean": "7790199000020", "nombre": "Harina 0000 Morixe 1 kg", "categoria": "pan_cereales", "barata": "Más Online", "min": 1299.0, "cara": "Disco", "max": 1650.0, "brecha": 27.0, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 1299.0, "lista": 1559.0}, {"tienda": "Vea", "precio": 1390.0, "lista": 1390.0}, {"tienda": "Carrefour", "precio": 1509.0, "lista": 1509.0}, {"tienda": "Día", "precio": 1509.0, "lista": 1509.0}, {"tienda": "Jumbo", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Disco", "precio": 1650.0, "lista": 1650.0}]}, {"ean": "7793890258769", "nombre": "Pan lactal blanco 315 g", "categoria": "pan_cereales", "barata": "Jumbo", "min": 3400.0, "cara": "Día", "max": 3615.0, "brecha": 6.3, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Jumbo", "precio": 3400.0, "lista": 3400.0}, {"tienda": "Disco", "precio": 3500.0, "lista": 3500.0}, {"tienda": "Vea", "precio": 3590.0, "lista": 3590.0}, {"tienda": "Carrefour", "precio": 3600.0, "lista": 3600.0}, {"tienda": "Más Online", "precio": 3612.0, "lista": 3612.0}, {"tienda": "Día", "precio": 3615.0, "lista": 3615.0}]}, {"ean": "7790040139015", "nombre": "Galletitas Criollitas 499 g", "categoria": "pan_cereales", "barata": "Carrefour", "min": 3389.0, "cara": "Disco", "max": 3700.0, "brecha": 9.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 3389.0, "lista": 3389.0}, {"tienda": "Día", "precio": 3389.0, "lista": 3389.0}, {"tienda": "Más Online", "precio": 3389.0, "lista": 3389.0}, {"tienda": "Vea", "precio": 3490.0, "lista": 3490.0}, {"tienda": "Jumbo", "precio": 3600.0, "lista": 3600.0}, {"tienda": "Disco", "precio": 3700.0, "lista": 3700.0}]}, {"ean": "7622201735296", "nombre": "Galletitas Oreo 118 g", "categoria": "pan_cereales", "barata": "Vea", "min": 2490.0, "cara": "Disco", "max": 2650.0, "brecha": 6.4, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 2490.0, "lista": 2490.0}, {"tienda": "Carrefour", "precio": 2639.0, "lista": 2639.0}, {"tienda": "Más Online", "precio": 2639.0, "lista": 2639.0}, {"tienda": "Día", "precio": 2639.0, "lista": 2639.0}, {"tienda": "Jumbo", "precio": 2650.0, "lista": 2650.0}, {"tienda": "Disco", "precio": 2650.0, "lista": 2650.0}]}, {"ean": "7790580138738", "nombre": "Polenta Presto Pronta 490 g", "categoria": "pan_cereales", "barata": "Día", "min": 1768.0, "cara": "Disco", "max": 1900.0, "brecha": 7.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Día", "precio": 1768.0, "lista": 1768.0}, {"tienda": "Carrefour", "precio": 1769.0, "lista": 1769.0}, {"tienda": "Más Online", "precio": 1769.0, "lista": 1769.0}, {"tienda": "Vea", "precio": 1790.0, "lista": 1790.0}, {"tienda": "Jumbo", "precio": 1900.0, "lista": 1900.0}, {"tienda": "Disco", "precio": 1900.0, "lista": 1900.0}]}, {"ean": "7792170555499", "nombre": "Avena tradicional Quaker 280 g", "categoria": "pan_cereales", "barata": "Día", "min": 2300.0, "cara": "Disco", "max": 2450.0, "brecha": 6.5, "tiendas": 3, "variacion": null, "precios": [{"tienda": "Día", "precio": 2300.0, "lista": 2300.0}, {"tienda": "Disco", "precio": 2450.0, "lista": 2450.0}, {"tienda": "Jumbo", "precio": 2450.0, "lista": 2450.0}]}, {"ean": "7790742348302", "nombre": "Leche entera La Serenísima sachet 1 l", "categoria": "lacteos", "barata": "Vea", "min": 1990.0, "cara": "Jumbo", "max": 2103.0, "brecha": 5.7, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1990.0, "lista": 1990.0}, {"tienda": "Carrefour", "precio": 2049.0, "lista": 2049.0}, {"tienda": "Más Online", "precio": 2049.0, "lista": 2049.0}, {"tienda": "Día", "precio": 2050.0, "lista": 2050.0}, {"tienda": "Disco", "precio": 2094.0, "lista": 2094.0}, {"tienda": "Jumbo", "precio": 2103.0, "lista": 2103.0}]}, {"ean": "7790742335500", "nombre": "Leche entera larga vida La Serenísima 1 l", "categoria": "lacteos", "barata": "Carrefour", "min": 3060.0, "cara": "Jumbo", "max": 3200.0, "brecha": 4.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 3060.0, "lista": 3060.0}, {"tienda": "Día", "precio": 3060.0, "lista": 3060.0}, {"tienda": "Vea", "precio": 3060.0, "lista": 3060.0}, {"tienda": "Más Online", "precio": 3069.0, "lista": 3069.0}, {"tienda": "Disco", "precio": 3100.0, "lista": 3100.0}, {"tienda": "Jumbo", "precio": 3200.0, "lista": 3200.0}]}, {"ean": "7791337010260", "nombre": "Yogur cremoso frutilla La Serenísima", "categoria": "lacteos", "barata": "Carrefour", "min": 1380.0, "cara": "Disco", "max": 1600.0, "brecha": 15.9, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1380.0, "lista": 1380.0}, {"tienda": "Día", "precio": 1380.0, "lista": 1380.0}, {"tienda": "Más Online", "precio": 1389.0, "lista": 1389.0}, {"tienda": "Vea", "precio": 1390.0, "lista": 1390.0}, {"tienda": "Jumbo", "precio": 1550.0, "lista": 1550.0}, {"tienda": "Disco", "precio": 1600.0, "lista": 1600.0}]}, {"ean": "7791337061361", "nombre": "Queso crema Casancrem 290 g", "categoria": "lacteos", "barata": "Vea", "min": 5990.0, "cara": "Más Online", "max": 5999.0, "brecha": 0.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 5990.0, "lista": 5990.0}, {"tienda": "Carrefour", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Disco", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Día", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Jumbo", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Más Online", "precio": 5999.0, "lista": 5999.0}]}, {"ean": "7793940054006", "nombre": "Manteca La Serenísima 200 g", "categoria": "lacteos", "barata": "Vea", "min": 4990.0, "cara": "Más Online", "max": 5019.0, "brecha": 0.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 4990.0, "lista": 4990.0}, {"tienda": "Carrefour", "precio": 5006.67, "lista": 5006.67}, {"tienda": "Disco", "precio": 5010.0, "lista": 5010.0}, {"tienda": "Día", "precio": 5010.0, "lista": 5010.0}, {"tienda": "Jumbo", "precio": 5010.0, "lista": 5010.0}, {"tienda": "Más Online", "precio": 5019.0, "lista": 5019.0}]}, {"ean": "7790742625304", "nombre": "Dulce de leche La Serenísima 400 g", "categoria": "lacteos", "barata": "Vea", "min": 3990.0, "cara": "Disco", "max": 4300.0, "brecha": 7.8, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 3990.0, "lista": 3990.0}, {"tienda": "Carrefour", "precio": 4013.85, "lista": 4013.85}, {"tienda": "Día", "precio": 4015.0, "lista": 4015.0}, {"tienda": "Más Online", "precio": 4019.0, "lista": 4019.0}, {"tienda": "Jumbo", "precio": 4300.0, "lista": 4300.0}, {"tienda": "Disco", "precio": 4300.0, "lista": 4300.0}]}, {"ean": "7790742223005", "nombre": "Queso rallado La Serenísima 70 g", "categoria": "lacteos", "barata": "Vea", "min": 3690.0, "cara": "Carrefour", "max": 3700.0, "brecha": 0.3, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Vea", "precio": 3690.0, "lista": 3690.0}, {"tienda": "Día", "precio": 3697.0, "lista": 3697.0}, {"tienda": "Disco", "precio": 3700.0, "lista": 3700.0}, {"tienda": "Carrefour", "precio": 3700.0, "lista": 3700.0}, {"tienda": "Jumbo", "precio": 3700.0, "lista": 3700.0}]}, {"ean": "7790272001029", "nombre": "Aceite de girasol Natura 1,5 l", "categoria": "aceites", "barata": "Más Online", "min": 5899.0, "cara": "Carrefour", "max": 7469.0, "brecha": 26.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 5899.0, "lista": 7469.0}, {"tienda": "Vea", "precio": 7390.0, "lista": 7390.0}, {"tienda": "Día", "precio": 7460.0, "lista": 7460.0}, {"tienda": "Jumbo", "precio": 7460.0, "lista": 7460.0}, {"tienda": "Disco", "precio": 7463.0, "lista": 7463.0}, {"tienda": "Carrefour", "precio": 7469.0, "lista": 7469.0}]}, {"ean": "7790060023684", "nombre": "Aceite de girasol Cocinero 1,5 l", "categoria": "aceites", "barata": "Vea", "min": 6890.0, "cara": "Disco", "max": 6950.0, "brecha": 0.9, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 6890.0, "lista": 6890.0}, {"tienda": "Carrefour", "precio": 6925.0, "lista": 6925.0}, {"tienda": "Día", "precio": 6925.0, "lista": 6925.0}, {"tienda": "Más Online", "precio": 6929.0, "lista": 6929.0}, {"tienda": "Jumbo", "precio": 6950.0, "lista": 6950.0}, {"tienda": "Disco", "precio": 6950.0, "lista": 6950.0}]}, {"ean": "7790070231871", "nombre": "Aceite de oliva Cocinero 500 ml", "categoria": "aceites", "barata": "Vea", "min": 13590.0, "cara": "Día", "max": 14060.0, "brecha": 3.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 13590.0, "lista": 13590.0}, {"tienda": "Más Online", "precio": 13649.0, "lista": 13649.0}, {"tienda": "Carrefour", "precio": 13650.0, "lista": 13650.0}, {"tienda": "Disco", "precio": 13650.0, "lista": 13650.0}, {"tienda": "Jumbo", "precio": 13650.0, "lista": 13650.0}, {"tienda": "Día", "precio": 14060.0, "lista": 14060.0}]}, {"ean": "7790580146115", "nombre": "Puré de tomate Arcor 520 g", "categoria": "conservas", "barata": "Más Online", "min": 899.0, "cara": "Carrefour", "max": 1220.0, "brecha": 35.7, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 899.0, "lista": 1229.0}, {"tienda": "Día", "precio": 915.0, "lista": 1220.0}, {"tienda": "Vea", "precio": 1190.0, "lista": 1190.0}, {"tienda": "Carrefour", "precio": 1220.0, "lista": 1220.0}, {"tienda": "Jumbo", "precio": 1220.0, "lista": 1220.0}, {"tienda": "Disco", "precio": 1220.0, "lista": 1220.0}]}, {"ean": "7790580567903", "nombre": "Tomate perita Arcor 400 g", "categoria": "conservas", "barata": "Carrefour", "min": 1579.0, "cara": "Jumbo", "max": 1700.0, "brecha": 7.7, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1579.0, "lista": 1579.0}, {"tienda": "Día", "precio": 1582.0, "lista": 1582.0}, {"tienda": "Más Online", "precio": 1589.0, "lista": 1589.0}, {"tienda": "Disco", "precio": 1600.0, "lista": 1600.0}, {"tienda": "Vea", "precio": 1690.0, "lista": 1690.0}, {"tienda": "Jumbo", "precio": 1700.0, "lista": 1700.0}]}, {"ean": "7790580980801", "nombre": "Choclo cremoso Arcor 300 g", "categoria": "conservas", "barata": "Carrefour", "min": 2059.0, "cara": "Jumbo", "max": 2250.0, "brecha": 9.3, "tiendas": 4, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 2059.0, "lista": 2059.0}, {"tienda": "Más Online", "precio": 2069.0, "lista": 2069.0}, {"tienda": "Disco", "precio": 2150.0, "lista": 2150.0}, {"tienda": "Jumbo", "precio": 2250.0, "lista": 2250.0}]}, {"ean": "7792540250450", "nombre": "Azúcar Ledesma 1 kg", "categoria": "azucar_dulces", "barata": "Vea", "min": 1590.0, "cara": "Más Online", "max": 1639.0, "brecha": 3.1, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1590.0, "lista": 1590.0}, {"tienda": "Disco", "precio": 1610.0, "lista": 1610.0}, {"tienda": "Jumbo", "precio": 1613.0, "lista": 1613.0}, {"tienda": "Día", "precio": 1619.0, "lista": 1619.0}, {"tienda": "Carrefour", "precio": 1619.0, "lista": 1619.0}, {"tienda": "Más Online", "precio": 1639.0, "lista": 1639.0}]}, {"ean": "7790580132170", "nombre": "Mermelada de damasco Arcor 454 g", "categoria": "azucar_dulces", "barata": "Vea", "min": 3290.0, "cara": "Disco", "max": 3600.0, "brecha": 9.4, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 3290.0, "lista": 3290.0}, {"tienda": "Día", "precio": 3340.0, "lista": 3340.0}, {"tienda": "Carrefour", "precio": 3345.0, "lista": 3345.0}, {"tienda": "Más Online", "precio": 3349.0, "lista": 3349.0}, {"tienda": "Jumbo", "precio": 3550.0, "lista": 3550.0}, {"tienda": "Disco", "precio": 3600.0, "lista": 3600.0}]}, {"ean": "8445291121881", "nombre": "Cacao Nesquik 360 g", "categoria": "azucar_dulces", "barata": "Carrefour", "min": 5100.0, "cara": "Más Online", "max": 6519.0, "brecha": 27.8, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Día", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Disco", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Jumbo", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Vea", "precio": 5190.0, "lista": 5190.0}, {"tienda": "Más Online", "precio": 6519.0, "lista": 6519.0}]}, {"ean": "7622202328947", "nombre": "Chocolate Milka con leche 55 g", "categoria": "azucar_dulces", "barata": "Día", "min": 5140.0, "cara": "Jumbo", "max": 5450.0, "brecha": 6.0, "tiendas": 4, "variacion": null, "precios": [{"tienda": "Día", "precio": 5140.0, "lista": 5140.0}, {"tienda": "Vea", "precio": 5390.0, "lista": 5390.0}, {"tienda": "Más Online", "precio": 5439.0, "lista": 5439.0}, {"tienda": "Jumbo", "precio": 5450.0, "lista": 5450.0}]}, {"ean": "7790072001014", "nombre": "Sal fina Celusal 500 g", "categoria": "almacen", "barata": "Vea", "min": 1549.0, "cara": "Más Online", "max": 1799.0, "brecha": 16.1, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1549.0, "lista": 1549.0}, {"tienda": "Carrefour", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Jumbo", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Día", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Disco", "precio": 1700.0, "lista": 1700.0}, {"tienda": "Más Online", "precio": 1799.0, "lista": 1799.0}]}, {"ean": "7794000008595", "nombre": "Caldo de verdura Knorr x6", "categoria": "almacen", "barata": "Carrefour", "min": 1869.0, "cara": "Disco", "max": 2100.0, "brecha": 12.4, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1869.0, "lista": 1869.0}, {"tienda": "Más Online", "precio": 1869.0, "lista": 1869.0}, {"tienda": "Día", "precio": 1873.0, "lista": 1873.0}, {"tienda": "Vea", "precio": 1990.0, "lista": 1990.0}, {"tienda": "Jumbo", "precio": 2000.0, "lista": 2000.0}, {"tienda": "Disco", "precio": 2100.0, "lista": 2100.0}]}, {"ean": "7794000006065", "nombre": "Mayonesa Hellmann's 237 g", "categoria": "almacen", "barata": "Carrefour", "min": 1795.0, "cara": "Disco", "max": 2000.0, "brecha": 11.4, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1795.0, "lista": 1795.0}, {"tienda": "Día", "precio": 1795.0, "lista": 1795.0}, {"tienda": "Más Online", "precio": 1799.0, "lista": 1799.0}, {"tienda": "Vea", "precio": 1890.0, "lista": 1890.0}, {"tienda": "Disco", "precio": 2000.0, "lista": 2000.0}]}, {"ean": "7790895000997", "nombre": "Coca-Cola 2,25 l", "categoria": "bebidas", "barata": "Vea", "min": 5990.0, "cara": "Carrefour", "max": 6000.0, "brecha": 0.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 5990.0, "lista": 5990.0}, {"tienda": "Más Online", "precio": 5999.0, "lista": 5999.0}, {"tienda": "Carrefour", "precio": 6000.0, "lista": 6000.0}, {"tienda": "Día", "precio": 6000.0, "lista": 6000.0}, {"tienda": "Jumbo", "precio": 6000.0, "lista": 6000.0}, {"tienda": "Disco", "precio": 6000.0, "lista": 6000.0}]}, {"ean": "7799155000197", "nombre": "Agua mineral Villavicencio 2 l", "categoria": "bebidas", "barata": "Más Online", "min": 2559.0, "cara": "Día", "max": 3200.0, "brecha": 25.0, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 2559.0, "lista": 3199.0}, {"tienda": "Carrefour", "precio": 3199.0, "lista": 3199.0}, {"tienda": "Disco", "precio": 3200.0, "lista": 3200.0}, {"tienda": "Día", "precio": 3200.0, "lista": 3200.0}, {"tienda": "Jumbo", "precio": 3200.0, "lista": 3200.0}]}, {"ean": "7622201705961", "nombre": "Jugo en polvo Tang naranja", "categoria": "bebidas", "barata": "Disco", "min": 586.0, "cara": "Carrefour", "max": 595.0, "brecha": 1.5, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Disco", "precio": 586.0, "lista": 586.0}, {"tienda": "Jumbo", "precio": 588.0, "lista": 588.0}, {"tienda": "Vea", "precio": 590.0, "lista": 590.0}, {"tienda": "Día", "precio": 595.0, "lista": 595.0}, {"tienda": "Carrefour", "precio": 595.0, "lista": 595.0}]}, {"ean": "7790895003295", "nombre": "Agua saborizada Aquarius pera 2,25 l", "categoria": "bebidas", "barata": "Más Online", "min": 3849.0, "cara": "Disco", "max": 4100.0, "brecha": 6.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 3849.0, "lista": 3849.0}, {"tienda": "Carrefour", "precio": 3850.0, "lista": 3850.0}, {"tienda": "Día", "precio": 3850.0, "lista": 3850.0}, {"tienda": "Vea", "precio": 3890.0, "lista": 3890.0}, {"tienda": "Jumbo", "precio": 4100.0, "lista": 4100.0}, {"tienda": "Disco", "precio": 4100.0, "lista": 4100.0}]}, {"ean": "7793704000928", "nombre": "Yerba Playadito 1 kg", "categoria": "infusiones", "barata": "Vea", "min": 5190.0, "cara": "Más Online", "max": 5289.0, "brecha": 1.9, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 5190.0, "lista": 5190.0}, {"tienda": "Disco", "precio": 5202.0, "lista": 5202.0}, {"tienda": "Jumbo", "precio": 5208.0, "lista": 5208.0}, {"tienda": "Día", "precio": 5208.0, "lista": 5208.0}, {"tienda": "Carrefour", "precio": 5209.0, "lista": 5209.0}, {"tienda": "Más Online", "precio": 5289.0, "lista": 5289.0}]}, {"ean": "7790387013610", "nombre": "Yerba Taragüi 1 kg", "categoria": "infusiones", "barata": "Día", "min": 3790.0, "cara": "Disco", "max": 5950.0, "brecha": 57.0, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Día", "precio": 3790.0, "lista": 5747.0}, {"tienda": "Vea", "precio": 5590.0, "lista": 5590.0}, {"tienda": "Carrefour", "precio": 5650.0, "lista": 5650.0}, {"tienda": "Más Online", "precio": 5749.0, "lista": 5749.0}, {"tienda": "Jumbo", "precio": 5950.0, "lista": 5950.0}, {"tienda": "Disco", "precio": 5950.0, "lista": 5950.0}]}, {"ean": "7790150006351", "nombre": "Café molido La Virginia 500 g", "categoria": "infusiones", "barata": "Vea", "min": 14490.0, "cara": "Jumbo", "max": 15450.0, "brecha": 6.6, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Vea", "precio": 14490.0, "lista": 14490.0}, {"tienda": "Carrefour", "precio": 14569.0, "lista": 14569.0}, {"tienda": "Más Online", "precio": 14569.0, "lista": 14569.0}, {"tienda": "Día", "precio": 14575.0, "lista": 14575.0}, {"tienda": "Jumbo", "precio": 15450.0, "lista": 15450.0}]}, {"ean": "7790387800142", "nombre": "Té Taragüi x50", "categoria": "infusiones", "barata": "Vea", "min": 2290.0, "cara": "Disco", "max": 2500.0, "brecha": 9.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 2290.0, "lista": 2290.0}, {"tienda": "Carrefour", "precio": 2300.0, "lista": 2300.0}, {"tienda": "Día", "precio": 2300.0, "lista": 2300.0}, {"tienda": "Jumbo", "precio": 2450.0, "lista": 2450.0}, {"tienda": "Más Online", "precio": 2459.0, "lista": 2459.0}, {"tienda": "Disco", "precio": 2500.0, "lista": 2500.0}]}, {"ean": "7790480090006", "nombre": "Mate cocido La Tranquera x25", "categoria": "infusiones", "barata": "Carrefour", "min": 1229.0, "cara": "Disco", "max": 1350.0, "brecha": 9.8, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1229.0, "lista": 1229.0}, {"tienda": "Más Online", "precio": 1249.0, "lista": 1249.0}, {"tienda": "Día", "precio": 1255.0, "lista": 1255.0}, {"tienda": "Vea", "precio": 1290.0, "lista": 1290.0}, {"tienda": "Jumbo", "precio": 1350.0, "lista": 1350.0}, {"tienda": "Disco", "precio": 1350.0, "lista": 1350.0}]}, {"ean": "7790132098459", "nombre": "Lavandina Ayudín 1 l", "categoria": "limpieza", "barata": "Vea", "min": 1290.0, "cara": "Más Online", "max": 1649.0, "brecha": 27.8, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1290.0, "lista": 1290.0}, {"tienda": "Carrefour", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Disco", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Día", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Jumbo", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Más Online", "precio": 1649.0, "lista": 1649.0}]}, {"ean": "7790990003039", "nombre": "Detergente Magistral 500 ml", "categoria": "limpieza", "barata": "Vea", "min": 4390.0, "cara": "Disco", "max": 5509.0, "brecha": 25.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 4390.0, "lista": 4390.0}, {"tienda": "Carrefour", "precio": 4559.0, "lista": 4559.0}, {"tienda": "Día", "precio": 4559.0, "lista": 4559.0}, {"tienda": "Disco", "precio": 5509.0, "lista": 5509.0}, {"tienda": "Jumbo", "precio": 5509.0, "lista": 5509.0}, {"tienda": "Más Online", "precio": 5509.0, "lista": 5509.0}]}, {"ean": "7791290796829", "nombre": "Jabón en polvo Ala 800 g", "categoria": "limpieza", "barata": "Vea", "min": 3290.0, "cara": "Disco", "max": 3700.0, "brecha": 12.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 3290.0, "lista": 3290.0}, {"tienda": "Carrefour", "precio": 3319.0, "lista": 3319.0}, {"tienda": "Día", "precio": 3320.0, "lista": 3320.0}, {"tienda": "Más Online", "precio": 3329.0, "lista": 3329.0}, {"tienda": "Jumbo", "precio": 3650.0, "lista": 3650.0}, {"tienda": "Disco", "precio": 3700.0, "lista": 3700.0}]}, {"ean": "7790250016182", "nombre": "Papel higiénico Higienol x4", "categoria": "limpieza", "barata": "Carrefour", "min": 2499.0, "cara": "Disco", "max": 2800.0, "brecha": 12.0, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 2499.0, "lista": 2499.0}, {"tienda": "Más Online", "precio": 2499.0, "lista": 2499.0}, {"tienda": "Vea", "precio": 2590.0, "lista": 2590.0}, {"tienda": "Día", "precio": 2760.0, "lista": 2760.0}, {"tienda": "Jumbo", "precio": 2800.0, "lista": 2800.0}, {"tienda": "Disco", "precio": 2800.0, "lista": 2800.0}]}, {"ean": "7791290796683", "nombre": "Suavizante Vivere 900 ml", "categoria": "limpieza", "barata": "Carrefour", "min": 2459.25, "cara": "Disco", "max": 3600.0, "brecha": 46.4, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 2459.25, "lista": 3279.0}, {"tienda": "Día", "precio": 3280.0, "lista": 3280.0}, {"tienda": "Más Online", "precio": 3289.0, "lista": 3289.0}, {"tienda": "Vea", "precio": 3400.0, "lista": 3400.0}, {"tienda": "Jumbo", "precio": 3500.0, "lista": 3500.0}, {"tienda": "Disco", "precio": 3600.0, "lista": 3600.0}]}, {"ean": "7891150046481", "nombre": "Jabón de tocador Dove x3", "categoria": "higiene", "barata": "Carrefour", "min": 7655.0, "cara": "Vea", "max": 7890.0, "brecha": 3.1, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Día", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Disco", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Jumbo", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Más Online", "precio": 7659.0, "lista": 7659.0}, {"tienda": "Vea", "precio": 7890.0, "lista": 7890.0}]}, {"ean": "7791293045658", "nombre": "Shampoo Sedal 190 ml", "categoria": "higiene", "barata": "Carrefour", "min": 4275.0, "cara": "Disco", "max": 4800.0, "brecha": 12.3, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 4275.0, "lista": 4275.0}, {"tienda": "Más Online", "precio": 4279.0, "lista": 4279.0}, {"tienda": "Vea", "precio": 4490.0, "lista": 4490.0}, {"tienda": "Jumbo", "precio": 4650.0, "lista": 4650.0}, {"tienda": "Disco", "precio": 4800.0, "lista": 4800.0}]}, {"ean": "7509546686523", "nombre": "Pasta dental Colgate 90 g", "categoria": "higiene", "barata": "Carrefour", "min": 4146.15, "cara": "Disco", "max": 4450.0, "brecha": 7.3, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 4146.15, "lista": 4146.15}, {"tienda": "Día", "precio": 4150.0, "lista": 4150.0}, {"tienda": "Vea", "precio": 4190.0, "lista": 4190.0}, {"tienda": "Jumbo", "precio": 4350.0, "lista": 4350.0}, {"tienda": "Disco", "precio": 4450.0, "lista": 4450.0}]}, {"ean": "7791293049496", "nombre": "Desodorante Rexona aerosol 150 ml", "categoria": "higiene", "barata": "Día", "min": 3840.0, "cara": "Más Online", "max": 5129.0, "brecha": 33.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Día", "precio": 3840.0, "lista": 5120.0}, {"tienda": "Vea", "precio": 4990.0, "lista": 4990.0}, {"tienda": "Disco", "precio": 5119.0, "lista": 5119.0}, {"tienda": "Carrefour", "precio": 5119.0, "lista": 5119.0}, {"tienda": "Jumbo", "precio": 5119.0, "lista": 5119.0}, {"tienda": "Más Online", "precio": 5129.0, "lista": 5129.0}]}]}</script>
 <script>
 (() => {
   const D = JSON.parse(document.getElementById("datos").textContent);
@@ -397,27 +480,154 @@
       `<div class="tabla-scroll"><table><thead><tr><th>Serie</th>${cab}</tr></thead><tbody>${filas}</tbody></table></div>`;
   }
 
-  // ---------- tabla de productos ----------
-  const comparables = D.productos.filter(p => p.tiendas > 1);
+  // ---------- buscador de productos ----------
+  const nombreCategoria = Object.fromEntries(D.categorias.map(c => [c.id, c.nombre]));
+  const sinTildes = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const enPromo = t => t.lista !== null && t.precio < t.lista - 0.005;
+  const productos = D.productos.map((p, i) => ({
+    ...p,
+    orden: i,
+    promo: p.precios.some(enPromo),
+    texto: sinTildes([p.nombre, nombreCategoria[p.categoria], p.ean].join(" ")),
+    textoNombre: sinTildes(p.nombre + " " + p.ean),
+  }));
+  const hayAumentos = D.dias > 1;
+  const ORDENES = {
+    categoria: (a, b) => a.orden - b.orden,
+    diferencia: (a, b) => b.brecha - a.brecha,
+    precio: (a, b) => a.min - b.min,
+    aumento: (a, b) => (b.variacion ?? -Infinity) - (a.variacion ?? -Infinity),
+  };
+
+  const elQ = document.getElementById("q");
+  const elChips = document.getElementById("chips");
+  const elOrden = document.getElementById("orden");
+  const elLista = document.getElementById("productos");
+  const elContador = document.getElementById("contador");
+  if (!hayAumentos) elOrden.querySelector('[value="aumento"]').remove();
+
+  const comparables = productos.filter(p => p.tiendas > 1);
   const mayor = comparables.reduce((a, b) => (b.brecha > a.brecha ? b : a), comparables[0]);
-  document.getElementById("bajada-productos").textContent = mayor
-    ? `El mismo producto puede costar hasta ${numero(mayor.brecha, 0)} % más según dónde lo compres (${mayor.nombre}).`
-    : "";
-  const filaProducto = p => `<tr>
-      <td>${esc(p.nombre)}<span class="sec">${esc(p.categoria)}</span></td>
-      <td>${esc(p.barata)}<span class="sec">${pesos(p.min)}</span></td>
-      <td>${p.tiendas > 1 ? esc(p.cara) + `<span class="sec">${pesos(p.max)}</span>` : `<span class="sec">solo en ${esc(p.barata)}</span>`}</td>
-      <td class="num">${p.tiendas > 1 ? pct(p.brecha) : "–"}</td>
-    </tr>`;
-  const ordenados = [...D.productos].sort((a, b) => b.brecha - a.brecha);
-  const tabla = filas => `<div class="tabla-scroll"><table>
-      <thead><tr><th>Producto</th><th>Más barato</th><th>Más caro</th><th class="num">Diferencia</th></tr></thead>
-      <tbody>${filas.map(filaProducto).join("")}</tbody></table></div>`;
-  document.getElementById("productos").innerHTML =
-    tabla(ordenados.slice(0, 10)) +
-    (ordenados.length > 10
-      ? `<details><summary>Ver los otros ${ordenados.length - 10} productos</summary>${tabla(ordenados.slice(10))}</details>`
-      : "");
+  document.getElementById("bajada-productos").textContent =
+    `Los ${productos.length} productos de la canasta, con su precio en cada supermercado.` +
+    (mayor ? ` El mismo producto puede costar hasta ${numero(mayor.brecha, 0)} % más según dónde lo compres.` : "");
+
+  // El estado vive en la URL (#q=yerba&cat=infusiones&promo=1) para poder compartir una búsqueda.
+  const estado = { q: "", cat: "", promo: false, orden: "categoria" };
+  function leerUrl() {
+    const url = new URLSearchParams(location.hash.slice(1));
+    const orden = url.get("orden");
+    estado.q = url.get("q") || "";
+    estado.cat = nombreCategoria[url.get("cat")] ? url.get("cat") : "";
+    estado.promo = url.get("promo") === "1";
+    estado.orden = ORDENES[orden] && (orden !== "aumento" || hayAumentos) ? orden : "categoria";
+    elQ.value = estado.q;
+    elOrden.value = estado.orden;
+  }
+  leerUrl();
+
+  function guardarEnUrl() {
+    const p = new URLSearchParams();
+    if (estado.q) p.set("q", estado.q);
+    if (estado.cat) p.set("cat", estado.cat);
+    if (estado.promo) p.set("promo", "1");
+    if (estado.orden !== "categoria") p.set("orden", estado.orden);
+    const hash = p.toString();
+    history.replaceState(null, "", hash ? "#" + hash : location.pathname + location.search);
+  }
+
+  function dibujarChips() {
+    const cuantos = id => productos.filter(p => p.categoria === id).length;
+    const opciones = [["", "Todas", productos.length], ...D.categorias.map(c => [c.id, c.nombre, cuantos(c.id)])];
+    elChips.innerHTML =
+      opciones.map(([id, nombre, n]) =>
+        `<button type="button" class="chip" data-cat="${id}" aria-pressed="${estado.cat === id}">${esc(nombre)}<span class="n">${n}</span></button>`
+      ).join("") +
+      `<span class="separador" aria-hidden="true"></span>` +
+      `<button type="button" class="chip" data-promo aria-pressed="${estado.promo}">En promoción<span class="n">${productos.filter(p => p.promo).length}</span></button>`;
+  }
+
+  function filaPorTienda(t, mejor) {
+    const promo = enPromo(t);
+    return `<li class="${mejor ? "mejor" : ""}">
+        <span>${esc(t.tienda)}${mejor ? '<span class="marca">más barato</span>' : ""}</span>
+        <span class="valor">${promo ? `<s>${pesos(t.lista)}</s>` : ""}${pesos(t.precio)}${
+          promo ? `<span class="marca">promo ${pct((t.precio / t.lista - 1) * 100, 0)}</span>` : ""}</span>
+      </li>`;
+  }
+
+  function filaProducto(p) {
+    const partes = [esc(nombreCategoria[p.categoria])];
+    partes.push(p.tiendas > 1
+      ? `${p.tiendas} súper · hasta ${numero(p.brecha, 0)} % más caro en ${esc(p.cara)}`
+      : `solo en ${esc(p.barata)}`);
+    if (p.variacion !== null && p.variacion !== undefined) partes.push(`${pct(p.variacion)} desde el ${fechaCorta(D.inicio)}`);
+    return `<li><details>
+        <summary>
+          <div><div class="nombre">${esc(p.nombre)}</div><div class="meta">${partes.join(" · ")}</div></div>
+          <div class="desde"><strong>${pesos(p.min)}</strong><span>en ${esc(p.barata)}</span></div>
+          <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </summary>
+        <ul class="por-tienda">${p.precios.map((t, i) => filaPorTienda(t, i === 0 && p.tiendas > 1)).join("")}</ul>
+        <p class="ean">Código de barras ${esc(p.ean)}</p>
+      </details></li>`;
+  }
+
+  function actualizar() {
+    const palabras = sinTildes(estado.q).split(/\s+/).filter(Boolean);
+    // Primero los que tienen las palabras en el nombre; después los que coinciden por categoría.
+    const enNombre = p => palabras.every(w => p.textoNombre.includes(w));
+    const visibles = productos
+      .filter(p => (!estado.cat || p.categoria === estado.cat) && (!estado.promo || p.promo))
+      .filter(p => palabras.every(w => p.texto.includes(w)))
+      .sort((a, b) => enNombre(b) - enNombre(a) || ORDENES[estado.orden](a, b));
+    elContador.textContent = visibles.length === productos.length
+      ? `${productos.length} productos`
+      : `${visibles.length} de ${productos.length} productos`;
+    if (visibles.length) {
+      elLista.innerHTML = visibles.map(filaProducto).join("");
+    } else {
+      const donde = estado.cat ? ` en ${nombreCategoria[estado.cat]}` : "";
+      const que = estado.q ? ` con “${esc(estado.q)}”` : "";
+      elLista.innerHTML = `<li class="sin-resultados">No hay productos${que}${donde}${estado.promo ? " en promoción" : ""}.
+        <button type="button" class="enlace" data-limpiar>Ver todos</button></li>`;
+    }
+    dibujarChips();
+    guardarEnUrl();
+  }
+
+  elQ.addEventListener("input", () => { estado.q = elQ.value.trim(); actualizar(); });
+  elOrden.addEventListener("change", () => { estado.orden = elOrden.value; actualizar(); });
+  elChips.addEventListener("click", ev => {
+    const chip = ev.target.closest(".chip");
+    if (!chip) return;
+    if (chip.hasAttribute("data-promo")) estado.promo = !estado.promo;
+    else estado.cat = chip.dataset.cat;
+    actualizar();
+    elChips.querySelector(chip.hasAttribute("data-promo") ? "[data-promo]" : `[data-cat="${estado.cat}"]`).focus();
+  });
+  elLista.addEventListener("click", ev => {
+    if (!ev.target.closest("[data-limpiar]")) return;
+    Object.assign(estado, { q: "", cat: "", promo: false });
+    elQ.value = "";
+    actualizar();
+    elQ.focus();
+  });
+  // Atajo: "/" lleva al buscador.
+  document.addEventListener("keydown", ev => {
+    if (ev.key === "/" && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) {
+      ev.preventDefault();
+      elQ.focus();
+    }
+  });
+  // Si alguien pega otro enlace de búsqueda sin recargar la página.
+  window.addEventListener("hashchange", () => {
+    leerUrl();
+    actualizar();
+    document.getElementById("buscador").scrollIntoView();
+  });
+  actualizar();
+  if (location.hash) document.getElementById("buscador").scrollIntoView();
 
   // ---------- enlace al repositorio ----------
   if (D.repositorio) {
