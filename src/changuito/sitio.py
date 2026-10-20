@@ -22,6 +22,19 @@ NOMBRES_TIENDAS = {
     "masonline": "Más Online",
 }
 
+# Si no corre en GitHub Actions, se usa el repo original para los enlaces y la vista previa al compartir.
+REPO_POR_DEFECTO = "enri-escaray/indice-changuito"
+
+
+def repositorio() -> str:
+    return os.environ.get("GITHUB_REPOSITORY") or REPO_POR_DEFECTO
+
+
+def url_sitio(repo: str) -> str:
+    """URL de GitHub Pages del repo: usuario.github.io/repo/."""
+    usuario, nombre = repo.split("/", 1)
+    return f"https://{usuario.lower()}.github.io/{nombre}/"
+
 
 def _limpio(valor):
     """Convierte NaN en None para que el JSON quede válido."""
@@ -77,11 +90,8 @@ def armar_datos(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Can
     # Con un solo día todavía no hay variación que mostrar.
     variacion_de = (resultado.por_producto.iloc[-1] - 100).to_dict() if len(diario) > 1 else {}
 
-    # GitHub Actions define GITHUB_REPOSITORY ("usuario/repo"); localmente no hay enlace.
-    repositorio = os.environ.get("GITHUB_REPOSITORY")
-
     return {
-        "repositorio": f"https://github.com/{repositorio}" if repositorio else None,
+        "repositorio": f"https://github.com/{repositorio()}",
         "actualizado": f"{ultima_fecha:%Y-%m-%d}",
         "inicio": f"{diario.index[0]:%Y-%m-%d}",
         "dias": len(diario),
@@ -97,6 +107,7 @@ def armar_datos(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Can
             {
                 "id": c.id,
                 "nombre": c.nombre,
+                "productos": len(c.productos),
                 "peso": _redondear(c.peso * 100, 1),
                 "valor": _redondear(diario[c.id].iloc[-1] - 100),
             }
@@ -138,7 +149,16 @@ def generar(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Canasta
     # "<\/" evita que un texto con "</script>" corte el bloque de datos.
     json_datos = json.dumps(datos, ensure_ascii=False).replace("</", "<\\/")
     plantilla = resources.files("changuito").joinpath("plantilla.html").read_text(encoding="utf-8")
+    repo = repositorio()
+    # Estos valores van en el HTML fijo (metadatos para compartir y texto sin JavaScript).
+    reemplazos = {
+        "__URL_SITIO__": url_sitio(repo),
+        "__URL_REPO__": f"https://github.com/{repo}",
+        "__N_PRODUCTOS__": str(len(canasta.eans)),
+    }
+    for marca, valor in reemplazos.items():
+        plantilla = plantilla.replace(marca, valor)
     dir_salida.mkdir(parents=True, exist_ok=True)
     ruta = dir_salida / "index.html"
-    ruta.write_text(plantilla.replace("__DATOS__", json_datos), encoding="utf-8")
+    ruta.write_text(plantilla.replace("__DATOS__", json_datos), encoding="utf-8", newline="\n")
     return ruta

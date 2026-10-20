@@ -112,3 +112,10 @@ tests/                    tests de punta a punta, sin internet
 
 El código tiene licencia [MIT](LICENSE). Los precios son públicos y salen de las tiendas online
 de cada cadena.
+
+Las fotos del sitio son de Wikimedia Commons:
+- Changuito: [Espumakid](https://commons.wikimedia.org/wiki/File:Carrito_de_supermercado_sobre_se%C3%B1al%C3%A9tica.JPG), CC BY-SA 3.0.
+- Góndola: [Horacio Cambeiro](https://commons.wikimedia.org/wiki/File:Huevos_casta%C3%B1os_y_huevos_blancos_en_venta_de_g%C3%B3ndola_de_supermercado.jpg), CC BY 3.0.
+- Supermercado de barrio: [Horacio Cambeiro](https://commons.wikimedia.org/wiki/File:Supermercado_%22Tucangu%C3%A1%22_(Ruiz_de_Montoya).jpg), CC BY 4.0.
+
+Los datos de cada foto están en [`docs/img/creditos.json`](docs/img/creditos.json).
