@@ -12,7 +12,7 @@ from changuito.fuentes import vtex
 
 def tienda_falsa(precio_base):
     def precios_de_tienda(tienda, eans, pausa=0.3, sesion=None):
-        return [vtex.Precio(tienda, e, f"Producto {e}", precio_base) for e in eans], []
+        return [vtex.Precio(tienda, e, f"Producto {e}", precio_base, precio_base) for e in eans], []
 
     return precios_de_tienda
 
@@ -27,17 +27,38 @@ def test_guarda_un_csv_por_dia(monkeypatch, canasta, tmp_path):
     ruta = recolectar_dia(monkeypatch, canasta, tmp_path, date(2026, 3, 5), 100)
     assert ruta == tmp_path / "2026" / "03" / "2026-03-05.csv"
     lineas = ruta.read_text(encoding="utf-8").splitlines()
-    assert lineas[0] == "fecha,tienda,ean,nombre,precio"
+    assert lineas[0] == "fecha,tienda,ean,nombre,precio,precio_lista"
     assert len(lineas) == 1 + 2 * 3
 
 
+def escribir_csv(directorio, fecha, contenido):
+    ruta = directorio / fecha[:4] / fecha[5:7] / f"{fecha}.csv"
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    ruta.write_text(contenido, encoding="utf-8")
+
+
 def test_duckdb_conserva_los_ean_como_texto(tmp_path):
-    ruta = tmp_path / "2026" / "01" / "2026-01-01.csv"
-    ruta.parent.mkdir(parents=True)
-    ruta.write_text("fecha,tienda,ean,nombre,precio\n2026-01-01,dia,0012345678905,\"Yerba, 1 kg\",10.5\n", encoding="utf-8")
+    escribir_csv(
+        tmp_path, "2026-01-01",
+        "fecha,tienda,ean,nombre,precio,precio_lista\n2026-01-01,dia,0012345678905,\"Yerba, 1 kg\",10.5,12\n",
+    )
     precios = indice.cargar_precios(tmp_path)
     assert precios.loc[0, "ean"] == "0012345678905"
     assert precios.loc[0, "precio"] == 10.5
+    assert precios.loc[0, "precio_lista"] == 12
+
+
+def test_lee_csv_viejos_sin_precio_de_lista(tmp_path):
+    escribir_csv(tmp_path, "2026-01-01", "fecha,tienda,ean,nombre,precio\n2026-01-01,dia,111,Uno,10\n")
+    solo_viejos = indice.cargar_precios(tmp_path)
+    assert solo_viejos["precio_lista"].isna().all()
+
+    escribir_csv(
+        tmp_path, "2026-01-02", "fecha,tienda,ean,nombre,precio,precio_lista\n2026-01-02,dia,111,Uno,8,10\n"
+    )
+    mezclados = indice.cargar_precios(tmp_path).sort_values("fecha")
+    assert mezclados["precio"].tolist() == [10, 8]
+    assert mezclados["precio_lista"].isna().tolist() == [True, False]
 
 
 def test_de_punta_a_punta(monkeypatch, canasta, tmp_path):

@@ -84,6 +84,7 @@ def armar_datos(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Can
         "dias": len(diario),
         "productos_canasta": len(canasta.eans),
         "precios_hoy": len(del_dia),
+        "promos_hoy": int((del_dia["precio"] < del_dia["precio_lista"] - 0.005).sum()),
         "tiendas_hoy": int(del_dia["tienda"].nunique()),
         "destacado": destacado,
         "serie": [

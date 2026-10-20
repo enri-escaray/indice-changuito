@@ -2,8 +2,10 @@
 
 Método, parecido al que usan los IPC oficiales:
 
-1. Panel de precios: una fila por día relevado y una columna por (producto, tienda).
-   Si falta un precio, se usa el último observado hasta `MAX_IMPUTACION` relevamientos.
+1. Panel de precios de lista: una fila por día relevado y una columna por (producto, tienda).
+   Se usa el precio regular y no el de promoción, para que el índice mida inflación y no
+   promociones que empiezan y terminan. Si falta un precio, se usa el último observado
+   hasta `MAX_IMPUTACION` relevamientos.
 2. Relativo diario de cada producto: media geométrica (Jevons) de P_t / P_t-1 entre
    las tiendas que tienen precio los dos días.
 3. Índice de cada categoría: media geométrica de los relativos de sus productos,
@@ -34,25 +36,36 @@ class Resultado:
 
 
 def cargar_precios(dir_precios: Path) -> pd.DataFrame:
-    """Lee todos los CSV diarios de una vez con DuckDB."""
+    """Lee todos los CSV diarios de una vez con DuckDB.
+
+    Los archivos anteriores al 20/10/2026 no tienen `precio_lista`: queda vacío (NaN).
+    """
+    columnas = ["fecha", "tienda", "ean", "precio", "precio_lista"]
     if not any(dir_precios.glob("**/*.csv")):
-        return pd.DataFrame({"fecha": pd.Series(dtype="datetime64[ns]"), "tienda": [], "ean": [], "precio": []})
+        vacio = pd.DataFrame({c: [] for c in columnas})
+        vacio["fecha"] = pd.to_datetime(vacio["fecha"])
+        return vacio
     patron = (dir_precios / "**" / "*.csv").as_posix().replace("'", "''")
     precios = duckdb.sql(
         f"""
-        SELECT fecha, tienda, ean, precio
-        FROM read_csv('{patron}', header = true,
+        SELECT *
+        FROM read_csv('{patron}', header = true, union_by_name = true,
                       types = {{'fecha': 'DATE', 'ean': 'VARCHAR', 'precio': 'DOUBLE'}})
         WHERE precio > 0
         """
     ).df()
+    if "precio_lista" not in precios:
+        precios["precio_lista"] = np.nan
+    precios["precio_lista"] = pd.to_numeric(precios["precio_lista"])
     precios["fecha"] = pd.to_datetime(precios["fecha"])
-    return precios
+    return precios[columnas]
 
 
-def panel_de_precios(precios: pd.DataFrame, max_imputacion: int = MAX_IMPUTACION) -> pd.DataFrame:
+def panel_de_precios(
+    precios: pd.DataFrame, columna: str = "precio_lista", max_imputacion: int = MAX_IMPUTACION
+) -> pd.DataFrame:
     panel = precios.pivot_table(
-        index="fecha", columns=["ean", "tienda"], values="precio", aggfunc="last"
+        index="fecha", columns=["ean", "tienda"], values=columna, aggfunc="last"
     ).sort_index()
     return panel.ffill(limit=max_imputacion)
 
@@ -130,9 +143,9 @@ def comparacion_productos(precios_del_dia: pd.DataFrame) -> pd.DataFrame:
 
 
 def calcular(precios: pd.DataFrame, canasta: Canasta) -> Resultado:
-    precios = precios[precios["ean"].isin(canasta.eans)]
+    precios = precios[precios["ean"].isin(canasta.eans) & precios["precio_lista"].notna()]
     if precios.empty:
-        raise ValueError("No hay precios de la canasta para calcular el índice")
+        raise ValueError("No hay precios de lista de la canasta para calcular el índice")
     panel = panel_de_precios(precios)
     por_categoria = indices_por_categoria(panel, canasta)
     diario = pd.concat([indice_general(por_categoria, canasta), por_categoria], axis=1)

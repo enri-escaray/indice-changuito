@@ -5,13 +5,34 @@ def producto(*items, nombre="Leche entera 1 l"):
     return {"productName": nombre, "items": list(items)}
 
 
-def item(ean, precio=1000.0, disponible=True):
-    return {"ean": ean, "sellers": [{"commertialOffer": {"Price": precio, "IsAvailable": disponible}}]}
+def item(ean, precio=1000.0, disponible=True, lista=None):
+    oferta = {"Price": precio, "ListPrice": precio if lista is None else lista, "IsAvailable": disponible}
+    return {"ean": ean, "sellers": [{"commertialOffer": oferta}]}
 
 
 def test_toma_el_precio_del_sku_con_el_ean_pedido():
     p = producto(item("111", 500), item("222", 900))
-    assert vtex.parsear_producto(p, "carrefour", "222") == vtex.Precio("carrefour", "222", "Leche entera 1 l", 900.0)
+    esperado = vtex.Precio("carrefour", "222", "Leche entera 1 l", 900.0, 900.0)
+    assert vtex.parsear_producto(p, "carrefour", "222") == esperado
+
+
+def test_separa_precio_con_promocion_y_precio_de_lista():
+    p = vtex.parsear_producto(producto(item("111", precio=899, lista=1229)), "masonline", "111")
+    assert (p.precio, p.precio_lista) == (899, 1229)
+
+
+def test_ignora_el_list_price_de_cencosud():
+    # Jumbo, Disco y Vea mandan en ListPrice el precio sin IVA x 100.
+    p = vtex.parsear_producto(producto(item("111", precio=3200, lista=264463)), "jumbo", "111")
+    assert (p.precio, p.precio_lista) == (3200, 3200)
+
+
+def test_precio_de_lista():
+    assert vtex.precio_de_lista(100, 133) == 133
+    assert vtex.precio_de_lista(100, None) == 100
+    assert vtex.precio_de_lista(100, 0) == 100
+    assert vtex.precio_de_lista(100, 90) == 100  # lista menor al precio: dato raro, se ignora
+    assert vtex.precio_de_lista(100, 8264) == 100  # sin IVA x 100 (Cencosud)
 
 
 def test_sin_stock_o_sin_precio_devuelve_none():

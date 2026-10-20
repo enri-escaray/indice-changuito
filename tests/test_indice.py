@@ -55,6 +55,33 @@ def test_imputa_precios_faltantes_con_el_ultimo_conocido(canasta):
     assert diario.loc["2026-01-03", "b"] == pytest.approx(100 * 1.1**0.5)
 
 
+def test_las_promociones_no_mueven_el_indice(canasta):
+    # Día 2: el producto 333 tiene 35 % de descuento, pero su precio de lista no cambia.
+    precios = armar_precios(
+        [
+            ("2026-01-01", "x", "333", 100, 100),
+            ("2026-01-02", "x", "333", 65, 100),
+            ("2026-01-03", "x", "333", 100, 100),
+        ]
+    )
+    diario = indice.calcular(precios, canasta).diario
+    assert diario["b"].tolist() == pytest.approx([100, 100, 100])
+
+
+def test_ignora_dias_sin_precio_de_lista(canasta):
+    # Los CSV viejos no tienen precio de lista: la serie arranca en el primer día que sí.
+    precios = armar_precios(
+        [
+            ("2026-01-01", "x", "333", 50, float("nan")),
+            ("2026-01-02", "x", "333", 100, 100),
+            ("2026-01-03", "x", "333", 110, 110),
+        ]
+    )
+    diario = indice.calcular(precios, canasta).diario
+    assert [f"{d:%Y-%m-%d}" for d in diario.index] == ["2026-01-02", "2026-01-03"]
+    assert diario["b"].tolist() == pytest.approx([100, 110])
+
+
 def test_categoria_sin_datos_no_varia(canasta):
     precios = armar_precios(
         [("2026-01-01", "x", "111", 100), ("2026-01-02", "x", "111", 120)]

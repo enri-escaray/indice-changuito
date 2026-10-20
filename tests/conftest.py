@@ -22,8 +22,12 @@ def canasta():
     )
 
 
-def armar_precios(filas: list[tuple[str, str, str, float]]) -> pd.DataFrame:
-    """Filas (fecha, tienda, ean, precio) -> DataFrame como el que devuelve cargar_precios."""
-    precios = pd.DataFrame(filas, columns=["fecha", "tienda", "ean", "precio"])
+def armar_precios(filas: list[tuple]) -> pd.DataFrame:
+    """Filas (fecha, tienda, ean, precio[, precio_lista]) -> DataFrame como el de cargar_precios.
+
+    Si no se da el precio de lista, se usa el mismo precio (producto sin promoción).
+    """
+    filas = [f if len(f) == 5 else (*f, f[3]) for f in filas]
+    precios = pd.DataFrame(filas, columns=["fecha", "tienda", "ean", "precio", "precio_lista"])
     precios["fecha"] = pd.to_datetime(precios["fecha"])
     return precios

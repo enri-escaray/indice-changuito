@@ -140,7 +140,7 @@
 
   <section class="tarjeta">
     <h2>¿Qué supermercado es más barato hoy?</h2>
-    <p class="bajada">Diferencia promedio contra el precio mediano de los mismos productos.</p>
+    <p class="bajada">Diferencia promedio contra el precio mediano de los mismos productos, con las promociones del día.</p>
     <div class="grafico" id="tiendas"></div>
   </section>
 
@@ -166,6 +166,7 @@
     <h2>Cómo se calcula</h2>
     <ul>
       <li>Todos los días se consulta el precio online de cada producto de la canasta en Carrefour, Día, Jumbo, Disco, Vea y Más Online.</li>
+      <li>El índice usa el <strong>precio de lista</strong>, sin promociones temporarias, para medir inflación y no ofertas que empiezan y terminan. Las comparaciones entre supermercados usan el precio que se paga hoy, con promociones.</li>
       <li>La variación de cada producto es la media geométrica de la variación en cada supermercado. Si un precio falta, se usa el último conocido durante hasta 7 días.</li>
       <li>Cada categoría promedia sus productos y el índice general pondera las categorías. Las ponderaciones son provisorias.</li>
       <li>No incluye carnes, frutas ni verduras frescas porque se venden por peso y no tienen un código de barras común.</li>
@@ -236,6 +237,7 @@
     ["Días relevados", numero(D.dias, 0)],
     ["Productos en la canasta", numero(D.productos_canasta, 0)],
     ["Precios relevados hoy", numero(D.precios_hoy, 0)],
+    ["En promoción hoy", numero(D.promos_hoy, 0)],
   ].map(([e, v]) => `<div class="tarjeta"><div class="etiqueta">${e}</div><div class="valor">${v}</div></div>`).join("");
 
   // ---------- gráfico de línea ----------

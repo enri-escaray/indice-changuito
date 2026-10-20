@@ -33,7 +33,20 @@ class Precio:
     tienda: str
     ean: str
     nombre: str
-    precio: float
+    precio: float  # lo que se paga hoy, con promociones incluidas
+    precio_lista: float  # precio regular, sin promociones temporarias
+
+
+def precio_de_lista(precio: float, lista: float | None) -> float:
+    """Precio regular a partir de `Price` y `ListPrice` de VTEX.
+
+    Carrefour, Día y Más Online usan ListPrice para el precio sin promoción.
+    Jumbo, Disco y Vea (Cencosud) mandan en ListPrice el precio sin IVA multiplicado
+    por 100, que no sirve: en ese caso (o si falta) se usa el precio de venta.
+    """
+    if lista and precio <= lista <= 3 * precio:
+        return float(lista)
+    return float(precio)
 
 
 def nueva_sesion() -> requests.Session:
@@ -68,6 +81,7 @@ def parsear_producto(producto: dict, tienda: str, ean: str | None = None) -> Pre
                     ean=item.get("ean") or "",
                     nombre=producto.get("productName", "").strip(),
                     precio=float(precio),
+                    precio_lista=precio_de_lista(precio, oferta.get("ListPrice")),
                 )
     return None
 

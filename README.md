@@ -13,8 +13,8 @@ con un método parecido al del IPC y publica un sitio con los gráficos. Todo co
 sin servidores.
 
 Además del índice, el sitio muestra **qué supermercado es más barato** y **dónde conviene comprar
-cada producto**. En el primer relevamiento (19/10/2026), Día salió 10 % más barato que la mediana,
-y el mismo producto llegó a costar el doble según la cadena.
+cada producto**. En el primer relevamiento (19/10/2026), con las promos de ese día, Día salió 10 %
+más barato que la mediana y el mismo producto llegó a costar el doble según la cadena.
 
 ## Cómo funciona
 
@@ -37,8 +37,11 @@ flowchart LR
 
 ## Metodología
 
-1. **Panel de precios:** una fila por día y una columna por (producto, tienda). Si un precio
-   falta, se usa el último conocido durante hasta 7 días.
+1. **Panel de precios de lista:** una fila por día y una columna por (producto, tienda). Si un
+   precio falta, se usa el último conocido durante hasta 7 días. El índice usa el **precio
+   regular** y no el de promoción. Si no, una promo del 35 % que termina parece una suba del 54 %
+   (pasó en Día el 20/10/2026). Las comparaciones entre supermercados sí usan el precio con promo,
+   que es lo que se paga.
 2. **Variación de cada producto:** media geométrica (Jevons) de la variación diaria en cada tienda.
 3. **Índice por categoría:** media geométrica de sus productos, encadenada día a día. La base 100
    es el primer día relevado.
@@ -85,6 +88,11 @@ tests/                    tests de punta a punta, sin internet
   pone un código propio. Por eso no se pueden comparar por EAN.
 - **Precios online.** Pueden ser distintos a los de la góndola, y no incluyen promociones como
   2x1 ni descuentos bancarios.
+- **Promos de Jumbo, Disco y Vea.** Carrefour, Día y Más Online informan el precio regular
+  (`ListPrice`). Las cadenas de Cencosud mandan en ese campo el precio sin IVA ×100, así que
+  para ellas se usa el precio de venta, y sus promociones pueden colarse en el índice.
+- **La serie arranca el 20/10/2026.** El relevamiento del 19/10 no guardó el precio de lista,
+  así que solo se usa para las comparaciones de ese día.
 
 ## Ideas para seguir
 

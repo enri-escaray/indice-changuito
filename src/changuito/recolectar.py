@@ -12,7 +12,7 @@ from pathlib import Path
 from changuito.canasta import Canasta
 from changuito.fuentes import vtex
 
-COLUMNAS = ("fecha", "tienda", "ean", "nombre", "precio")
+COLUMNAS = ("fecha", "tienda", "ean", "nombre", "precio", "precio_lista")
 
 
 @dataclass
@@ -46,6 +46,7 @@ def recolectar(
                     "ean": p.ean,
                     "nombre": p.nombre,
                     "precio": p.precio,
+                    "precio_lista": p.precio_lista,
                 }
                 for p in precios
             )
