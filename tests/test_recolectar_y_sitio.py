@@ -8,6 +8,7 @@ import pytest
 
 from changuito import indice, recolectar, sitio
 from changuito.fuentes import vtex
+from conftest import armar_precios
 
 
 def tienda_falsa(precio_base):
@@ -84,3 +85,30 @@ def test_primer_dia_muestra_cantidad_de_precios(monkeypatch, canasta, tmp_path):
     precios = indice.cargar_precios(tmp_path / "precios")
     datos = sitio.armar_datos(indice.calcular(precios, canasta), precios, canasta)
     assert datos["destacado"] == {"tipo": "inicio", "valor": 6}
+    assert all(p["variacion"] is None for p in datos["productos"])
+
+
+def test_datos_del_buscador(canasta):
+    precios = armar_precios(
+        [
+            ("2026-01-01", "dia", "111", 100),
+            ("2026-01-01", "carrefour", "111", 100),
+            ("2026-01-02", "dia", "111", 90, 120),  # en promo: lista 120, se paga 90
+            ("2026-01-02", "carrefour", "111", 110),
+            ("2026-01-02", "jumbo", "333", 50),
+        ]
+    )
+    datos = sitio.armar_datos(indice.calcular(precios, canasta), precios, canasta)
+    assert [c["id"] for c in datos["categorias"]] == ["a", "b"]
+    assert datos["promos_hoy"] == 1
+
+    leche, tres = datos["productos"]
+    assert leche["categoria"] == "a"
+    assert leche["precios"] == [
+        {"tienda": "Día", "precio": 90.0, "lista": 120.0},
+        {"tienda": "Carrefour", "precio": 110.0, "lista": 110.0},
+    ]
+    assert (leche["barata"], leche["cara"]) == ("Día", "Carrefour")
+    # Aumento con precio de lista: media geométrica de +20 % y +10 %.
+    assert leche["variacion"] == pytest.approx(((1.2 * 1.1) ** 0.5 - 1) * 100, abs=0.01)
+    assert tres["tiendas"] == 1 and tres["variacion"] == 0

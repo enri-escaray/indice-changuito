@@ -111,9 +111,72 @@
   th, td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--grilla); }
   th { color: var(--tinta-2); font-weight: 500; white-space: nowrap; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  td .sec { display: block; color: var(--tenue); font-size: 12px; }
   tr.general td { font-weight: 600; }
-  details summary { cursor: pointer; color: var(--azul); font-size: 14px; margin-top: 12px; }
+
+  .oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .filtros { display: grid; gap: 10px; }
+  .buscar { position: relative; display: block; }
+  .buscar svg {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; fill: none; stroke: var(--tenue); stroke-width: 1.75; stroke-linecap: round;
+  }
+  .buscar input {
+    width: 100%; height: 42px; padding: 0 12px 0 36px;
+    font: inherit; color: var(--tinta); background: var(--pagina);
+    border: 1px solid var(--borde); border-radius: 10px;
+  }
+  .buscar input::placeholder { color: var(--tenue); }
+  .buscar input:focus { outline: 2px solid var(--azul); outline-offset: 1px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .chip {
+    font: inherit; font-size: 13px; line-height: 1.3; padding: 5px 11px; cursor: pointer;
+    border-radius: 999px; border: 1px solid var(--borde); background: transparent; color: var(--tinta-2);
+  }
+  .chip .n { margin-left: 6px; color: var(--tenue); font-variant-numeric: tabular-nums; }
+  .chip:hover { background: color-mix(in srgb, var(--tinta) 5%, transparent); }
+  .chip[aria-pressed="true"] { background: var(--tinta); border-color: var(--tinta); color: var(--superficie); }
+  .chip[aria-pressed="true"] .n { color: inherit; opacity: 0.7; }
+  .chip:focus-visible, .productos summary:focus-visible, .barra-resultados select:focus-visible, .enlace:focus-visible {
+    outline: 2px solid var(--azul); outline-offset: 2px;
+  }
+  .separador { width: 1px; height: 20px; background: var(--grilla); margin: 0 4px; }
+  .barra-resultados {
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px;
+    margin: 14px 0 4px; font-size: 13px; color: var(--tinta-2);
+  }
+  .barra-resultados select {
+    font: inherit; font-size: 13px; color: var(--tinta); margin-left: 6px; padding: 4px 8px;
+    background: var(--pagina); border: 1px solid var(--borde); border-radius: 8px;
+  }
+  .productos { list-style: none; margin: 0; padding: 0; }
+  .productos > li { border-top: 1px solid var(--grilla); }
+  .productos summary {
+    list-style: none; display: grid; grid-template-columns: 1fr auto 16px; gap: 12px; align-items: center;
+    padding: 10px 6px; margin: 0 -6px; border-radius: 8px; cursor: pointer;
+  }
+  .productos summary::-webkit-details-marker { display: none; }
+  .productos summary:hover { background: color-mix(in srgb, var(--tinta) 4%, transparent); }
+  .productos .nombre { font-weight: 500; }
+  .productos .meta { font-size: 12px; color: var(--tenue); margin-top: 1px; }
+  .productos .desde { text-align: right; white-space: nowrap; }
+  .productos .desde strong { display: block; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .productos .desde span { font-size: 12px; color: var(--tinta-2); }
+  .chev { width: 16px; height: 16px; fill: none; stroke: var(--tenue); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; transition: transform 120ms; }
+  details[open] .chev { transform: rotate(180deg); }
+  .por-tienda { list-style: none; margin: 0; padding: 2px 0 4px; }
+  .por-tienda li { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 13px; }
+  .por-tienda li + li { border-top: 1px solid var(--grilla); }
+  .por-tienda .valor { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .por-tienda s { color: var(--tenue); margin-right: 6px; }
+  .por-tienda .mejor { font-weight: 600; }
+  .marca {
+    display: inline-block; font-size: 11px; font-weight: 500; line-height: 1.4; padding: 0 6px; margin-left: 6px;
+    border: 1px solid var(--borde); border-radius: 4px; color: var(--tinta-2); vertical-align: 1px;
+  }
+  .ean { font-size: 12px; color: var(--tenue); margin: 2px 0 12px; font-variant-numeric: tabular-nums; }
+  .sin-resultados { padding: 20px 0; color: var(--tinta-2); font-size: 14px; }
+  .enlace { font: inherit; color: var(--azul); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+  @media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
 
   footer { margin-top: 32px; font-size: 13px; color: var(--tinta-2); }
   footer h2 { font-size: 15px; color: var(--tinta); }
@@ -144,6 +207,31 @@
     <div class="grafico" id="tiendas"></div>
   </section>
 
+  <section class="tarjeta" id="buscador">
+    <h2>Buscá un producto</h2>
+    <p class="bajada" id="bajada-productos"></p>
+    <div class="filtros">
+      <label class="buscar">
+        <span class="oculto">Buscar producto</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        <input type="search" id="q" placeholder="Yerba, leche, aceite…" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
+    </div>
+    <div class="barra-resultados">
+      <span id="contador" aria-live="polite"></span>
+      <label>Ordenar por
+        <select id="orden">
+          <option value="categoria">Categoría</option>
+          <option value="diferencia">Mayor diferencia entre súper</option>
+          <option value="precio">Menor precio</option>
+          <option value="aumento">Mayor aumento</option>
+        </select>
+      </label>
+    </div>
+    <ul class="productos" id="productos"></ul>
+  </section>
+
   <section class="tarjeta">
     <h2>Variación por categoría</h2>
     <p class="bajada" id="bajada-categorias"></p>
@@ -156,11 +244,6 @@
     <div id="mensual"></div>
   </section>
 
-  <section class="tarjeta">
-    <h2>Dónde conviene comprar cada producto</h2>
-    <p class="bajada" id="bajada-productos"></p>
-    <div id="productos"></div>
-  </section>
 
   <footer>
     <h2>Cómo se calcula</h2>
@@ -397,27 +480,154 @@
       `<div class="tabla-scroll"><table><thead><tr><th>Serie</th>${cab}</tr></thead><tbody>${filas}</tbody></table></div>`;
   }
 
-  // ---------- tabla de productos ----------
-  const comparables = D.productos.filter(p => p.tiendas > 1);
+  // ---------- buscador de productos ----------
+  const nombreCategoria = Object.fromEntries(D.categorias.map(c => [c.id, c.nombre]));
+  const sinTildes = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const enPromo = t => t.lista !== null && t.precio < t.lista - 0.005;
+  const productos = D.productos.map((p, i) => ({
+    ...p,
+    orden: i,
+    promo: p.precios.some(enPromo),
+    texto: sinTildes([p.nombre, nombreCategoria[p.categoria], p.ean].join(" ")),
+    textoNombre: sinTildes(p.nombre + " " + p.ean),
+  }));
+  const hayAumentos = D.dias > 1;
+  const ORDENES = {
+    categoria: (a, b) => a.orden - b.orden,
+    diferencia: (a, b) => b.brecha - a.brecha,
+    precio: (a, b) => a.min - b.min,
+    aumento: (a, b) => (b.variacion ?? -Infinity) - (a.variacion ?? -Infinity),
+  };
+
+  const elQ = document.getElementById("q");
+  const elChips = document.getElementById("chips");
+  const elOrden = document.getElementById("orden");
+  const elLista = document.getElementById("productos");
+  const elContador = document.getElementById("contador");
+  if (!hayAumentos) elOrden.querySelector('[value="aumento"]').remove();
+
+  const comparables = productos.filter(p => p.tiendas > 1);
   const mayor = comparables.reduce((a, b) => (b.brecha > a.brecha ? b : a), comparables[0]);
-  document.getElementById("bajada-productos").textContent = mayor
-    ? `El mismo producto puede costar hasta ${numero(mayor.brecha, 0)} % más según dónde lo compres (${mayor.nombre}).`
-    : "";
-  const filaProducto = p => `<tr>
-      <td>${esc(p.nombre)}<span class="sec">${esc(p.categoria)}</span></td>
-      <td>${esc(p.barata)}<span class="sec">${pesos(p.min)}</span></td>
-      <td>${p.tiendas > 1 ? esc(p.cara) + `<span class="sec">${pesos(p.max)}</span>` : `<span class="sec">solo en ${esc(p.barata)}</span>`}</td>
-      <td class="num">${p.tiendas > 1 ? pct(p.brecha) : "–"}</td>
-    </tr>`;
-  const ordenados = [...D.productos].sort((a, b) => b.brecha - a.brecha);
-  const tabla = filas => `<div class="tabla-scroll"><table>
-      <thead><tr><th>Producto</th><th>Más barato</th><th>Más caro</th><th class="num">Diferencia</th></tr></thead>
-      <tbody>${filas.map(filaProducto).join("")}</tbody></table></div>`;
-  document.getElementById("productos").innerHTML =
-    tabla(ordenados.slice(0, 10)) +
-    (ordenados.length > 10
-      ? `<details><summary>Ver los otros ${ordenados.length - 10} productos</summary>${tabla(ordenados.slice(10))}</details>`
-      : "");
+  document.getElementById("bajada-productos").textContent =
+    `Los ${productos.length} productos de la canasta, con su precio en cada supermercado.` +
+    (mayor ? ` El mismo producto puede costar hasta ${numero(mayor.brecha, 0)} % más según dónde lo compres.` : "");
+
+  // El estado vive en la URL (#q=yerba&cat=infusiones&promo=1) para poder compartir una búsqueda.
+  const estado = { q: "", cat: "", promo: false, orden: "categoria" };
+  function leerUrl() {
+    const url = new URLSearchParams(location.hash.slice(1));
+    const orden = url.get("orden");
+    estado.q = url.get("q") || "";
+    estado.cat = nombreCategoria[url.get("cat")] ? url.get("cat") : "";
+    estado.promo = url.get("promo") === "1";
+    estado.orden = ORDENES[orden] && (orden !== "aumento" || hayAumentos) ? orden : "categoria";
+    elQ.value = estado.q;
+    elOrden.value = estado.orden;
+  }
+  leerUrl();
+
+  function guardarEnUrl() {
+    const p = new URLSearchParams();
+    if (estado.q) p.set("q", estado.q);
+    if (estado.cat) p.set("cat", estado.cat);
+    if (estado.promo) p.set("promo", "1");
+    if (estado.orden !== "categoria") p.set("orden", estado.orden);
+    const hash = p.toString();
+    history.replaceState(null, "", hash ? "#" + hash : location.pathname + location.search);
+  }
+
+  function dibujarChips() {
+    const cuantos = id => productos.filter(p => p.categoria === id).length;
+    const opciones = [["", "Todas", productos.length], ...D.categorias.map(c => [c.id, c.nombre, cuantos(c.id)])];
+    elChips.innerHTML =
+      opciones.map(([id, nombre, n]) =>
+        `<button type="button" class="chip" data-cat="${id}" aria-pressed="${estado.cat === id}">${esc(nombre)}<span class="n">${n}</span></button>`
+      ).join("") +
+      `<span class="separador" aria-hidden="true"></span>` +
+      `<button type="button" class="chip" data-promo aria-pressed="${estado.promo}">En promoción<span class="n">${productos.filter(p => p.promo).length}</span></button>`;
+  }
+
+  function filaPorTienda(t, mejor) {
+    const promo = enPromo(t);
+    return `<li class="${mejor ? "mejor" : ""}">
+        <span>${esc(t.tienda)}${mejor ? '<span class="marca">más barato</span>' : ""}</span>
+        <span class="valor">${promo ? `<s>${pesos(t.lista)}</s>` : ""}${pesos(t.precio)}${
+          promo ? `<span class="marca">promo ${pct((t.precio / t.lista - 1) * 100, 0)}</span>` : ""}</span>
+      </li>`;
+  }
+
+  function filaProducto(p) {
+    const partes = [esc(nombreCategoria[p.categoria])];
+    partes.push(p.tiendas > 1
+      ? `${p.tiendas} súper · hasta ${numero(p.brecha, 0)} % más caro en ${esc(p.cara)}`
+      : `solo en ${esc(p.barata)}`);
+    if (p.variacion !== null && p.variacion !== undefined) partes.push(`${pct(p.variacion)} desde el ${fechaCorta(D.inicio)}`);
+    return `<li><details>
+        <summary>
+          <div><div class="nombre">${esc(p.nombre)}</div><div class="meta">${partes.join(" · ")}</div></div>
+          <div class="desde"><strong>${pesos(p.min)}</strong><span>en ${esc(p.barata)}</span></div>
+          <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </summary>
+        <ul class="por-tienda">${p.precios.map((t, i) => filaPorTienda(t, i === 0 && p.tiendas > 1)).join("")}</ul>
+        <p class="ean">Código de barras ${esc(p.ean)}</p>
+      </details></li>`;
+  }
+
+  function actualizar() {
+    const palabras = sinTildes(estado.q).split(/\s+/).filter(Boolean);
+    // Primero los que tienen las palabras en el nombre; después los que coinciden por categoría.
+    const enNombre = p => palabras.every(w => p.textoNombre.includes(w));
+    const visibles = productos
+      .filter(p => (!estado.cat || p.categoria === estado.cat) && (!estado.promo || p.promo))
+      .filter(p => palabras.every(w => p.texto.includes(w)))
+      .sort((a, b) => enNombre(b) - enNombre(a) || ORDENES[estado.orden](a, b));
+    elContador.textContent = visibles.length === productos.length
+      ? `${productos.length} productos`
+      : `${visibles.length} de ${productos.length} productos`;
+    if (visibles.length) {
+      elLista.innerHTML = visibles.map(filaProducto).join("");
+    } else {
+      const donde = estado.cat ? ` en ${nombreCategoria[estado.cat]}` : "";
+      const que = estado.q ? ` con “${esc(estado.q)}”` : "";
+      elLista.innerHTML = `<li class="sin-resultados">No hay productos${que}${donde}${estado.promo ? " en promoción" : ""}.
+        <button type="button" class="enlace" data-limpiar>Ver todos</button></li>`;
+    }
+    dibujarChips();
+    guardarEnUrl();
+  }
+
+  elQ.addEventListener("input", () => { estado.q = elQ.value.trim(); actualizar(); });
+  elOrden.addEventListener("change", () => { estado.orden = elOrden.value; actualizar(); });
+  elChips.addEventListener("click", ev => {
+    const chip = ev.target.closest(".chip");
+    if (!chip) return;
+    if (chip.hasAttribute("data-promo")) estado.promo = !estado.promo;
+    else estado.cat = chip.dataset.cat;
+    actualizar();
+    elChips.querySelector(chip.hasAttribute("data-promo") ? "[data-promo]" : `[data-cat="${estado.cat}"]`).focus();
+  });
+  elLista.addEventListener("click", ev => {
+    if (!ev.target.closest("[data-limpiar]")) return;
+    Object.assign(estado, { q: "", cat: "", promo: false });
+    elQ.value = "";
+    actualizar();
+    elQ.focus();
+  });
+  // Atajo: "/" lleva al buscador.
+  document.addEventListener("keydown", ev => {
+    if (ev.key === "/" && !/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) {
+      ev.preventDefault();
+      elQ.focus();
+    }
+  });
+  // Si alguien pega otro enlace de búsqueda sin recargar la página.
+  window.addEventListener("hashchange", () => {
+    leerUrl();
+    actualizar();
+    document.getElementById("buscador").scrollIntoView();
+  });
+  actualizar();
+  if (location.hash) document.getElementById("buscador").scrollIntoView();
 
   // ---------- enlace al repositorio ----------
   if (D.repositorio) {

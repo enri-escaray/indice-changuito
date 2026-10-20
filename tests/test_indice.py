@@ -82,6 +82,19 @@ def test_ignora_dias_sin_precio_de_lista(canasta):
     assert diario["b"].tolist() == pytest.approx([100, 110])
 
 
+def test_indice_por_producto(canasta):
+    precios = armar_precios(
+        [
+            ("2026-01-01", "x", "111", 100),
+            ("2026-01-02", "x", "111", 120),
+            ("2026-01-01", "x", "333", 50),
+            ("2026-01-02", "x", "333", 50),
+        ]
+    )
+    por_producto = indice.calcular(precios, canasta).por_producto
+    assert por_producto.iloc[-1].to_dict() == pytest.approx({"111": 120, "333": 100})
+
+
 def test_categoria_sin_datos_no_varia(canasta):
     precios = armar_precios(
         [("2026-01-01", "x", "111", 100), ("2026-01-02", "x", "111", 120)]

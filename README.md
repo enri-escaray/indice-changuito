@@ -12,9 +12,14 @@ en seis cadenas: Carrefour, Día, Jumbo, Disco, Vea y Más Online. Con esos prec
 con un método parecido al del IPC y publica un sitio con los gráficos. Todo corre gratis en GitHub,
 sin servidores.
 
-Además del índice, el sitio muestra **qué supermercado es más barato** y **dónde conviene comprar
-cada producto**. En el primer relevamiento (19/10/2026), con las promos de ese día, Día salió 10 %
-más barato que la mediana y el mismo producto llegó a costar el doble según la cadena.
+Además del índice, el sitio muestra **qué supermercado es más barato** y tiene un **buscador de
+productos**. Ahí se busca por nombre, marca o código de barras (sin importar las tildes), se filtra
+por categoría o por los que están en promoción, y se ve el precio en cada supermercado. Los filtros
+quedan en la URL, así se puede compartir una búsqueda, por ejemplo
+[`#q=yerba`](https://enri-escaray.github.io/indice-changuito/#q=yerba).
+
+En el primer relevamiento (19/10/2026), con las promos de ese día, Día salió 10 % más barato que la
+mediana, y el mismo producto llegó a costar el doble según la cadena.
 
 ## Cómo funciona
 
@@ -74,7 +79,7 @@ src/changuito/
   fuentes/vtex.py         cliente de la API de las tiendas
   recolectar.py           recolección diaria -> CSV
   indice.py               cálculo del índice, ranking de tiendas y comparación de productos
-  sitio.py, plantilla.html  sitio estático con gráficos (sin dependencias de JS)
+  sitio.py, plantilla.html  sitio estático con gráficos y buscador (sin dependencias de JS)
 data/                     precios crudos e índices calculados
 docs/                     sitio que publica GitHub Pages
 tests/                    tests de punta a punta, sin internet
