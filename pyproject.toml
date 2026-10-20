@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "indice-changuito"
+version = "0.1.0"
+description = "Índice de inflación de supermercados de Argentina, calculado con datos abiertos todos los días"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    "duckdb>=1.0",
+    "pandas>=2.1",
+    "pyyaml>=6.0",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+changuito = "changuito.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+changuito = ["plantilla.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

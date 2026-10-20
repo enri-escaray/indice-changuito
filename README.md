@@ -1,0 +1,101 @@
+# 🛒 Índice Changuito
+
+[![Tests](https://github.com/enri-escaray/indice-changuito/actions/workflows/tests.yml/badge.svg)](https://github.com/enri-escaray/indice-changuito/actions/workflows/tests.yml)
+[![Recolección diaria](https://github.com/enri-escaray/indice-changuito/actions/workflows/recolectar.yml/badge.svg)](https://github.com/enri-escaray/indice-changuito/actions/workflows/recolectar.yml)
+
+**Inflación de supermercados en Argentina, medida todos los días con datos abiertos.**
+
+👉 **Sitio:** [enri-escaray.github.io/indice-changuito](https://enri-escaray.github.io/indice-changuito/)
+
+Todos los días a las 12, un robot de GitHub Actions consulta el precio online de 49 productos
+en seis cadenas: Carrefour, Día, Jumbo, Disco, Vea y Más Online. Con esos precios calcula un índice
+con un método parecido al del IPC y publica un sitio con los gráficos. Todo corre gratis en GitHub,
+sin servidores.
+
+Además del índice, el sitio muestra **qué supermercado es más barato** y **dónde conviene comprar
+cada producto**. En el primer relevamiento (19/10/2026), Día salió 10 % más barato que la mediana,
+y el mismo producto llegó a costar el doble según la cadena.
+
+## Cómo funciona
+
+```mermaid
+flowchart LR
+    A[GitHub Actions<br/>todos los días 12:00] --> B[recolectar<br/>API de 6 súper]
+    B --> C[(data/precios/<br/>un CSV por día)]
+    C --> D[calcular<br/>DuckDB + pandas]
+    D --> E[(indice_diario.csv<br/>indice_mensual.csv)]
+    D --> F[sitio<br/>docs/index.html]
+    F --> G[GitHub Pages]
+```
+
+- **Fuente:** las tiendas online de las seis cadenas usan la plataforma VTEX, que tiene una API
+  pública de catálogo. Cada producto se busca por su código de barras (EAN), así que en todas
+  las cadenas se compara exactamente el mismo producto.
+- **Datos versionados:** cada día se guarda un CSV en `data/precios/AAAA/MM/`. El historial de
+  precios queda en el historial de git (técnica conocida como *git scraping*).
+- **Cálculo:** DuckDB lee todos los CSV de una vez y pandas calcula el índice.
+
+## Metodología
+
+1. **Panel de precios:** una fila por día y una columna por (producto, tienda). Si un precio
+   falta, se usa el último conocido durante hasta 7 días.
+2. **Variación de cada producto:** media geométrica (Jevons) de la variación diaria en cada tienda.
+3. **Índice por categoría:** media geométrica de sus productos, encadenada día a día. La base 100
+   es el primer día relevado.
+4. **Índice general:** promedio ponderado de las 10 categorías.
+5. **Inflación mensual:** promedio del mes contra el promedio del mes anterior, igual que el INDEC.
+
+La canasta y los pesos están en [`canasta.yaml`](canasta.yaml).
+
+## Usarlo en tu compu
+
+```bash
+python -m venv .venv
+source .venv/bin/activate            # en Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+
+changuito recolectar                 # baja los precios de hoy
+changuito calcular                   # recalcula el índice con todo el historial
+changuito sitio                      # genera docs/index.html
+changuito actualizar                 # los tres pasos juntos
+
+changuito buscar "yerba playadito"   # busca el EAN de un producto para sumarlo a la canasta
+pytest                               # corre los tests
+```
+
+## Estructura
+
+```
+canasta.yaml              productos (por EAN), categorías y pesos
+src/changuito/
+  fuentes/vtex.py         cliente de la API de las tiendas
+  recolectar.py           recolección diaria -> CSV
+  indice.py               cálculo del índice, ranking de tiendas y comparación de productos
+  sitio.py, plantilla.html  sitio estático con gráficos (sin dependencias de JS)
+data/                     precios crudos e índices calculados
+docs/                     sitio que publica GitHub Pages
+tests/                    tests de punta a punta, sin internet
+```
+
+## Limitaciones (por ahora)
+
+- **Pesos provisorios.** Las ponderaciones de cada categoría son una aproximación propia, no
+  las del INDEC.
+- **Sin productos frescos.** Carnes, frutas y verduras se venden por peso, y cada cadena les
+  pone un código propio. Por eso no se pueden comparar por EAN.
+- **Precios online.** Pueden ser distintos a los de la góndola, y no incluyen promociones como
+  2x1 ni descuentos bancarios.
+
+## Ideas para seguir
+
+- [ ] Reemplazar los pesos por las ponderaciones del IPC del INDEC.
+- [ ] Sumar la base oficial [SEPA / Precios Claros](https://datos.produccion.gob.ar/dataset/sepa-precios),
+      que publica a diario 12 millones de precios de todo el país con licencia CC BY 4.0.
+- [ ] Comparar el índice con el IPC oficial mes a mes.
+- [ ] Agregar carnes, frutas y verduras con un mapeo de códigos por cadena.
+- [ ] Publicar los datos también en formato JSON para que otros los usen.
+
+## Licencia
+
+El código tiene licencia [MIT](LICENSE). Los precios son públicos y salen de las tiendas online
+de cada cadena.

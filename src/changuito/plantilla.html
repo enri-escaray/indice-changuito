@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Índice Changuito</title>
+<meta name="description" content="Inflación de supermercados en Argentina, medida todos los días con precios online de seis cadenas.">
+<style>
+  :root {
+    color-scheme: light;
+    --pagina: #f9f9f7;
+    --superficie: #fcfcfb;
+    --tinta: #0b0b0b;
+    --tinta-2: #52514e;
+    --tenue: #898781;
+    --grilla: #e1e0d9;
+    --eje: #c3c2b7;
+    --borde: rgba(11, 11, 11, 0.10);
+    --azul: #2a78d6;
+    --rojo: #e34948;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --pagina: #0d0d0d;
+      --superficie: #1a1a19;
+      --tinta: #f0efec;
+      --tinta-2: #c3c2b7;
+      --grilla: #2c2c2a;
+      --eje: #383835;
+      --borde: rgba(255, 255, 255, 0.10);
+      --azul: #3987e5;
+      --rojo: #e66767;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --pagina: #0d0d0d;
+    --superficie: #1a1a19;
+    --tinta: #f0efec;
+    --tinta-2: #c3c2b7;
+    --grilla: #2c2c2a;
+    --eje: #383835;
+    --borde: rgba(255, 255, 255, 0.10);
+    --azul: #3987e5;
+    --rojo: #e66767;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--pagina);
+    color: var(--tinta);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 16px 48px; }
+  header h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--tinta-2); }
+  .actualizado { font-size: 13px; color: var(--tenue); margin-top: 6px; }
+
+  .tarjeta {
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 16px;
+  }
+  .tarjeta h2 { font-size: 17px; margin: 0 0 2px; }
+  .tarjeta .bajada { margin: 0 0 16px; color: var(--tinta-2); font-size: 14px; }
+
+  .destacado .etiqueta { color: var(--tinta-2); font-size: 14px; }
+  .destacado .cifra { font-size: 56px; font-weight: 600; line-height: 1.1; margin: 4px 0; }
+  .destacado .nota { color: var(--tinta-2); font-size: 14px; margin: 0; }
+
+  .cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .cifras .tarjeta { margin: 0; padding: 14px 16px; }
+  .cifras .etiqueta { font-size: 13px; color: var(--tinta-2); }
+  .cifras .valor { font-size: 22px; font-weight: 600; }
+
+  .grafico { position: relative; }
+  .grafico svg { display: block; width: 100%; overflow: visible; }
+  .grafico text { font-size: 11px; fill: var(--tenue); font-variant-numeric: tabular-nums; }
+  .vacio { color: var(--tenue); font-size: 14px; margin: 8px 0; }
+
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 2;
+    background: var(--superficie); color: var(--tinta);
+    border: 1px solid var(--borde); border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    padding: 6px 10px; font-size: 13px; white-space: nowrap;
+    opacity: 0; transition: opacity 80ms;
+  }
+  .tooltip strong { font-weight: 600; }
+  .tooltip .sec { color: var(--tinta-2); }
+
+  .barras { display: grid; gap: 6px; }
+  .fila { display: grid; grid-template-columns: minmax(96px, 180px) 1fr; align-items: center; gap: 12px; padding: 2px 0; border-radius: 6px; outline: none; }
+  .fila:hover, .fila:focus-visible { background: color-mix(in srgb, var(--tinta) 4%, transparent); }
+  .fila .nombre { font-size: 13px; color: var(--tinta-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pista { position: relative; height: 24px; }
+  .pista .base { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--eje); }
+  .pista .barra { position: absolute; top: 4px; height: 16px; }
+  .pista .barra.sube { background: var(--rojo); border-radius: 0 4px 4px 0; }
+  .pista .barra.baja { background: var(--azul); border-radius: 4px 0 0 4px; }
+  .pista .valor { position: absolute; top: 2px; font-size: 12px; color: var(--tinta); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .referencias { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; color: var(--tinta-2); }
+  .referencias span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+
+  .tabla-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--grilla); }
+  th { color: var(--tinta-2); font-weight: 500; white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td .sec { display: block; color: var(--tenue); font-size: 12px; }
+  tr.general td { font-weight: 600; }
+  details summary { cursor: pointer; color: var(--azul); font-size: 14px; margin-top: 12px; }
+
+  footer { margin-top: 32px; font-size: 13px; color: var(--tinta-2); }
+  footer h2 { font-size: 15px; color: var(--tinta); }
+  footer li { margin-bottom: 4px; }
+  a { color: var(--azul); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Índice Changuito</h1>
+    <p>Inflación de supermercados en Argentina, medida todos los días con los precios online de seis cadenas.</p>
+    <div class="actualizado" id="actualizado"></div>
+  </header>
+
+  <section class="tarjeta destacado" id="destacado"></section>
+  <section class="cifras" id="cifras"></section>
+
+  <section class="tarjeta">
+    <h2>Evolución del índice</h2>
+    <p class="bajada">Índice general, base 100 = primer día relevado.</p>
+    <div class="grafico" id="linea"></div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>¿Qué supermercado es más barato hoy?</h2>
+    <p class="bajada">Diferencia promedio contra el precio mediano de los mismos productos.</p>
+    <div class="grafico" id="tiendas"></div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Variación por categoría</h2>
+    <p class="bajada" id="bajada-categorias"></p>
+    <div class="grafico" id="categorias"></div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Inflación mensual</h2>
+    <p class="bajada">Promedio del mes contra el promedio del mes anterior.</p>
+    <div id="mensual"></div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Dónde conviene comprar cada producto</h2>
+    <p class="bajada" id="bajada-productos"></p>
+    <div id="productos"></div>
+  </section>
+
+  <footer>
+    <h2>Cómo se calcula</h2>
+    <ul>
+      <li>Todos los días se consulta el precio online de cada producto de la canasta en Carrefour, Día, Jumbo, Disco, Vea y Más Online.</li>
+      <li>La variación de cada producto es la media geométrica de la variación en cada supermercado. Si un precio falta, se usa el último conocido durante hasta 7 días.</li>
+      <li>Cada categoría promedia sus productos y el índice general pondera las categorías. Las ponderaciones son provisorias.</li>
+      <li>No incluye carnes, frutas ni verduras frescas porque se venden por peso y no tienen un código de barras común.</li>
+    </ul>
+    <p id="repo"></p>
+  </footer>
+</main>
+
+<script type="application/json" id="datos">__DATOS__</script>
+<script>
+(() => {
+  const D = JSON.parse(document.getElementById("datos").textContent);
+
+  // ---------- formatos ----------
+  const numero = (v, d = 1) =>
+    new Intl.NumberFormat("es-AR", { minimumFractionDigits: d, maximumFractionDigits: d }).format(v);
+  const pct = (v, d = 1) => (v > 0 ? "+" : v < 0 ? "−" : "") + numero(Math.abs(v), d) + " %";
+  const pesos = v => "$ " + new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(v);
+  const aFecha = s => new Date(s + "T12:00:00");
+  const fechaLarga = s => aFecha(s).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
+  const fechaCorta = s => aFecha(s).toLocaleDateString("es-AR", { day: "numeric", month: "short" });
+  const mesLargo = s => aFecha(s + "-15").toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+  const mesCorto = s => aFecha(s + "-15").toLocaleDateString("es-AR", { month: "short", year: "2-digit" });
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const vacio = texto => `<p class="vacio">${texto}</p>`;
+
+  // ---------- tooltip compartido ----------
+  function tooltipEn(contenedor) {
+    const tip = document.createElement("div");
+    tip.className = "tooltip";
+    contenedor.appendChild(tip);
+    return {
+      mostrar(html, x, y) {
+        tip.innerHTML = html;
+        tip.style.opacity = 1;
+        const ancho = contenedor.clientWidth, w = tip.offsetWidth;
+        tip.style.left = Math.max(0, Math.min(ancho - w, x - w / 2)) + "px";
+        tip.style.top = (y - tip.offsetHeight - 10) + "px";
+      },
+      ocultar() { tip.style.opacity = 0; },
+    };
+  }
+
+  // ---------- encabezado y cifra destacada ----------
+  document.getElementById("actualizado").textContent = "Actualizado el " + fechaLarga(D.actualizado);
+
+  const dest = D.destacado;
+  let etiqueta, cifra, nota;
+  if (dest.tipo === "mensual") {
+    etiqueta = "Inflación de " + mesLargo(dest.mes) + (dest.en_curso ? " (mes en curso)" : "");
+    cifra = pct(dest.valor);
+    nota = `Promedio del mes contra el promedio del mes anterior · ${dest.dias} días relevados.`;
+  } else if (dest.tipo === "acumulada") {
+    etiqueta = "Variación desde el " + fechaLarga(D.inicio);
+    cifra = pct(dest.valor);
+    nota = "Todavía no hay dos meses de datos para calcular la inflación mensual.";
+  } else {
+    etiqueta = "Primer relevamiento";
+    cifra = numero(dest.valor, 0) + " precios";
+    nota = `Relevados el ${fechaLarga(D.actualizado)} en ${D.tiendas_hoy} supermercados. El índice arranca en 100 y desde mañana empieza a mostrar cómo cambian los precios.`;
+  }
+  document.getElementById("destacado").innerHTML =
+    `<div class="etiqueta">${etiqueta}</div><div class="cifra">${cifra}</div><p class="nota">${nota}</p>`;
+
+  const ultimo = D.serie[D.serie.length - 1].valor;
+  document.getElementById("cifras").innerHTML = [
+    ["Índice hoy", numero(ultimo, 2)],
+    ["Días relevados", numero(D.dias, 0)],
+    ["Productos en la canasta", numero(D.productos_canasta, 0)],
+    ["Precios relevados hoy", numero(D.precios_hoy, 0)],
+  ].map(([e, v]) => `<div class="tarjeta"><div class="etiqueta">${e}</div><div class="valor">${v}</div></div>`).join("");
+
+  // ---------- gráfico de línea ----------
+  function escalaLinda(lo, hi, cantidad) {
+    const crudo = (hi - lo) / cantidad;
+    const pot = Math.pow(10, Math.floor(Math.log10(crudo)));
+    const r = crudo / pot;
+    const paso = pot * (r >= 7.5 ? 10 : r >= 3.5 ? 5 : r >= 1.5 ? 2 : 1);
+    const ticks = [];
+    for (let v = Math.floor(lo / paso) * paso; v <= hi + paso * 1e-9; v += paso) ticks.push(+v.toFixed(10));
+    return ticks;
+  }
+
+  function linea(el, puntos) {
+    if (puntos.length < 2) {
+      el.innerHTML = vacio("El gráfico aparece cuando haya al menos dos días de datos.");
+      return;
+    }
+    const NS = "http://www.w3.org/2000/svg";
+    const dibujar = () => {
+      el.innerHTML = "";
+      const W = el.clientWidth, H = 260, m = { t: 12, r: 56, b: 26, l: 44 };
+      const xs = puntos.map(p => aFecha(p.fecha).getTime());
+      const ys = puntos.map(p => p.valor);
+      const margen = Math.max((Math.max(...ys) - Math.min(...ys)) * 0.1, 0.5);
+      const ticks = escalaLinda(Math.min(...ys, 100) - margen, Math.max(...ys, 100) + margen, 4);
+      const lo = ticks[0], hi = ticks[ticks.length - 1];
+      const x = t => m.l + (t - xs[0]) / (xs[xs.length - 1] - xs[0]) * (W - m.l - m.r);
+      const y = v => m.t + (hi - v) / (hi - lo) * (H - m.t - m.b);
+
+      let svg = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Evolución del índice general">`;
+      for (const t of ticks) {
+        const color = t === 100 ? "var(--eje)" : "var(--grilla)";
+        svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(t)}" y2="${y(t)}" stroke="${color}" stroke-width="1"/>`;
+        svg += `<text x="${m.l - 8}" y="${y(t) + 4}" text-anchor="end">${numero(t, t % 1 ? 1 : 0)}</text>`;
+      }
+      const nx = Math.min(puntos.length, Math.max(2, Math.floor((W - m.l - m.r) / 90)));
+      for (let k = 0; k < nx; k++) {
+        const i = Math.round(k * (puntos.length - 1) / (nx - 1));
+        const anchor = k === 0 ? "start" : k === nx - 1 ? "end" : "middle";
+        svg += `<text x="${x(xs[i])}" y="${H - 6}" text-anchor="${anchor}">${fechaCorta(puntos[i].fecha)}</text>`;
+      }
+      const d = puntos.map((p, i) => (i ? "L" : "M") + x(xs[i]).toFixed(1) + "," + y(p.valor).toFixed(1)).join("");
+      svg += `<path d="${d}" fill="none" stroke="var(--azul)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+      const xf = x(xs[xs.length - 1]), yf = y(ys[ys.length - 1]);
+      svg += `<circle cx="${xf}" cy="${yf}" r="4" fill="var(--azul)" stroke="var(--superficie)" stroke-width="2"/>`;
+      svg += `<text x="${xf + 8}" y="${yf + 4}" style="fill: var(--tinta-2)">${numero(ys[ys.length - 1], 1)}</text>`;
+      svg += `<line class="cruz" y1="${m.t}" y2="${H - m.b}" stroke="var(--eje)" stroke-width="1" visibility="hidden"/>`;
+      svg += `<circle class="punto" r="4" fill="var(--azul)" stroke="var(--superficie)" stroke-width="2" visibility="hidden"/>`;
+      svg += `<rect x="${m.l}" y="0" width="${W - m.l - m.r}" height="${H}" fill="transparent"/>`;
+      svg += "</svg>";
+      el.innerHTML = svg;
+
+      const s = el.querySelector("svg"), cruz = s.querySelector(".cruz"), punto = s.querySelector(".punto");
+      const tip = tooltipEn(el);
+      s.querySelector("rect").addEventListener("pointermove", ev => {
+        const caja = s.getBoundingClientRect();
+        const px = (ev.clientX - caja.left) * (W / caja.width);
+        let i = 0;
+        for (let j = 1; j < xs.length; j++) if (Math.abs(x(xs[j]) - px) < Math.abs(x(xs[i]) - px)) i = j;
+        const cx = x(xs[i]), cy = y(ys[i]);
+        cruz.setAttribute("x1", cx); cruz.setAttribute("x2", cx); cruz.setAttribute("visibility", "visible");
+        punto.setAttribute("cx", cx); punto.setAttribute("cy", cy); punto.setAttribute("visibility", "visible");
+        const variacion = ys[i] - 100;
+        tip.mostrar(
+          `<strong>${numero(ys[i], 2)}</strong> <span class="sec">· ${fechaLarga(puntos[i].fecha)}<br>${pct(variacion)} desde el inicio</span>`,
+          cx * caja.width / W, cy * caja.height / H
+        );
+      });
+      s.querySelector("rect").addEventListener("pointerleave", () => {
+        cruz.setAttribute("visibility", "hidden");
+        punto.setAttribute("visibility", "hidden");
+        tip.ocultar();
+      });
+    };
+    dibujar();
+    let espera;
+    new ResizeObserver(() => { clearTimeout(espera); espera = setTimeout(dibujar, 100); }).observe(el);
+  }
+
+  // ---------- barras divergentes (rojo = sube / más caro, azul = baja / más barato) ----------
+  function barras(el, items, detalle, referencias) {
+    const valores = items.map(i => i.valor);
+    const lo = Math.min(0, ...valores), hi = Math.max(0, ...valores);
+    const rango = (hi - lo) || 1;
+    // espacio extra a cada lado para que la etiqueta entre afuera de la barra
+    const dlo = lo < 0 ? lo - rango * 0.3 : 0;
+    const dhi = hi > 0 ? hi + rango * 0.3 : (lo < 0 ? 0 : 1);
+    const pos = v => (v - dlo) / (dhi - dlo) * 100;
+    const base = pos(0);
+    el.innerHTML = `<div class="barras">${items.map((it, i) => {
+      const extremo = pos(it.valor);
+      const clase = it.valor >= 0 ? "sube" : "baja";
+      const barra = `left:${Math.min(base, extremo)}%;width:${Math.abs(extremo - base)}%`;
+      const etiqueta = it.valor >= 0
+        ? `left:calc(${extremo}% + 6px)`
+        : `right:calc(${100 - extremo}% + 6px)`;
+      return `<div class="fila" tabindex="0" data-i="${i}">
+        <span class="nombre">${esc(it.nombre)}</span>
+        <div class="pista"><div class="base" style="left:${base}%"></div>
+          <div class="barra ${clase}" style="${barra}"></div>
+          <span class="valor" style="${etiqueta}">${pct(it.valor)}</span></div>
+      </div>`;
+    }).join("")}</div>
+    <div class="referencias">${referencias.map(([c, t]) => `<span style="--c:var(${c})">${t}</span>`).join("")}</div>`;
+
+    const tip = tooltipEn(el);
+    el.querySelectorAll(".fila").forEach(fila => {
+      const mostrar = () => {
+        const caja = el.getBoundingClientRect(), f = fila.getBoundingClientRect();
+        tip.mostrar(detalle(items[+fila.dataset.i]), f.left - caja.left + f.width / 2, f.top - caja.top);
+      };
+      fila.addEventListener("pointerenter", mostrar);
+      fila.addEventListener("focus", mostrar);
+      fila.addEventListener("pointerleave", tip.ocultar);
+      fila.addEventListener("blur", tip.ocultar);
+    });
+  }
+
+  linea(document.getElementById("linea"), D.serie);
+
+  barras(
+    document.getElementById("tiendas"),
+    D.tiendas,
+    t => `<strong>${esc(t.nombre)}</strong> <span class="sec">· ${t.valor < 0 ? "más barato" : "más caro"} que la mediana: ${pct(t.valor)}</span>`,
+    [["--azul", "Más barato que la mediana"], ["--rojo", "Más caro que la mediana"]]
+  );
+
+  const elCategorias = document.getElementById("categorias");
+  document.getElementById("bajada-categorias").textContent =
+    "Variación acumulada desde el " + fechaLarga(D.inicio) + ".";
+  if (D.dias < 2) {
+    elCategorias.innerHTML = vacio("Las variaciones por categoría aparecen a partir del segundo día de datos.");
+  } else {
+    barras(
+      elCategorias,
+      [...D.categorias].sort((a, b) => b.valor - a.valor),
+      c => `<strong>${esc(c.nombre)}</strong> <span class="sec">· ${pct(c.valor)} · pesa ${numero(c.peso, 1)} % en el índice</span>`,
+      [["--rojo", "Subió"], ["--azul", "Bajó"]]
+    );
+  }
+
+  // ---------- tabla mensual ----------
+  const M = D.mensual;
+  const conDatos = M.meses.map((_, j) => M.series[0].variaciones[j] !== null);
+  const columnas = M.meses.map((m, j) => j).filter(j => conDatos[j]).slice(-12);
+  if (!columnas.length) {
+    document.getElementById("mensual").innerHTML =
+      vacio("La primera inflación mensual aparece cuando haya datos de dos meses distintos.");
+  } else {
+    const cab = columnas.map(j => `<th class="num">${mesCorto(M.meses[j])}</th>`).join("");
+    const filas = M.series.map(s =>
+      `<tr class="${s.id === "general" ? "general" : ""}"><td>${esc(s.nombre)}</td>${
+        columnas.map(j => `<td class="num">${s.variaciones[j] === null ? "–" : pct(s.variaciones[j])}</td>`).join("")
+      }</tr>`).join("");
+    document.getElementById("mensual").innerHTML =
+      `<div class="tabla-scroll"><table><thead><tr><th>Serie</th>${cab}</tr></thead><tbody>${filas}</tbody></table></div>`;
+  }
+
+  // ---------- tabla de productos ----------
+  const comparables = D.productos.filter(p => p.tiendas > 1);
+  const mayor = comparables.reduce((a, b) => (b.brecha > a.brecha ? b : a), comparables[0]);
+  document.getElementById("bajada-productos").textContent = mayor
+    ? `El mismo producto puede costar hasta ${numero(mayor.brecha, 0)} % más según dónde lo compres (${mayor.nombre}).`
+    : "";
+  const filaProducto = p => `<tr>
+      <td>${esc(p.nombre)}<span class="sec">${esc(p.categoria)}</span></td>
+      <td>${esc(p.barata)}<span class="sec">${pesos(p.min)}</span></td>
+      <td>${p.tiendas > 1 ? esc(p.cara) + `<span class="sec">${pesos(p.max)}</span>` : `<span class="sec">solo en ${esc(p.barata)}</span>`}</td>
+      <td class="num">${p.tiendas > 1 ? pct(p.brecha) : "–"}</td>
+    </tr>`;
+  const ordenados = [...D.productos].sort((a, b) => b.brecha - a.brecha);
+  const tabla = filas => `<div class="tabla-scroll"><table>
+      <thead><tr><th>Producto</th><th>Más barato</th><th>Más caro</th><th class="num">Diferencia</th></tr></thead>
+      <tbody>${filas.map(filaProducto).join("")}</tbody></table></div>`;
+  document.getElementById("productos").innerHTML =
+    tabla(ordenados.slice(0, 10)) +
+    (ordenados.length > 10
+      ? `<details><summary>Ver los otros ${ordenados.length - 10} productos</summary>${tabla(ordenados.slice(10))}</details>`
+      : "");
+
+  // ---------- enlace al repositorio ----------
+  if (D.repositorio) {
+    document.getElementById("repo").innerHTML =
+      `Código abierto y datos en <a href="${esc(D.repositorio)}">${esc(D.repositorio.replace("https://", ""))}</a>.`;
+  }
+})();
+</script>
+</body>
+</html>

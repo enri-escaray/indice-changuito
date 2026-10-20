@@ -1,0 +1,112 @@
+# Canasta del Índice Changuito
+#
+# Cada categoría tiene un peso y una lista de productos identificados por su
+# código de barras (EAN). Los pesos se normalizan solos: no hace falta que sumen 100.
+#
+# ⚠️ Pesos PROVISORIOS: son una aproximación propia de cómo se reparte el gasto
+# en el supermercado. El próximo paso es reemplazarlos por las ponderaciones
+# del IPC del INDEC. No incluye carnes, frutas ni verduras frescas: se venden
+# por peso y cada cadena usa códigos propios, así que no se pueden comparar por EAN.
+#
+# Para buscar el EAN de un producto nuevo:
+#   python -m changuito buscar "aceite girasol" --tienda carrefour
+
+categorias:
+  - id: pan_cereales
+    nombre: Pan, harinas y cereales
+    peso: 18
+    productos:
+      - { ean: "7790070336309", nombre: "Fideos spaghetti Matarazzo 500 g" }
+      - { ean: "7790070337085", nombre: "Fideos tirabuzón al huevo Lucchetti 500 g" }
+      - { ean: "7790070431448", nombre: "Arroz largo fino Gallo 1 kg" }
+      - { ean: "7790070431486", nombre: "Arroz largo fino Lucchetti 1 kg" }
+      - { ean: "7790070562258", nombre: "Harina 000 Favorita 1 kg" }
+      - { ean: "7790199000020", nombre: "Harina 0000 Morixe 1 kg" }
+      - { ean: "7793890258769", nombre: "Pan lactal blanco 315 g" }
+      - { ean: "7790040139015", nombre: "Galletitas Criollitas 499 g" }
+      - { ean: "7622201735296", nombre: "Galletitas Oreo 118 g" }
+      - { ean: "7790580138738", nombre: "Polenta Presto Pronta 490 g" }
+      - { ean: "7792170555499", nombre: "Avena tradicional Quaker 280 g" }
+
+  - id: lacteos
+    nombre: Lácteos
+    peso: 16
+    productos:
+      - { ean: "7790742348302", nombre: "Leche entera La Serenísima sachet 1 l" }
+      - { ean: "7790742335500", nombre: "Leche entera larga vida La Serenísima 1 l" }
+      - { ean: "7791337010260", nombre: "Yogur cremoso frutilla La Serenísima" }
+      - { ean: "7791337061361", nombre: "Queso crema Casancrem 290 g" }
+      - { ean: "7793940054006", nombre: "Manteca La Serenísima 200 g" }
+      - { ean: "7790742625304", nombre: "Dulce de leche La Serenísima 400 g" }
+      - { ean: "7790742223005", nombre: "Queso rallado La Serenísima 70 g" }
+
+  - id: aceites
+    nombre: Aceites
+    peso: 5
+    productos:
+      - { ean: "7790272001029", nombre: "Aceite de girasol Natura 1,5 l" }
+      - { ean: "7790060023684", nombre: "Aceite de girasol Cocinero 1,5 l" }
+      - { ean: "7790070231871", nombre: "Aceite de oliva Cocinero 500 ml" }
+
+  - id: conservas
+    nombre: Conservas y tomate
+    peso: 5
+    productos:
+      - { ean: "7790580146115", nombre: "Puré de tomate Arcor 520 g" }
+      - { ean: "7790580567903", nombre: "Tomate perita Arcor 400 g" }
+      - { ean: "7790580980801", nombre: "Choclo cremoso Arcor 300 g" }
+
+  - id: azucar_dulces
+    nombre: Azúcar y dulces
+    peso: 8
+    productos:
+      - { ean: "7792540250450", nombre: "Azúcar Ledesma 1 kg" }
+      - { ean: "7790580132170", nombre: "Mermelada de damasco Arcor 454 g" }
+      - { ean: "8445291121881", nombre: "Cacao Nesquik 360 g" }
+      - { ean: "7622202328947", nombre: "Chocolate Milka con leche 55 g" }
+
+  - id: almacen
+    nombre: Condimentos y almacén
+    peso: 5
+    productos:
+      - { ean: "7790072001014", nombre: "Sal fina Celusal 500 g" }
+      - { ean: "7794000008595", nombre: "Caldo de verdura Knorr x6" }
+      - { ean: "7794000006065", nombre: "Mayonesa Hellmann's 237 g" }
+
+  - id: bebidas
+    nombre: Bebidas sin alcohol
+    peso: 11
+    productos:
+      - { ean: "7790895000997", nombre: "Coca-Cola 2,25 l" }
+      - { ean: "7799155000197", nombre: "Agua mineral Villavicencio 2 l" }
+      - { ean: "7622201705961", nombre: "Jugo en polvo Tang naranja" }
+      - { ean: "7790895003295", nombre: "Agua saborizada Aquarius pera 2,25 l" }
+
+  - id: infusiones
+    nombre: Yerba, café y té
+    peso: 8
+    productos:
+      - { ean: "7793704000928", nombre: "Yerba Playadito 1 kg" }
+      - { ean: "7790387013610", nombre: "Yerba Taragüi 1 kg" }
+      - { ean: "7790150006351", nombre: "Café molido La Virginia 500 g" }
+      - { ean: "7790387800142", nombre: "Té Taragüi x50" }
+      - { ean: "7790480090006", nombre: "Mate cocido La Tranquera x25" }
+
+  - id: limpieza
+    nombre: Limpieza
+    peso: 13
+    productos:
+      - { ean: "7790132098459", nombre: "Lavandina Ayudín 1 l" }
+      - { ean: "7790990003039", nombre: "Detergente Magistral 500 ml" }
+      - { ean: "7791290796829", nombre: "Jabón en polvo Ala 800 g" }
+      - { ean: "7790250016182", nombre: "Papel higiénico Higienol x4" }
+      - { ean: "7791290796683", nombre: "Suavizante Vivere 900 ml" }
+
+  - id: higiene
+    nombre: Higiene personal
+    peso: 11
+    productos:
+      - { ean: "7891150046481", nombre: "Jabón de tocador Dove x3" }
+      - { ean: "7791293045658", nombre: "Shampoo Sedal 190 ml" }
+      - { ean: "7509546686523", nombre: "Pasta dental Colgate 90 g" }
+      - { ean: "7791293049496", nombre: "Desodorante Rexona aerosol 150 ml" }
