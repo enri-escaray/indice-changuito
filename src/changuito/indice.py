@@ -33,6 +33,7 @@ class Resultado:
     diario: pd.DataFrame  # índice por fecha: columna "general" + una por categoría
     mensual: pd.DataFrame  # formato largo: mes, serie, indice, variacion_pct, dias_relevados
     cobertura: pd.DataFrame  # cantidad de productos con precio, por fecha y tienda
+    por_producto: pd.DataFrame  # índice de cada producto (columna = EAN), base 100
 
 
 def cargar_precios(dir_precios: Path) -> pd.DataFrame:
@@ -77,6 +78,11 @@ def relativos_por_producto(panel: pd.DataFrame) -> pd.DataFrame:
     """
     log_relativos = np.log(panel).diff()
     return log_relativos.T.groupby(level="ean").mean().T
+
+
+def indices_por_producto(panel: pd.DataFrame) -> pd.DataFrame:
+    """Índice de cada producto (base 100), para mostrar cuánto aumentó cada uno."""
+    return 100 * np.exp(relativos_por_producto(panel).fillna(0.0).cumsum())
 
 
 def indices_por_categoria(panel: pd.DataFrame, canasta: Canasta) -> pd.DataFrame:
@@ -151,7 +157,12 @@ def calcular(precios: pd.DataFrame, canasta: Canasta) -> Resultado:
     diario = pd.concat([indice_general(por_categoria, canasta), por_categoria], axis=1)
     diario.index.name = "fecha"
     cobertura = precios.groupby(["fecha", "tienda"]).size().unstack(fill_value=0)
-    return Resultado(diario=diario, mensual=resumen_mensual(diario), cobertura=cobertura)
+    return Resultado(
+        diario=diario,
+        mensual=resumen_mensual(diario),
+        cobertura=cobertura,
+        por_producto=indices_por_producto(panel),
+    )
 
 
 def guardar(resultado: Resultado, dir_datos: Path) -> None:

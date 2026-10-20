@@ -73,6 +73,9 @@ def armar_datos(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Can
 
     comparacion = indice.comparacion_productos(del_dia)
     comparacion["orden"] = comparacion["ean"].map({e: i for i, e in enumerate(canasta.eans)})
+    precios_por_ean = {ean: grupo.sort_values("precio") for ean, grupo in del_dia.groupby("ean")}
+    # Con un solo día todavía no hay variación que mostrar.
+    variacion_de = (resultado.por_producto.iloc[-1] - 100).to_dict() if len(diario) > 1 else {}
 
     # GitHub Actions define GITHUB_REPOSITORY ("usuario/repo"); localmente no hay enlace.
     repositorio = os.environ.get("GITHUB_REPOSITORY")
@@ -92,6 +95,7 @@ def armar_datos(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Can
         ],
         "categorias": [
             {
+                "id": c.id,
                 "nombre": c.nombre,
                 "peso": _redondear(c.peso * 100, 1),
                 "valor": _redondear(diario[c.id].iloc[-1] - 100),
@@ -105,14 +109,24 @@ def armar_datos(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Can
         ],
         "productos": [
             {
+                "ean": fila.ean,
                 "nombre": nombres[fila.ean],
-                "categoria": nombres_categoria[canasta.categoria_de[fila.ean]],
+                "categoria": canasta.categoria_de[fila.ean],
                 "barata": NOMBRES_TIENDAS.get(fila.tienda_barata, fila.tienda_barata),
                 "min": _redondear(fila.precio_min),
                 "cara": NOMBRES_TIENDAS.get(fila.tienda_cara, fila.tienda_cara),
                 "max": _redondear(fila.precio_max),
                 "brecha": _redondear(fila.brecha_pct, 1),
                 "tiendas": int(fila.tiendas),
+                "variacion": _redondear(variacion_de[fila.ean]) if fila.ean in variacion_de else None,
+                "precios": [
+                    {
+                        "tienda": NOMBRES_TIENDAS.get(p.tienda, p.tienda),
+                        "precio": _redondear(p.precio),
+                        "lista": _redondear(p.precio_lista),
+                    }
+                    for p in precios_por_ean[fila.ean].itertuples()
+                ],
             }
             for fila in comparacion.sort_values("orden").itertuples()
         ],
