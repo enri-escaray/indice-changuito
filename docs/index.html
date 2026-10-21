@@ -3,265 +3,499 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Índice Changuito</title>
-<meta name="description" content="Inflación de supermercados en Argentina, medida todos los días con precios online de seis cadenas.">
+<title>Índice Changuito: inflación y precios de supermercados</title>
+<meta name="description" content="Inflación de supermercados en Argentina, medida todos los días. Compará el precio de 49 productos en Carrefour, Día, Jumbo, Disco, Vea y Más Online.">
+<meta name="theme-color" content="#FFE11A">
+<link rel="canonical" href="https://enri-escaray.github.io/indice-changuito/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Índice Changuito">
+<meta property="og:locale" content="es_AR">
+<meta property="og:url" content="https://enri-escaray.github.io/indice-changuito/">
+<meta property="og:title" content="Cuánto sube el súper y dónde conviene comprar">
+<meta property="og:description" content="Precios de 49 productos en 6 cadenas, revisados todos los días a las 12. Buscá un producto y mirá en qué súper sale menos.">
+<meta property="og:image" content="https://enri-escaray.github.io/indice-changuito/img/changuito.jpg">
+<meta property="og:image:alt" content="Un changuito de supermercado vacío, de perfil, sobre la vereda.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FFE11A'/%3E%3Cpath d='M8 14h8l6 26h26l6-18H20' fill='none' stroke='%23000' stroke-width='6' stroke-linejoin='round'/%3E%3Ccircle cx='26' cy='50' r='5'/%3E%3Ccircle cx='46' cy='50' r='5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add("js")</script>
 <style>
+  /* Colores del súper: el amarillo del cartel de góndola, el rojo del estante y de la oferta, negro y blanco. */
   :root {
-    color-scheme: light;
-    --pagina: #f9f9f7;
-    --superficie: #fcfcfb;
-    --tinta: #0b0b0b;
-    --tinta-2: #52514e;
-    --tenue: #898781;
-    --grilla: #e1e0d9;
-    --eje: #c3c2b7;
-    --borde: rgba(11, 11, 11, 0.10);
-    --azul: #2a78d6;
-    --rojo: #e34948;
+    --amarillo: #FFE11A;
+    --rojo: #C8102E;
+    --negro: #000000;
+    --blanco: #FFFFFF;
+    --papel-2: #F1F1EC;
+
+    --fuente: "Archivo", system-ui, sans-serif;
+    --paso-chico: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+    --paso-texto: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+    --paso-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
+    --paso-titulo: clamp(2.75rem, 1.2rem + 5.5vw, 6rem);
+    --paso-medio: clamp(2rem, 1.4rem + 2vw, 3rem);
+    --paso-afiche: clamp(3.25rem, 13vw, 13rem);
+
+    --margen: clamp(20px, 2vw + 12px, 32px);
+    --entre-secciones: clamp(88px, 10vw, 176px);
+    --sube: #C8102E;
+    --baja: #2A78D6;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      color-scheme: dark;
-      --pagina: #0d0d0d;
-      --superficie: #1a1a19;
-      --tinta: #f0efec;
-      --tinta-2: #c3c2b7;
-      --grilla: #2c2c2a;
-      --eje: #383835;
-      --borde: rgba(255, 255, 255, 0.10);
-      --azul: #3987e5;
-      --rojo: #e66767;
-    }
-  }
-  :root[data-theme="dark"] {
-    color-scheme: dark;
-    --pagina: #0d0d0d;
-    --superficie: #1a1a19;
-    --tinta: #f0efec;
-    --tinta-2: #c3c2b7;
-    --grilla: #2c2c2a;
-    --eje: #383835;
-    --borde: rgba(255, 255, 255, 0.10);
-    --azul: #3987e5;
-    --rojo: #e66767;
-  }
+
+  /* Cada campo es un color plano entero; los textos y los controles toman la tinta de su campo. */
+  .campo-amarillo { --fondo: var(--amarillo); --tinta: #000; --tinta-2: #3A3300; --boton: #000; --boton-tinta: var(--amarillo); --panel: #FFF6B8; }
+  .campo-blanco   { --fondo: var(--blanco); --tinta: #000; --tinta-2: #4A4A44; --boton: #000; --boton-tinta: #FFF; --panel: var(--papel-2); }
+  .campo-rojo     { --fondo: var(--rojo); --tinta: #FFF; --tinta-2: #FFE3E6; --boton: #000; --boton-tinta: #FFF; --panel: #FFF; }
+  .campo-negro    { --fondo: var(--negro); --tinta: #FFF; --tinta-2: #D2D2CA; --boton: var(--amarillo); --boton-tinta: #000; --panel: #161616; --sube: #E66767; --baja: #3987E5; }
+
+  /* El afiche es igual en modo claro y oscuro: los colores del súper son la identidad. */
+  :root { color-scheme: light; }
 
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--pagina);
-    color: var(--tinta);
-    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
-  }
-  main { max-width: 960px; margin: 0 auto; padding: 32px 16px 48px; }
-  header h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.01em; }
-  header p { margin: 0; color: var(--tinta-2); }
-  .actualizado { font-size: 13px; color: var(--tenue); margin-top: 6px; }
-
-  .tarjeta {
-    background: var(--superficie);
-    border: 1px solid var(--borde);
-    border-radius: 12px;
-    padding: 20px;
-    margin-top: 16px;
-  }
-  .tarjeta h2 { font-size: 17px; margin: 0 0 2px; }
-  .tarjeta .bajada { margin: 0 0 16px; color: var(--tinta-2); font-size: 14px; }
-
-  .destacado .etiqueta { color: var(--tinta-2); font-size: 14px; }
-  .destacado .cifra { font-size: 56px; font-weight: 600; line-height: 1.1; margin: 4px 0; }
-  .destacado .nota { color: var(--tinta-2); font-size: 14px; margin: 0; }
-
-  .cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
-  .cifras .tarjeta { margin: 0; padding: 14px 16px; }
-  .cifras .etiqueta { font-size: 13px; color: var(--tinta-2); }
-  .cifras .valor { font-size: 22px; font-weight: 600; }
-
-  .grafico { position: relative; }
-  .grafico svg { display: block; width: 100%; overflow: visible; }
-  .grafico text { font-size: 11px; fill: var(--tenue); font-variant-numeric: tabular-nums; }
-  .vacio { color: var(--tenue); font-size: 14px; margin: 8px 0; }
-
-  .tooltip {
-    position: absolute; pointer-events: none; z-index: 2;
-    background: var(--superficie); color: var(--tinta);
-    border: 1px solid var(--borde); border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    padding: 6px 10px; font-size: 13px; white-space: nowrap;
-    opacity: 0; transition: opacity 80ms;
-  }
-  .tooltip strong { font-weight: 600; }
-  .tooltip .sec { color: var(--tinta-2); }
-
-  .barras { display: grid; gap: 6px; }
-  .fila { display: grid; grid-template-columns: minmax(96px, 180px) 1fr; align-items: center; gap: 12px; padding: 2px 0; border-radius: 6px; outline: none; }
-  .fila:hover, .fila:focus-visible { background: color-mix(in srgb, var(--tinta) 4%, transparent); }
-  .fila .nombre { font-size: 13px; color: var(--tinta-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pista { position: relative; height: 24px; }
-  .pista .base { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--eje); }
-  .pista .barra { position: absolute; top: 4px; height: 16px; }
-  .pista .barra.sube { background: var(--rojo); border-radius: 0 4px 4px 0; }
-  .pista .barra.baja { background: var(--azul); border-radius: 4px 0 0 4px; }
-  .pista .valor { position: absolute; top: 2px; font-size: 12px; color: var(--tinta); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .referencias { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 12px; color: var(--tinta-2); }
-  .referencias span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
-
-  .tabla-scroll { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { padding: 7px 8px; text-align: left; border-bottom: 1px solid var(--grilla); }
-  th { color: var(--tinta-2); font-weight: 500; white-space: nowrap; }
-  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  tr.general td { font-weight: 600; }
-
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body { margin: 0; background: var(--amarillo); color: #000; font: 400 var(--paso-texto)/1.5 var(--fuente); -webkit-font-smoothing: antialiased; }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: inherit; }
+  ::selection { background: #000; color: var(--amarillo); }
+  :focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
   .oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .filtros { display: grid; gap: 10px; }
+
+  .campo { background: var(--fondo); color: var(--tinta); padding: var(--entre-secciones) var(--margen); }
+  .ancho { max-width: 1376px; margin: 0 auto; }
+
+  /* Titulares en números de cartel: Archivo al ancho mínimo y al peso máximo, en mayúsculas. */
+  .afiche, .titulo, .cifra, .precio-grande, .declaracion {
+    font-family: var(--fuente); font-stretch: 62%; font-weight: 800; text-transform: uppercase;
+    letter-spacing: -0.01em; line-height: 0.86; margin: 0; text-wrap: balance;
+  }
+  .titulo { font-size: var(--paso-titulo); max-width: 16ch; }
+  .lead { font-size: var(--paso-lead); line-height: 1.35; max-width: 34ch; margin: 28px 0 0; }
+  .texto { max-width: 60ch; }
+  .texto p { margin: 0 0 1em; }
+  .nota { font-size: var(--paso-chico); color: var(--tinta-2); }
+
+  .boton {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 56px; padding: 0 28px;
+    background: var(--boton); color: var(--boton-tinta); font: 600 var(--paso-texto)/1 var(--fuente);
+    text-decoration: none; border: 0; cursor: pointer;
+    transition: transform 140ms var(--ease-out), background-color 180ms, color 180ms;
+  }
+  .boton:hover { background: var(--tinta); color: var(--fondo); }
+  .boton-grande { min-height: 72px; padding: 0 36px; font-size: var(--paso-lead); }
+  .campo-amarillo .boton:hover { background: var(--rojo); color: #FFF; }
+  .boton:active { transform: scale(0.97); }
+  .enlace-fuerte { font-weight: 600; text-underline-offset: 4px; text-decoration-thickness: 2px; transition: text-decoration-thickness 180ms; }
+  .enlace-fuerte:hover { text-decoration-thickness: 4px; }
+
+  /* ---------- barra superior ---------- */
+  .barra {
+    position: sticky; top: 0; z-index: 10; background: var(--amarillo); color: #000;
+    display: flex; align-items: center; gap: 24px; padding: 12px var(--margen);
+  }
+  .marca { font-stretch: 62%; font-weight: 800; font-size: var(--paso-lead); line-height: 1; text-transform: uppercase; text-decoration: none; margin-right: auto; }
+  .barra nav { display: flex; gap: 24px; }
+  .barra nav a { text-decoration: none; font-weight: 500; transition: opacity 180ms; }
+  .barra nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .compartir { font: 600 var(--paso-texto)/1 var(--fuente); color: #000; background: none; border: 0; padding: 12px 0; min-height: 44px; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; transition: text-decoration-thickness 180ms; }
+  .compartir:hover { text-decoration-thickness: 4px; }
+  @media (max-width: 860px) { .barra nav { display: none; } }
+
+  /* ---------- héroe ---------- */
+  .heroe { position: relative; overflow: hidden; padding-top: clamp(40px, 6vw, 96px); padding-bottom: clamp(56px, 7vw, 120px); min-height: min(84svh, 900px); display: flex; align-items: flex-end; }
+  .heroe .ancho { position: relative; width: 100%; }
+  .afiche { font-size: var(--paso-afiche); position: relative; z-index: 2; }
+  .afiche span { display: block; }
+  .heroe-pie { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 40ch); gap: 32px; margin-top: 40px; }
+  .heroe-pie .lead { margin: 0; }
+  .heroe-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+  .heroe-foto {
+    position: absolute; z-index: 1; right: max(-4vw, -60px); top: clamp(24px, 3vw, 64px); width: min(46vw, 760px); margin: 0;
+    transform: rotate(-4deg);
+    clip-path: polygon(6% 4%, 97% 0, 100% 92%, 3% 100%);
+  }
+  .heroe-foto img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 55%; filter: saturate(1.05) contrast(1.05); }
+  @media (max-width: 860px) {
+    .heroe { min-height: 0; display: block; }
+    .heroe .ancho { display: flex; flex-direction: column; }
+    .heroe-pie { order: 2; grid-template-columns: 1fr; margin-top: 24px; }
+    .heroe-foto { order: 3; position: relative; right: auto; top: auto; width: 100%; margin: 40px 0 0; transform: rotate(-3deg); }
+  }
+
+  /* ---------- marquesina con los precios de hoy ---------- */
+  .marquesina { background: #000; color: #FFF; overflow: hidden; padding: 22px 0; }
+  .marquesina-pista { display: flex; width: max-content; }
+  .marquesina-pista span { font-stretch: 62%; font-weight: 800; text-transform: uppercase; font-size: var(--paso-medio); line-height: 1; white-space: nowrap; padding-right: 0.9em; }
+  .marquesina-pista b { color: var(--amarillo); font-weight: 800; margin-left: 0.3em; }
+  .marquesina-pista em { font-style: normal; margin-left: 0.3em; }
+  @media (prefers-reduced-motion: no-preference) {
+    .marquesina-pista { animation: desfile var(--duracion, 70s) linear infinite; }
+    .marquesina:hover .marquesina-pista { animation-play-state: paused; }
+  }
+  @keyframes desfile { to { transform: translateX(-50%); } }
+
+  /* ---------- buscador ---------- */
+  .buscador-cabeza { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px 64px; align-items: end; margin-bottom: 48px; }
+  .buscador-cabeza .lead { margin: 0; }
+  @media (max-width: 860px) { .buscador-cabeza { grid-template-columns: 1fr; margin-bottom: 32px; } }
+  .buscador { background: var(--panel); padding: clamp(16px, 2.4vw, 32px); }
   .buscar { position: relative; display: block; }
-  .buscar svg {
-    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-    width: 16px; height: 16px; fill: none; stroke: var(--tenue); stroke-width: 1.75; stroke-linecap: round;
-  }
+  .buscar svg { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
   .buscar input {
-    width: 100%; height: 42px; padding: 0 12px 0 36px;
-    font: inherit; color: var(--tinta); background: var(--pagina);
-    border: 1px solid var(--borde); border-radius: 10px;
+    width: 100%; height: 64px; padding: 0 16px 0 56px; font: 500 clamp(1.125rem, 1rem + 0.6vw, 1.5rem)/1 var(--fuente);
+    color: var(--tinta); background: var(--fondo); border: 3px solid var(--tinta); border-radius: 0;
   }
-  .buscar input::placeholder { color: var(--tenue); }
-  .buscar input:focus { outline: 2px solid var(--azul); outline-offset: 1px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .buscar input::placeholder { color: var(--tinta-2); opacity: 0.8; }
+  .buscar input:focus { outline: 4px solid var(--amarillo); outline-offset: 0; }
+  .chips { display: flex; gap: 8px; margin: 16px calc(-1 * clamp(16px, 2.4vw, 32px)) 0; padding: 0 clamp(16px, 2.4vw, 32px) 6px; overflow-x: auto; scrollbar-width: thin; }
   .chip {
-    font: inherit; font-size: 13px; line-height: 1.3; padding: 5px 11px; cursor: pointer;
-    border-radius: 999px; border: 1px solid var(--borde); background: transparent; color: var(--tinta-2);
+    flex: none; min-height: 44px; padding: 0 16px; cursor: pointer; font: 500 1rem/1 var(--fuente);
+    color: var(--tinta); background: var(--fondo); border: 0; border-radius: 0;
+    transition: background-color 180ms, color 180ms, transform 140ms var(--ease-out);
   }
-  .chip .n { margin-left: 6px; color: var(--tenue); font-variant-numeric: tabular-nums; }
-  .chip:hover { background: color-mix(in srgb, var(--tinta) 5%, transparent); }
-  .chip[aria-pressed="true"] { background: var(--tinta); border-color: var(--tinta); color: var(--superficie); }
-  .chip[aria-pressed="true"] .n { color: inherit; opacity: 0.7; }
-  .chip:focus-visible, .productos summary:focus-visible, .barra-resultados select:focus-visible, .enlace:focus-visible {
-    outline: 2px solid var(--azul); outline-offset: 2px;
-  }
-  .separador { width: 1px; height: 20px; background: var(--grilla); margin: 0 4px; }
-  .barra-resultados {
-    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px;
-    margin: 14px 0 4px; font-size: 13px; color: var(--tinta-2);
-  }
+  .chip .n { margin-left: 8px; font-variant-numeric: tabular-nums; color: var(--tinta-2); }
+  .chip:hover { background: var(--amarillo); color: #000; }
+  .chip:hover .n { color: #000; }
+  .chip:active { transform: scale(0.96); }
+  .chip[aria-pressed="true"] { background: var(--tinta); color: var(--fondo); }
+  .chip[aria-pressed="true"] .n { color: inherit; opacity: 0.75; }
+  .chip-oferta[aria-pressed="true"] { background: var(--rojo); color: #FFF; }
+  .opciones-busqueda { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin-top: 16px; }
+  .opciones-busqueda select { margin-left: 8px; }
+  .regla { font-size: 0.9375rem; }
+  .barra-resultados { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin: 18px 0 8px; }
   .barra-resultados select {
-    font: inherit; font-size: 13px; color: var(--tinta); margin-left: 6px; padding: 4px 8px;
-    background: var(--pagina); border: 1px solid var(--borde); border-radius: 8px;
+    font: 500 1rem var(--fuente); color: var(--tinta); background: var(--fondo); border: 2px solid var(--tinta); border-radius: 0;
+    min-height: 44px; padding: 0 10px; margin-left: 8px;
   }
   .productos { list-style: none; margin: 0; padding: 0; }
-  .productos > li { border-top: 1px solid var(--grilla); }
+  .productos > li + li { margin-top: 4px; }
+  .productos details { background: var(--fondo); }
   .productos summary {
-    list-style: none; display: grid; grid-template-columns: 1fr auto 16px; gap: 12px; align-items: center;
-    padding: 10px 6px; margin: 0 -6px; border-radius: 8px; cursor: pointer;
+    list-style: none; display: grid; grid-template-columns: minmax(0, 1fr) auto 20px; gap: 16px; align-items: center;
+    padding: 16px clamp(14px, 1.6vw, 22px); cursor: pointer; transition: background-color 180ms;
   }
   .productos summary::-webkit-details-marker { display: none; }
-  .productos summary:hover { background: color-mix(in srgb, var(--tinta) 4%, transparent); }
-  .productos .nombre { font-weight: 500; }
-  .productos .meta { font-size: 12px; color: var(--tenue); margin-top: 1px; }
-  .productos .desde { text-align: right; white-space: nowrap; }
-  .productos .desde strong { display: block; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .productos .desde span { font-size: 12px; color: var(--tinta-2); }
-  .chev { width: 16px; height: 16px; fill: none; stroke: var(--tenue); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; transition: transform 120ms; }
+  .productos summary:hover { background: color-mix(in srgb, var(--amarillo) 35%, var(--fondo)); }
+  .productos .nombre { font-weight: 600; font-size: var(--paso-texto); line-height: 1.25; }
+  .productos .meta { font-size: var(--paso-chico); color: var(--tinta-2); margin-top: 2px; }
+  .productos .desde { text-align: right; }
+  .precio-grande { display: block; font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem); line-height: 0.9; font-variant-numeric: tabular-nums; }
+  .productos .desde .donde { display: block; font-size: 0.9375rem; font-weight: 600; color: var(--tinta); margin-top: 4px; }
+  .productos .desde .marca-chica { margin: 6px 0 0; }
+  .chev { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: square; transition: transform 200ms var(--ease-out); }
   details[open] .chev { transform: rotate(180deg); }
-  .por-tienda { list-style: none; margin: 0; padding: 2px 0 4px; }
-  .por-tienda li { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 13px; }
-  .por-tienda li + li { border-top: 1px solid var(--grilla); }
-  .por-tienda .valor { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .por-tienda s { color: var(--tenue); margin-right: 6px; }
-  .por-tienda .mejor { font-weight: 600; }
-  .marca {
-    display: inline-block; font-size: 11px; font-weight: 500; line-height: 1.4; padding: 0 6px; margin-left: 6px;
-    border: 1px solid var(--borde); border-radius: 4px; color: var(--tinta-2); vertical-align: 1px;
-  }
-  .ean { font-size: 12px; color: var(--tenue); margin: 2px 0 12px; font-variant-numeric: tabular-nums; }
-  .sin-resultados { padding: 20px 0; color: var(--tinta-2); font-size: 14px; }
-  .enlace { font: inherit; color: var(--azul); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
-  @media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
+  .por-tienda { list-style: none; margin: 0; padding: 4px clamp(14px, 1.6vw, 22px) 18px; }
+  .por-tienda li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; padding: 8px 0; border-top: 1px solid color-mix(in srgb, var(--tinta) 14%, transparent); } /* taste-skill-ignore: lista dentro del buscador (data-ui) */
+  .por-tienda .valor { text-align: right; font-variant-numeric: tabular-nums; margin-left: auto; }
+  .por-tienda s { color: var(--tinta-2); margin-right: 8px; }
+  .por-tienda .mejor { font-weight: 700; }
+  .marca-chica { display: inline-block; font-size: 0.8125rem; font-weight: 600; line-height: 1.6; padding: 0 8px; margin-left: 8px; background: var(--amarillo); color: #000; vertical-align: 2px; }
+  .marca-chica.promo { background: var(--rojo); color: #FFF; }
+  .ean { font-size: var(--paso-chico); color: var(--tinta-2); margin: 0; padding: 0 clamp(14px, 1.6vw, 22px) 16px; font-variant-numeric: tabular-nums; }
+  .sin-resultados { background: var(--fondo); padding: 28px 22px; }
+  .sin-resultados p { margin: 0 0 14px; max-width: 52ch; }
+  .ver-todos { margin-top: 16px; width: 100%; }
 
-  footer { margin-top: 32px; font-size: 13px; color: var(--tinta-2); }
-  footer h2 { font-size: 15px; color: var(--tinta); }
-  footer li { margin-bottom: 4px; }
-  a { color: var(--azul); }
+  /* ---------- ranking ---------- */
+  .dos-columnas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 48px clamp(40px, 6vw, 112px); align-items: start; }
+  @media (max-width: 960px) { .dos-columnas { grid-template-columns: 1fr; } }
+  .declaracion { font-size: var(--paso-titulo); margin-top: 36px; max-width: 14ch; color: var(--amarillo); }
+  .panel { background: var(--panel); color: #000; padding: clamp(18px, 2.4vw, 36px); }
+  .campo-negro .panel { color: #FFF; background: transparent; padding: 0; }
+  .campo-negro .pista .barra-dato.neutra { background: var(--amarillo); opacity: 1; }
+  .panel h3 { font-size: var(--paso-lead); font-weight: 600; margin: 0 0 18px; line-height: 1.2; }
+  .nota-panel { margin: -8px 0 18px; font-size: 0.9375rem; }
+
+  /* gráficos (piezas de interfaz: guardan sus propias líneas y tamaños) */
+  .grafico { position: relative; }
+  .grafico svg { display: block; width: 100%; overflow: visible; }
+  .grafico text { font: 400 12px var(--fuente); fill: currentColor; opacity: 0.75; font-variant-numeric: tabular-nums; }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 3; background: #000; color: #FFF; padding: 8px 12px;
+    font-size: 0.875rem; white-space: nowrap; opacity: 0; transition: opacity 80ms;
+  }
+  .barras { display: grid; gap: 8px; }
+  .fila { display: grid; grid-template-columns: min(34%, 200px) minmax(0, 1fr); align-items: center; gap: 14px; padding: 2px 0; outline-offset: 2px; }
+  .fila:hover, .fila:focus-visible { background: color-mix(in srgb, currentColor 6%, transparent); }
+  .fila .nombre { font-size: 0.9375rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pista { position: relative; height: 30px; }
+  .pista .base { position: absolute; top: 0; bottom: 0; width: 2px; background: currentColor; opacity: 0.35; }
+  .pista .barra-dato { position: absolute; top: 5px; height: 20px; transform-origin: var(--origen, left); }
+  .pista .barra-dato.sube { background: var(--sube); --origen: left; }
+  .pista .barra-dato.baja { background: var(--baja); --origen: right; }
+  .pista .barra-dato.neutra { background: currentColor; opacity: 0.85; }
+  .pista .valor { position: absolute; top: 5px; font-size: 0.875rem; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .referencias { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 16px; font-size: 0.875rem; }
+  .referencias span::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 8px; vertical-align: -1px; background: var(--c); }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .grafico .barra-dato { transform: scaleX(0); transition: transform 900ms var(--ease-out); transition-delay: calc(var(--i, 0) * 70ms + 200ms); }
+    .js .grafico.is-in .barra-dato { transform: scaleX(1); }
+  }
+
+  /* ---------- índice ---------- */
+  .cifra { font-size: var(--paso-afiche); margin: 36px 0 8px; font-variant-numeric: tabular-nums; }
+  .cifra-etiqueta { font-size: var(--paso-lead); font-weight: 600; margin: 0; }
+  .que-viene { list-style: none; margin: 0; padding: 0; display: grid; gap: 32px; }
+  .que-viene li { max-width: 40ch; font-size: var(--paso-texto); }
+  .que-viene strong { display: block; font-stretch: 62%; font-weight: 800; text-transform: uppercase; font-size: var(--paso-medio); line-height: 0.95; margin-bottom: 8px; color: var(--amarillo); }
+  .indice-abajo { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px clamp(40px, 6vw, 112px); margin-top: clamp(56px, 7vw, 112px); align-items: start; }
+  @media (max-width: 960px) { .indice-abajo { grid-template-columns: 1fr; } }
+  .tabla-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+  th, td { padding: 9px 8px; text-align: left; border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent); }
+  th { font-weight: 500; white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.general td { font-weight: 700; }
+
+  /* ---------- cómo funciona ---------- */
+  .foto-sangre { position: relative; margin: calc(-1 * var(--entre-secciones)) calc(-1 * var(--margen)) 0; }
+  .foto-sangre img { width: 100%; height: clamp(320px, 52vw, 720px); object-fit: cover; object-position: 50% 45%; }
+  .foto-sangre figcaption { position: absolute; left: var(--margen); bottom: 0; background: var(--rojo); color: #FFF; padding: 14px 20px; font-size: var(--paso-chico); max-width: calc(100% - 2 * var(--margen)); }
+  .como { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 48px clamp(40px, 6vw, 112px); margin-top: clamp(64px, 8vw, 128px); }
+  @media (max-width: 960px) { .como { grid-template-columns: 1fr; } }
+  .pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 40px; }
+  .pasos h3, .limites h3 { font-stretch: 62%; font-weight: 800; text-transform: uppercase; font-size: var(--paso-medio); line-height: 0.9; margin: 0 0 12px; }
+  .pasos p { margin: 0; max-width: 52ch; }
+  .limites { margin-top: clamp(56px, 7vw, 104px); background: var(--panel); padding: clamp(22px, 3vw, 44px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 24px clamp(40px, 6vw, 112px); }
+  .limites p { margin: 0; max-width: 60ch; }
+  @media (max-width: 960px) { .limites { grid-template-columns: 1fr; } }
+
+  /* ---------- abierto ---------- */
+  .abierto-foto { margin: 0; }
+  .abierto-foto img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .abierto-foto figcaption { font-size: var(--paso-chico); margin-top: 10px; color: var(--tinta-2); }
+  .abierto-acciones { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; margin-top: 36px; }
+  .metodo { margin-top: 40px; }
+  .metodo summary { cursor: pointer; font-size: var(--paso-lead); font-weight: 600; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+  .metodo ul { margin: 24px 0 0; padding-left: 1.2em; max-width: 72ch; }
+  .metodo li { margin-bottom: 12px; }
+  .metodo .cita { max-width: 72ch; margin: 20px 0 0; }
+
+  /* ---------- pie ---------- */
+  .pie { padding-bottom: 40px; }
+  .pie-nombre { font-stretch: 62%; font-weight: 800; text-transform: uppercase; font-size: var(--paso-afiche); line-height: 0.86; margin: 0 0 48px; letter-spacing: -0.01em; color: var(--amarillo); }
+  .pie-columnas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 48px; font-size: var(--paso-chico); }
+  .pie-columnas p { margin: 0 0 8px; }
+  .pie-columnas h2 { font-size: var(--paso-chico); font-weight: 700; margin: 0 0 10px; }
+  @media (max-width: 860px) { .pie-columnas { grid-template-columns: 1fr; } }
+
+  .aviso { position: fixed; left: 50%; bottom: 24px; z-index: 20; transform: translate(-50%, 120%); background: #000; color: #FFF; padding: 14px 20px; font-weight: 500; visibility: hidden; transition: transform 240ms var(--ease-out), visibility 0s 240ms; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); } /* taste-skill-ignore: aviso flotante */
+  .aviso.visible { transform: translate(-50%, 0); visibility: visible; transition: transform 240ms var(--ease-out); }
+
+  /* ---------- movimiento: entradas una sola vez, nunca dejan contenido oculto ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    .js [data-entra] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-out); transition-delay: calc(var(--i, 0) * 80ms); }
+    .js [data-entra].is-in { opacity: 1; transform: none; }
+    .js .afiche span { transform: translateY(40%); opacity: 0; animation: subir 900ms var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * 110ms + 120ms); }
+    .js .heroe-foto { animation: entrar-foto 1100ms var(--ease-out) 300ms both; }
+    .heroe-foto img { transition: transform 600ms var(--ease-soft); will-change: transform; }
+  }
+  @keyframes subir { to { transform: none; opacity: 1; } }
+  @keyframes entrar-foto { from { transform: rotate(2deg) translateY(12%); opacity: 0; } to { transform: rotate(-4deg); opacity: 1; } }
+  @media (max-width: 860px) { @keyframes entrar-foto { from { transform: rotate(1deg) translateY(10%); opacity: 0; } to { transform: rotate(-3deg); opacity: 1; } } }
 </style>
 </head>
 <body>
+
+<header class="barra">
+  <a class="marca" href="#arriba">Índice Changuito</a>
+  <nav aria-label="Secciones">
+    <a href="#buscar">Buscar</a>
+    <a href="#ranking">Súper más barato</a>
+    <a href="#indice">Índice</a>
+    <a href="#titulo-como">Cómo funciona</a>
+    <a href="https://github.com/enri-escaray/indice-changuito">GitHub</a>
+  </nav>
+  <button class="compartir" type="button" id="compartir">Compartir</button>
+</header>
+
 <main>
-  <header>
-    <h1>Índice Changuito</h1>
-    <p>Inflación de supermercados en Argentina, medida todos los días con los precios online de seis cadenas.</p>
-    <div class="actualizado" id="actualizado"></div>
-  </header>
-
-  <section class="tarjeta destacado" id="destacado"></section>
-  <section class="cifras" id="cifras"></section>
-
-  <section class="tarjeta">
-    <h2>Evolución del índice</h2>
-    <p class="bajada">Índice general, base 100 = primer día relevado.</p>
-    <div class="grafico" id="linea"></div>
-  </section>
-
-  <section class="tarjeta">
-    <h2>¿Qué supermercado es más barato hoy?</h2>
-    <p class="bajada">Diferencia promedio contra el precio mediano de los mismos productos, con las promociones del día.</p>
-    <div class="grafico" id="tiendas"></div>
-  </section>
-
-  <section class="tarjeta" id="buscador">
-    <h2>Buscá un producto</h2>
-    <p class="bajada" id="bajada-productos"></p>
-    <div class="filtros">
-      <label class="buscar">
-        <span class="oculto">Buscar producto</span>
-        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
-        <input type="search" id="q" placeholder="Yerba, leche, aceite…" autocomplete="off" spellcheck="false">
-      </label>
-      <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
+  <section class="campo campo-amarillo heroe" id="arriba">
+    <div class="ancho">
+      <h1 class="afiche"><span style="--i:0">Cuánto sube</span><span style="--i:1">el súper</span></h1>
+      <figure class="heroe-foto">
+        <img src="img/changuito.jpg" width="1600" height="1200" alt="Un changuito de supermercado vacío, de perfil, sobre la vereda." fetchpriority="high">
+      </figure>
+      <div class="heroe-pie">
+        <p class="lead" id="heroe-texto">Todos los días a las 12 comparamos el precio de 49 productos en Carrefour, Día, Jumbo, Disco, Vea y Más Online.</p>
+        <div class="heroe-acciones">
+          <a class="boton boton-grande" href="#buscar" data-enfocar>Buscá un producto</a>
+          <a class="enlace-fuerte" href="#ranking">Ver el súper más barato</a>
+        </div>
+      </div>
     </div>
-    <div class="barra-resultados">
-      <span id="contador" aria-live="polite"></span>
-      <label>Ordenar por
-        <select id="orden">
-          <option value="categoria">Categoría</option>
-          <option value="diferencia">Mayor diferencia entre súper</option>
-          <option value="precio">Menor precio</option>
-          <option value="aumento">Mayor aumento</option>
-        </select>
-      </label>
+  </section>
+
+  <div class="marquesina marquee" aria-hidden="true"><div class="marquesina-pista" id="marquesina"></div></div>
+
+  <section class="campo campo-blanco" id="buscar" aria-labelledby="titulo-buscar">
+    <div class="ancho">
+      <div class="buscador-cabeza">
+        <h2 class="titulo" id="titulo-buscar" data-entra>Buscá un producto</h2>
+        <p class="lead" id="bajada-productos" data-entra style="--i:1">Los productos de la canasta con su precio en cada súper.</p>
+      </div>
+      <div class="buscador" data-ui data-entra style="--i:2">
+        <label class="buscar">
+          <span class="oculto">Buscar por nombre, marca o código de barras</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/></svg>
+          <input type="search" id="q" placeholder="Yerba, aceite, La Serenísima…" autocomplete="off" spellcheck="false">
+        </label>
+        <div class="opciones-busqueda">
+          <button type="button" class="chip chip-oferta" id="solo-ofertas" aria-pressed="false">Solo ofertas<span class="n"></span></button>
+          <label>Ordenar por
+            <select id="orden">
+              <option value="diferencia">Mayor diferencia entre súper</option>
+              <option value="precio">Precio más bajo</option>
+              <option value="categoria">Categoría</option>
+              <option value="aumento">Mayor aumento</option>
+            </select>
+          </label>
+        </div>
+        <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
+        <div class="barra-resultados">
+          <span id="contador" aria-live="polite"></span>
+          <span class="regla">Precios de hoy en cada web, con sus ofertas. Sin 2x1 ni descuentos con tarjeta.</span>
+        </div>
+        <ul class="productos" id="productos"></ul>
+        <noscript><p>Para usar el buscador hace falta JavaScript. Los precios de hoy también están en GitHub, en la carpeta data/precios.</p></noscript>
+      </div>
     </div>
-    <ul class="productos" id="productos"></ul>
   </section>
 
-  <section class="tarjeta">
-    <h2>Variación por categoría</h2>
-    <p class="bajada" id="bajada-categorias"></p>
-    <div class="grafico" id="categorias"></div>
+  <section class="campo campo-rojo" id="ranking" aria-labelledby="titulo-ranking">
+    <div class="ancho dos-columnas">
+      <div>
+        <h2 class="titulo" id="titulo-ranking" data-entra>¿Qué súper sale menos?</h2>
+        <p class="declaracion" id="ranking-ganador" data-entra style="--i:1"></p>
+        <p class="lead" id="ranking-texto" data-entra style="--i:2">Comparamos los mismos productos en las seis cadenas, con lo que se paga hoy en cada web, ofertas incluidas.</p>
+        <p class="lead" data-entra style="--i:3">Tu compra puede dar distinto: <a class="enlace-fuerte" href="#buscar" data-enfocar>buscá lo que llevás</a>.</p>
+      </div>
+      <div class="panel" data-ui data-entra style="--i:3">
+        <h3>Cuánto más barato o más caro que un súper típico</h3>
+        <div class="grafico" id="tiendas"></div>
+      </div>
+    </div>
   </section>
 
-  <section class="tarjeta">
-    <h2>Inflación mensual</h2>
-    <p class="bajada">Promedio del mes contra el promedio del mes anterior.</p>
-    <div id="mensual"></div>
+  <section class="campo campo-negro" id="indice" aria-labelledby="titulo-indice">
+    <div class="ancho">
+      <div class="dos-columnas">
+        <div>
+          <h2 class="titulo" id="titulo-indice" data-entra>Cómo cambiaron los precios</h2>
+          <p class="cifra" id="indice-cifra" data-entra style="--i:1"></p>
+          <p class="cifra-etiqueta" id="indice-etiqueta" data-entra style="--i:2"></p>
+          <p class="lead" id="indice-texto" data-entra style="--i:3"></p>
+        </div>
+        <div class="panel" data-ui data-entra style="--i:2" id="indice-panel"></div>
+      </div>
+      <div class="indice-abajo">
+        <div class="panel" data-ui data-entra>
+          <h3 id="titulo-categorias"></h3>
+          <div class="grafico" id="categorias"></div>
+        </div>
+        <div class="panel" data-ui data-entra style="--i:1" id="mensual-panel">
+          <h3>Inflación mensual</h3>
+          <div id="mensual"></div>
+        </div>
+      </div>
+    </div>
   </section>
 
+  <section class="campo campo-blanco" id="como" aria-labelledby="titulo-como">
+    <figure class="foto-sangre">
+      <img src="img/gondola-huevos.jpg" width="1600" height="1200" loading="lazy" alt="Góndola de supermercado con maples de huevos y carteles de precio impresos en el estante rojo.">
+      <figcaption>Carteles de precio en la góndola de un súper argentino. Los huevos y los productos frescos todavía no entran en el índice.</figcaption>
+    </figure>
+    <div class="ancho">
+      <div class="como">
+        <div>
+          <h2 class="titulo" id="titulo-como" data-entra>Cómo funciona</h2>
+          <p class="lead" data-entra style="--i:1">Mismo producto, mismo código de barras, todos los días. Los precios que ves incluyen las ofertas de hoy; la inflación se mide sin ofertas, para que una oferta que termina no parezca una suba.</p>
+        </div>
+        <ol class="pasos">
+          <li data-entra><h3>Junta los precios</h3><p>Todos los días al mediodía, un robot consulta el precio de 49 productos en las tiendas online de las seis cadenas, sin elegir sucursal ni código postal.</p></li>
+          <li data-entra style="--i:1"><h3>Compara lo mismo con lo mismo</h3><p>Busca cada producto por su código de barras, así compara exactamente el mismo en todas las cadenas.</p></li>
+          <li data-entra style="--i:2"><h3>Publica los resultados</h3><p>Calcula la inflación con el precio sin ofertas, arma el ranking con el precio de hoy, ofertas incluidas, y actualiza esta página. Los datos quedan públicos en GitHub.</p></li>
+        </ol>
+      </div>
+      <div class="limites" data-entra>
+        <h3>Lo que todavía no mide</h3>
+        <p>Cubre productos envasados, incluidos limpieza e higiene: no incluye carnes, frutas, verduras ni huevos. Usa precios online sin elegir sucursal, que pueden variar en tu zona, sin 2x1 ni descuentos con tarjeta. El peso de cada categoría es provisorio. En Jumbo, Disco y Vea alguna oferta puede colarse en la inflación, porque esas webs no informan el precio sin oferta. Si ves un error, <a href="https://github.com/enri-escaray/indice-changuito/issues">avisanos</a>.</p>
+      </div>
+      <details class="metodo" data-entra>
+        <summary>Metodología completa y cómo citar</summary>
+        <ul>
+          <li><strong>Canasta.</strong> 49 productos envasados en 10 categorías, identificados por código de barras. Limpieza e higiene pesan 24 %: no es un índice solo de alimentos.</li>
+          <li><strong>Pesos.</strong> Propios y provisorios; no son los del IPC del INDEC.</li>
+          <li><strong>Variación diaria.</strong> Para cada producto, media geométrica (Jevons) de la variación del precio sin oferta en cada súper. Si falta un precio, se usa el último conocido durante hasta 7 días.</li>
+          <li><strong>Índice.</strong> Cada categoría es la media geométrica de sus productos, encadenada día a día; el índice general es el promedio ponderado de las categorías. Base 100: 20 de octubre de 2026.</li>
+          <li><strong>Inflación mensual.</strong> Promedio del índice en el mes contra el promedio del mes anterior, como hace el INDEC. El primer mes arranca el 20 de octubre de 2026, así que tiene pocos días.</li>
+          <li><strong>Ranking.</strong> Para cada súper, cuánto se aleja en promedio (media geométrica) del precio del medio (la mediana) de las seis cadenas, con el precio de hoy y solo en productos que están en al menos tres.</li>
+          <li><strong>¿Es comparable con el IPC?</strong> No directamente: mide productos envasados de seis cadenas online, sin frescos, servicios ni regiones, y con pesos propios.</li>
+          <li><strong>Datos.</strong> <a href="datos/precios-hoy.csv" download>precios-hoy.csv</a> trae fecha, tienda, ean (código de barras), producto, categoría, precio (con oferta) y precio_lista (sin oferta). El historial completo está en GitHub.</li>
+        </ul>
+        <p class="cita"><strong>Cómo citar:</strong> «Índice Changuito, relevamiento propio de precios online de supermercados (https://enri-escaray.github.io/indice-changuito/), datos del 21 de octubre de 2026».</p>
+      </details>
+    </div>
+  </section>
 
-  <footer>
-    <h2>Cómo se calcula</h2>
-    <ul>
-      <li>Todos los días se consulta el precio online de cada producto de la canasta en Carrefour, Día, Jumbo, Disco, Vea y Más Online.</li>
-      <li>El índice usa el <strong>precio de lista</strong>, sin promociones temporarias, para medir inflación y no ofertas que empiezan y terminan. Las comparaciones entre supermercados usan el precio que se paga hoy, con promociones.</li>
-      <li>La variación de cada producto es la media geométrica de la variación en cada supermercado. Si un precio falta, se usa el último conocido durante hasta 7 días.</li>
-      <li>Cada categoría promedia sus productos y el índice general pondera las categorías. Las ponderaciones son provisorias.</li>
-      <li>No incluye carnes, frutas ni verduras frescas porque se venden por peso y no tienen un código de barras común.</li>
-    </ul>
-    <p id="repo"></p>
-  </footer>
+  <section class="campo campo-amarillo" id="abierto" aria-labelledby="titulo-abierto">
+    <div class="ancho dos-columnas">
+      <div>
+        <h2 class="titulo" id="titulo-abierto" data-entra>Quién lo hace</h2>
+        <div class="texto lead" data-entra style="--i:1">
+          <p>Lo hace <a href="https://github.com/enri-escaray">Enrique Escaray</a>, de forma independiente: no tiene relación con ningún supermercado ni con el gobierno, y no tiene publicidad ni analíticas.</p>
+          <p>El código y cada precio relevado están abiertos en GitHub, con su historial completo, para que cualquiera pueda revisarlos o usarlos.</p>
+        </div>
+        <div class="abierto-acciones" data-entra style="--i:2">
+          <a class="boton" href="datos/precios-hoy.csv" download>Descargar los precios de hoy</a>
+          <a class="enlace-fuerte" href="https://github.com/enri-escaray/indice-changuito">Ver el código en GitHub</a>
+        </div>
+      </div>
+      <figure class="abierto-foto" data-entra style="--i:2">
+        <img src="img/super-barrio.jpg" width="1280" height="960" loading="lazy" alt="Fachada de un supermercado de barrio con un cartel verde y rojo con un tucán.">
+        <figcaption>Supermercado Tucanguá, en Ruiz de Montoya, Misiones.</figcaption>
+      </figure>
+    </div>
+  </section>
 </main>
 
-<script type="application/json" id="datos">{"repositorio": "https://github.com/enri-escaray/indice-changuito", "actualizado": "2026-10-20", "inicio": "2026-10-20", "dias": 1, "productos_canasta": 49, "precios_hoy": 278, "promos_hoy": 8, "tiendas_hoy": 6, "destacado": {"tipo": "inicio", "valor": 278}, "serie": [{"fecha": "2026-10-20", "valor": 100.0}], "categorias": [{"id": "pan_cereales", "nombre": "Pan, harinas y cereales", "peso": 18.0, "valor": 0.0}, {"id": "lacteos", "nombre": "Lácteos", "peso": 16.0, "valor": 0.0}, {"id": "aceites", "nombre": "Aceites", "peso": 5.0, "valor": 0.0}, {"id": "conservas", "nombre": "Conservas y tomate", "peso": 5.0, "valor": 0.0}, {"id": "azucar_dulces", "nombre": "Azúcar y dulces", "peso": 8.0, "valor": 0.0}, {"id": "almacen", "nombre": "Condimentos y almacén", "peso": 5.0, "valor": 0.0}, {"id": "bebidas", "nombre": "Bebidas sin alcohol", "peso": 11.0, "valor": 0.0}, {"id": "infusiones", "nombre": "Yerba, café y té", "peso": 8.0, "valor": 0.0}, {"id": "limpieza", "nombre": "Limpieza", "peso": 13.0, "valor": 0.0}, {"id": "higiene", "nombre": "Higiene personal", "peso": 11.0, "valor": 0.0}], "mensual": {"meses": ["2026-10"], "dias": [1], "series": [{"id": "general", "nombre": "Índice general", "variaciones": [null]}, {"id": "pan_cereales", "nombre": "Pan, harinas y cereales", "variaciones": [null]}, {"id": "lacteos", "nombre": "Lácteos", "variaciones": [null]}, {"id": "aceites", "nombre": "Aceites", "variaciones": [null]}, {"id": "conservas", "nombre": "Conservas y tomate", "variaciones": [null]}, {"id": "azucar_dulces", "nombre": "Azúcar y dulces", "variaciones": [null]}, {"id": "almacen", "nombre": "Condimentos y almacén", "variaciones": [null]}, {"id": "bebidas", "nombre": "Bebidas sin alcohol", "variaciones": [null]}, {"id": "infusiones", "nombre": "Yerba, café y té", "variaciones": [null]}, {"id": "limpieza", "nombre": "Limpieza", "variaciones": [null]}, {"id": "higiene", "nombre": "Higiene personal", "variaciones": [null]}]}, "tiendas": [{"nombre": "Día", "valor": -2.75}, {"nombre": "Vea", "valor": -1.53}, {"nombre": "Carrefour", "valor": -1.36}, {"nombre": "Más Online", "valor": -0.75}, {"nombre": "Jumbo", "valor": 2.77}, {"nombre": "Disco", "valor": 3.3}], "productos": [{"ean": "7790070336309", "nombre": "Fideos spaghetti Matarazzo 500 g", "categoria": "pan_cereales", "barata": "Vea", "min": 1990.0, "cara": "Día", "max": 2200.0, "brecha": 10.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1990.0, "lista": 1990.0}, {"tienda": "Carrefour", "precio": 2099.0, "lista": 2099.0}, {"tienda": "Jumbo", "precio": 2099.0, "lista": 2099.0}, {"tienda": "Disco", "precio": 2099.0, "lista": 2099.0}, {"tienda": "Más Online", "precio": 2199.0, "lista": 2199.0}, {"tienda": "Día", "precio": 2200.0, "lista": 2200.0}]}, {"ean": "7790070337085", "nombre": "Fideos tirabuzón al huevo Lucchetti 500 g", "categoria": "pan_cereales", "barata": "Vea", "min": 2290.0, "cara": "Disco", "max": 2400.0, "brecha": 4.8, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Vea", "precio": 2290.0, "lista": 2290.0}, {"tienda": "Carrefour", "precio": 2299.0, "lista": 2299.0}, {"tienda": "Más Online", "precio": 2299.0, "lista": 2299.0}, {"tienda": "Jumbo", "precio": 2350.0, "lista": 2350.0}, {"tienda": "Disco", "precio": 2400.0, "lista": 2400.0}]}, {"ean": "7790070431448", "nombre": "Arroz largo fino Gallo 1 kg", "categoria": "pan_cereales", "barata": "Vea", "min": 2390.0, "cara": "Carrefour", "max": 2619.0, "brecha": 9.6, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Vea", "precio": 2390.0, "lista": 2390.0}, {"tienda": "Disco", "precio": 2400.0, "lista": 2400.0}, {"tienda": "Jumbo", "precio": 2400.0, "lista": 2400.0}, {"tienda": "Carrefour", "precio": 2619.0, "lista": 2619.0}, {"tienda": "Más Online", "precio": 2619.0, "lista": 2619.0}]}, {"ean": "7790070431486", "nombre": "Arroz largo fino Lucchetti 1 kg", "categoria": "pan_cereales", "barata": "Carrefour", "min": 2132.0, "cara": "Disco", "max": 2350.0, "brecha": 10.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 2132.0, "lista": 2132.0}, {"tienda": "Día", "precio": 2135.0, "lista": 2135.0}, {"tienda": "Más Online", "precio": 2139.0, "lista": 2139.0}, {"tienda": "Vea", "precio": 2290.0, "lista": 2290.0}, {"tienda": "Jumbo", "precio": 2350.0, "lista": 2350.0}, {"tienda": "Disco", "precio": 2350.0, "lista": 2350.0}]}, {"ean": "7790070562258", "nombre": "Harina 000 Favorita 1 kg", "categoria": "pan_cereales", "barata": "Vea", "min": 990.0, "cara": "Día", "max": 1300.0, "brecha": 31.3, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 990.0, "lista": 990.0}, {"tienda": "Carrefour", "precio": 1299.0, "lista": 1299.0}, {"tienda": "Más Online", "precio": 1299.0, "lista": 1299.0}, {"tienda": "Día", "precio": 1300.0, "lista": 1300.0}, {"tienda": "Jumbo", "precio": 1300.0, "lista": 1300.0}, {"tienda": "Disco", "precio": 1300.0, "lista": 1300.0}]}, {"ean": "7790199000020", "nombre": "Harina 0000 Morixe 1 kg", "categoria": "pan_cereales", "barata": "Más Online", "min": 1299.0, "cara": "Disco", "max": 1650.0, "brecha": 27.0, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 1299.0, "lista": 1559.0}, {"tienda": "Vea", "precio": 1390.0, "lista": 1390.0}, {"tienda": "Carrefour", "precio": 1509.0, "lista": 1509.0}, {"tienda": "Día", "precio": 1509.0, "lista": 1509.0}, {"tienda": "Jumbo", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Disco", "precio": 1650.0, "lista": 1650.0}]}, {"ean": "7793890258769", "nombre": "Pan lactal blanco 315 g", "categoria": "pan_cereales", "barata": "Jumbo", "min": 3400.0, "cara": "Día", "max": 3615.0, "brecha": 6.3, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Jumbo", "precio": 3400.0, "lista": 3400.0}, {"tienda": "Disco", "precio": 3500.0, "lista": 3500.0}, {"tienda": "Vea", "precio": 3590.0, "lista": 3590.0}, {"tienda": "Carrefour", "precio": 3600.0, "lista": 3600.0}, {"tienda": "Más Online", "precio": 3612.0, "lista": 3612.0}, {"tienda": "Día", "precio": 3615.0, "lista": 3615.0}]}, {"ean": "7790040139015", "nombre": "Galletitas Criollitas 499 g", "categoria": "pan_cereales", "barata": "Carrefour", "min": 3389.0, "cara": "Disco", "max": 3700.0, "brecha": 9.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 3389.0, "lista": 3389.0}, {"tienda": "Día", "precio": 3389.0, "lista": 3389.0}, {"tienda": "Más Online", "precio": 3389.0, "lista": 3389.0}, {"tienda": "Vea", "precio": 3490.0, "lista": 3490.0}, {"tienda": "Jumbo", "precio": 3600.0, "lista": 3600.0}, {"tienda": "Disco", "precio": 3700.0, "lista": 3700.0}]}, {"ean": "7622201735296", "nombre": "Galletitas Oreo 118 g", "categoria": "pan_cereales", "barata": "Vea", "min": 2490.0, "cara": "Disco", "max": 2650.0, "brecha": 6.4, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 2490.0, "lista": 2490.0}, {"tienda": "Carrefour", "precio": 2639.0, "lista": 2639.0}, {"tienda": "Más Online", "precio": 2639.0, "lista": 2639.0}, {"tienda": "Día", "precio": 2639.0, "lista": 2639.0}, {"tienda": "Jumbo", "precio": 2650.0, "lista": 2650.0}, {"tienda": "Disco", "precio": 2650.0, "lista": 2650.0}]}, {"ean": "7790580138738", "nombre": "Polenta Presto Pronta 490 g", "categoria": "pan_cereales", "barata": "Día", "min": 1768.0, "cara": "Disco", "max": 1900.0, "brecha": 7.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Día", "precio": 1768.0, "lista": 1768.0}, {"tienda": "Carrefour", "precio": 1769.0, "lista": 1769.0}, {"tienda": "Más Online", "precio": 1769.0, "lista": 1769.0}, {"tienda": "Vea", "precio": 1790.0, "lista": 1790.0}, {"tienda": "Jumbo", "precio": 1900.0, "lista": 1900.0}, {"tienda": "Disco", "precio": 1900.0, "lista": 1900.0}]}, {"ean": "7792170555499", "nombre": "Avena tradicional Quaker 280 g", "categoria": "pan_cereales", "barata": "Día", "min": 2300.0, "cara": "Disco", "max": 2450.0, "brecha": 6.5, "tiendas": 3, "variacion": null, "precios": [{"tienda": "Día", "precio": 2300.0, "lista": 2300.0}, {"tienda": "Disco", "precio": 2450.0, "lista": 2450.0}, {"tienda": "Jumbo", "precio": 2450.0, "lista": 2450.0}]}, {"ean": "7790742348302", "nombre": "Leche entera La Serenísima sachet 1 l", "categoria": "lacteos", "barata": "Vea", "min": 1990.0, "cara": "Jumbo", "max": 2103.0, "brecha": 5.7, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1990.0, "lista": 1990.0}, {"tienda": "Carrefour", "precio": 2049.0, "lista": 2049.0}, {"tienda": "Más Online", "precio": 2049.0, "lista": 2049.0}, {"tienda": "Día", "precio": 2050.0, "lista": 2050.0}, {"tienda": "Disco", "precio": 2094.0, "lista": 2094.0}, {"tienda": "Jumbo", "precio": 2103.0, "lista": 2103.0}]}, {"ean": "7790742335500", "nombre": "Leche entera larga vida La Serenísima 1 l", "categoria": "lacteos", "barata": "Carrefour", "min": 3060.0, "cara": "Jumbo", "max": 3200.0, "brecha": 4.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 3060.0, "lista": 3060.0}, {"tienda": "Día", "precio": 3060.0, "lista": 3060.0}, {"tienda": "Vea", "precio": 3060.0, "lista": 3060.0}, {"tienda": "Más Online", "precio": 3069.0, "lista": 3069.0}, {"tienda": "Disco", "precio": 3100.0, "lista": 3100.0}, {"tienda": "Jumbo", "precio": 3200.0, "lista": 3200.0}]}, {"ean": "7791337010260", "nombre": "Yogur cremoso frutilla La Serenísima", "categoria": "lacteos", "barata": "Carrefour", "min": 1380.0, "cara": "Disco", "max": 1600.0, "brecha": 15.9, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1380.0, "lista": 1380.0}, {"tienda": "Día", "precio": 1380.0, "lista": 1380.0}, {"tienda": "Más Online", "precio": 1389.0, "lista": 1389.0}, {"tienda": "Vea", "precio": 1390.0, "lista": 1390.0}, {"tienda": "Jumbo", "precio": 1550.0, "lista": 1550.0}, {"tienda": "Disco", "precio": 1600.0, "lista": 1600.0}]}, {"ean": "7791337061361", "nombre": "Queso crema Casancrem 290 g", "categoria": "lacteos", "barata": "Vea", "min": 5990.0, "cara": "Más Online", "max": 5999.0, "brecha": 0.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 5990.0, "lista": 5990.0}, {"tienda": "Carrefour", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Disco", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Día", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Jumbo", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Más Online", "precio": 5999.0, "lista": 5999.0}]}, {"ean": "7793940054006", "nombre": "Manteca La Serenísima 200 g", "categoria": "lacteos", "barata": "Vea", "min": 4990.0, "cara": "Más Online", "max": 5019.0, "brecha": 0.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 4990.0, "lista": 4990.0}, {"tienda": "Carrefour", "precio": 5006.67, "lista": 5006.67}, {"tienda": "Disco", "precio": 5010.0, "lista": 5010.0}, {"tienda": "Día", "precio": 5010.0, "lista": 5010.0}, {"tienda": "Jumbo", "precio": 5010.0, "lista": 5010.0}, {"tienda": "Más Online", "precio": 5019.0, "lista": 5019.0}]}, {"ean": "7790742625304", "nombre": "Dulce de leche La Serenísima 400 g", "categoria": "lacteos", "barata": "Vea", "min": 3990.0, "cara": "Disco", "max": 4300.0, "brecha": 7.8, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 3990.0, "lista": 3990.0}, {"tienda": "Carrefour", "precio": 4013.85, "lista": 4013.85}, {"tienda": "Día", "precio": 4015.0, "lista": 4015.0}, {"tienda": "Más Online", "precio": 4019.0, "lista": 4019.0}, {"tienda": "Jumbo", "precio": 4300.0, "lista": 4300.0}, {"tienda": "Disco", "precio": 4300.0, "lista": 4300.0}]}, {"ean": "7790742223005", "nombre": "Queso rallado La Serenísima 70 g", "categoria": "lacteos", "barata": "Vea", "min": 3690.0, "cara": "Carrefour", "max": 3700.0, "brecha": 0.3, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Vea", "precio": 3690.0, "lista": 3690.0}, {"tienda": "Día", "precio": 3697.0, "lista": 3697.0}, {"tienda": "Disco", "precio": 3700.0, "lista": 3700.0}, {"tienda": "Carrefour", "precio": 3700.0, "lista": 3700.0}, {"tienda": "Jumbo", "precio": 3700.0, "lista": 3700.0}]}, {"ean": "7790272001029", "nombre": "Aceite de girasol Natura 1,5 l", "categoria": "aceites", "barata": "Más Online", "min": 5899.0, "cara": "Carrefour", "max": 7469.0, "brecha": 26.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 5899.0, "lista": 7469.0}, {"tienda": "Vea", "precio": 7390.0, "lista": 7390.0}, {"tienda": "Día", "precio": 7460.0, "lista": 7460.0}, {"tienda": "Jumbo", "precio": 7460.0, "lista": 7460.0}, {"tienda": "Disco", "precio": 7463.0, "lista": 7463.0}, {"tienda": "Carrefour", "precio": 7469.0, "lista": 7469.0}]}, {"ean": "7790060023684", "nombre": "Aceite de girasol Cocinero 1,5 l", "categoria": "aceites", "barata": "Vea", "min": 6890.0, "cara": "Disco", "max": 6950.0, "brecha": 0.9, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 6890.0, "lista": 6890.0}, {"tienda": "Carrefour", "precio": 6925.0, "lista": 6925.0}, {"tienda": "Día", "precio": 6925.0, "lista": 6925.0}, {"tienda": "Más Online", "precio": 6929.0, "lista": 6929.0}, {"tienda": "Jumbo", "precio": 6950.0, "lista": 6950.0}, {"tienda": "Disco", "precio": 6950.0, "lista": 6950.0}]}, {"ean": "7790070231871", "nombre": "Aceite de oliva Cocinero 500 ml", "categoria": "aceites", "barata": "Vea", "min": 13590.0, "cara": "Día", "max": 14060.0, "brecha": 3.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 13590.0, "lista": 13590.0}, {"tienda": "Más Online", "precio": 13649.0, "lista": 13649.0}, {"tienda": "Carrefour", "precio": 13650.0, "lista": 13650.0}, {"tienda": "Disco", "precio": 13650.0, "lista": 13650.0}, {"tienda": "Jumbo", "precio": 13650.0, "lista": 13650.0}, {"tienda": "Día", "precio": 14060.0, "lista": 14060.0}]}, {"ean": "7790580146115", "nombre": "Puré de tomate Arcor 520 g", "categoria": "conservas", "barata": "Más Online", "min": 899.0, "cara": "Carrefour", "max": 1220.0, "brecha": 35.7, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 899.0, "lista": 1229.0}, {"tienda": "Día", "precio": 915.0, "lista": 1220.0}, {"tienda": "Vea", "precio": 1190.0, "lista": 1190.0}, {"tienda": "Carrefour", "precio": 1220.0, "lista": 1220.0}, {"tienda": "Jumbo", "precio": 1220.0, "lista": 1220.0}, {"tienda": "Disco", "precio": 1220.0, "lista": 1220.0}]}, {"ean": "7790580567903", "nombre": "Tomate perita Arcor 400 g", "categoria": "conservas", "barata": "Carrefour", "min": 1579.0, "cara": "Jumbo", "max": 1700.0, "brecha": 7.7, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1579.0, "lista": 1579.0}, {"tienda": "Día", "precio": 1582.0, "lista": 1582.0}, {"tienda": "Más Online", "precio": 1589.0, "lista": 1589.0}, {"tienda": "Disco", "precio": 1600.0, "lista": 1600.0}, {"tienda": "Vea", "precio": 1690.0, "lista": 1690.0}, {"tienda": "Jumbo", "precio": 1700.0, "lista": 1700.0}]}, {"ean": "7790580980801", "nombre": "Choclo cremoso Arcor 300 g", "categoria": "conservas", "barata": "Carrefour", "min": 2059.0, "cara": "Jumbo", "max": 2250.0, "brecha": 9.3, "tiendas": 4, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 2059.0, "lista": 2059.0}, {"tienda": "Más Online", "precio": 2069.0, "lista": 2069.0}, {"tienda": "Disco", "precio": 2150.0, "lista": 2150.0}, {"tienda": "Jumbo", "precio": 2250.0, "lista": 2250.0}]}, {"ean": "7792540250450", "nombre": "Azúcar Ledesma 1 kg", "categoria": "azucar_dulces", "barata": "Vea", "min": 1590.0, "cara": "Más Online", "max": 1639.0, "brecha": 3.1, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1590.0, "lista": 1590.0}, {"tienda": "Disco", "precio": 1610.0, "lista": 1610.0}, {"tienda": "Jumbo", "precio": 1613.0, "lista": 1613.0}, {"tienda": "Día", "precio": 1619.0, "lista": 1619.0}, {"tienda": "Carrefour", "precio": 1619.0, "lista": 1619.0}, {"tienda": "Más Online", "precio": 1639.0, "lista": 1639.0}]}, {"ean": "7790580132170", "nombre": "Mermelada de damasco Arcor 454 g", "categoria": "azucar_dulces", "barata": "Vea", "min": 3290.0, "cara": "Disco", "max": 3600.0, "brecha": 9.4, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 3290.0, "lista": 3290.0}, {"tienda": "Día", "precio": 3340.0, "lista": 3340.0}, {"tienda": "Carrefour", "precio": 3345.0, "lista": 3345.0}, {"tienda": "Más Online", "precio": 3349.0, "lista": 3349.0}, {"tienda": "Jumbo", "precio": 3550.0, "lista": 3550.0}, {"tienda": "Disco", "precio": 3600.0, "lista": 3600.0}]}, {"ean": "8445291121881", "nombre": "Cacao Nesquik 360 g", "categoria": "azucar_dulces", "barata": "Carrefour", "min": 5100.0, "cara": "Más Online", "max": 6519.0, "brecha": 27.8, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Día", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Disco", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Jumbo", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Vea", "precio": 5190.0, "lista": 5190.0}, {"tienda": "Más Online", "precio": 6519.0, "lista": 6519.0}]}, {"ean": "7622202328947", "nombre": "Chocolate Milka con leche 55 g", "categoria": "azucar_dulces", "barata": "Día", "min": 5140.0, "cara": "Jumbo", "max": 5450.0, "brecha": 6.0, "tiendas": 4, "variacion": null, "precios": [{"tienda": "Día", "precio": 5140.0, "lista": 5140.0}, {"tienda": "Vea", "precio": 5390.0, "lista": 5390.0}, {"tienda": "Más Online", "precio": 5439.0, "lista": 5439.0}, {"tienda": "Jumbo", "precio": 5450.0, "lista": 5450.0}]}, {"ean": "7790072001014", "nombre": "Sal fina Celusal 500 g", "categoria": "almacen", "barata": "Vea", "min": 1549.0, "cara": "Más Online", "max": 1799.0, "brecha": 16.1, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1549.0, "lista": 1549.0}, {"tienda": "Carrefour", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Jumbo", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Día", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Disco", "precio": 1700.0, "lista": 1700.0}, {"tienda": "Más Online", "precio": 1799.0, "lista": 1799.0}]}, {"ean": "7794000008595", "nombre": "Caldo de verdura Knorr x6", "categoria": "almacen", "barata": "Carrefour", "min": 1869.0, "cara": "Disco", "max": 2100.0, "brecha": 12.4, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1869.0, "lista": 1869.0}, {"tienda": "Más Online", "precio": 1869.0, "lista": 1869.0}, {"tienda": "Día", "precio": 1873.0, "lista": 1873.0}, {"tienda": "Vea", "precio": 1990.0, "lista": 1990.0}, {"tienda": "Jumbo", "precio": 2000.0, "lista": 2000.0}, {"tienda": "Disco", "precio": 2100.0, "lista": 2100.0}]}, {"ean": "7794000006065", "nombre": "Mayonesa Hellmann's 237 g", "categoria": "almacen", "barata": "Carrefour", "min": 1795.0, "cara": "Disco", "max": 2000.0, "brecha": 11.4, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1795.0, "lista": 1795.0}, {"tienda": "Día", "precio": 1795.0, "lista": 1795.0}, {"tienda": "Más Online", "precio": 1799.0, "lista": 1799.0}, {"tienda": "Vea", "precio": 1890.0, "lista": 1890.0}, {"tienda": "Disco", "precio": 2000.0, "lista": 2000.0}]}, {"ean": "7790895000997", "nombre": "Coca-Cola 2,25 l", "categoria": "bebidas", "barata": "Vea", "min": 5990.0, "cara": "Carrefour", "max": 6000.0, "brecha": 0.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 5990.0, "lista": 5990.0}, {"tienda": "Más Online", "precio": 5999.0, "lista": 5999.0}, {"tienda": "Carrefour", "precio": 6000.0, "lista": 6000.0}, {"tienda": "Día", "precio": 6000.0, "lista": 6000.0}, {"tienda": "Jumbo", "precio": 6000.0, "lista": 6000.0}, {"tienda": "Disco", "precio": 6000.0, "lista": 6000.0}]}, {"ean": "7799155000197", "nombre": "Agua mineral Villavicencio 2 l", "categoria": "bebidas", "barata": "Más Online", "min": 2559.0, "cara": "Día", "max": 3200.0, "brecha": 25.0, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 2559.0, "lista": 3199.0}, {"tienda": "Carrefour", "precio": 3199.0, "lista": 3199.0}, {"tienda": "Disco", "precio": 3200.0, "lista": 3200.0}, {"tienda": "Día", "precio": 3200.0, "lista": 3200.0}, {"tienda": "Jumbo", "precio": 3200.0, "lista": 3200.0}]}, {"ean": "7622201705961", "nombre": "Jugo en polvo Tang naranja", "categoria": "bebidas", "barata": "Disco", "min": 586.0, "cara": "Carrefour", "max": 595.0, "brecha": 1.5, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Disco", "precio": 586.0, "lista": 586.0}, {"tienda": "Jumbo", "precio": 588.0, "lista": 588.0}, {"tienda": "Vea", "precio": 590.0, "lista": 590.0}, {"tienda": "Día", "precio": 595.0, "lista": 595.0}, {"tienda": "Carrefour", "precio": 595.0, "lista": 595.0}]}, {"ean": "7790895003295", "nombre": "Agua saborizada Aquarius pera 2,25 l", "categoria": "bebidas", "barata": "Más Online", "min": 3849.0, "cara": "Disco", "max": 4100.0, "brecha": 6.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Más Online", "precio": 3849.0, "lista": 3849.0}, {"tienda": "Carrefour", "precio": 3850.0, "lista": 3850.0}, {"tienda": "Día", "precio": 3850.0, "lista": 3850.0}, {"tienda": "Vea", "precio": 3890.0, "lista": 3890.0}, {"tienda": "Jumbo", "precio": 4100.0, "lista": 4100.0}, {"tienda": "Disco", "precio": 4100.0, "lista": 4100.0}]}, {"ean": "7793704000928", "nombre": "Yerba Playadito 1 kg", "categoria": "infusiones", "barata": "Vea", "min": 5190.0, "cara": "Más Online", "max": 5289.0, "brecha": 1.9, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 5190.0, "lista": 5190.0}, {"tienda": "Disco", "precio": 5202.0, "lista": 5202.0}, {"tienda": "Jumbo", "precio": 5208.0, "lista": 5208.0}, {"tienda": "Día", "precio": 5208.0, "lista": 5208.0}, {"tienda": "Carrefour", "precio": 5209.0, "lista": 5209.0}, {"tienda": "Más Online", "precio": 5289.0, "lista": 5289.0}]}, {"ean": "7790387013610", "nombre": "Yerba Taragüi 1 kg", "categoria": "infusiones", "barata": "Día", "min": 3790.0, "cara": "Disco", "max": 5950.0, "brecha": 57.0, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Día", "precio": 3790.0, "lista": 5747.0}, {"tienda": "Vea", "precio": 5590.0, "lista": 5590.0}, {"tienda": "Carrefour", "precio": 5650.0, "lista": 5650.0}, {"tienda": "Más Online", "precio": 5749.0, "lista": 5749.0}, {"tienda": "Jumbo", "precio": 5950.0, "lista": 5950.0}, {"tienda": "Disco", "precio": 5950.0, "lista": 5950.0}]}, {"ean": "7790150006351", "nombre": "Café molido La Virginia 500 g", "categoria": "infusiones", "barata": "Vea", "min": 14490.0, "cara": "Jumbo", "max": 15450.0, "brecha": 6.6, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Vea", "precio": 14490.0, "lista": 14490.0}, {"tienda": "Carrefour", "precio": 14569.0, "lista": 14569.0}, {"tienda": "Más Online", "precio": 14569.0, "lista": 14569.0}, {"tienda": "Día", "precio": 14575.0, "lista": 14575.0}, {"tienda": "Jumbo", "precio": 15450.0, "lista": 15450.0}]}, {"ean": "7790387800142", "nombre": "Té Taragüi x50", "categoria": "infusiones", "barata": "Vea", "min": 2290.0, "cara": "Disco", "max": 2500.0, "brecha": 9.2, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 2290.0, "lista": 2290.0}, {"tienda": "Carrefour", "precio": 2300.0, "lista": 2300.0}, {"tienda": "Día", "precio": 2300.0, "lista": 2300.0}, {"tienda": "Jumbo", "precio": 2450.0, "lista": 2450.0}, {"tienda": "Más Online", "precio": 2459.0, "lista": 2459.0}, {"tienda": "Disco", "precio": 2500.0, "lista": 2500.0}]}, {"ean": "7790480090006", "nombre": "Mate cocido La Tranquera x25", "categoria": "infusiones", "barata": "Carrefour", "min": 1229.0, "cara": "Disco", "max": 1350.0, "brecha": 9.8, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 1229.0, "lista": 1229.0}, {"tienda": "Más Online", "precio": 1249.0, "lista": 1249.0}, {"tienda": "Día", "precio": 1255.0, "lista": 1255.0}, {"tienda": "Vea", "precio": 1290.0, "lista": 1290.0}, {"tienda": "Jumbo", "precio": 1350.0, "lista": 1350.0}, {"tienda": "Disco", "precio": 1350.0, "lista": 1350.0}]}, {"ean": "7790132098459", "nombre": "Lavandina Ayudín 1 l", "categoria": "limpieza", "barata": "Vea", "min": 1290.0, "cara": "Más Online", "max": 1649.0, "brecha": 27.8, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 1290.0, "lista": 1290.0}, {"tienda": "Carrefour", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Disco", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Día", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Jumbo", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Más Online", "precio": 1649.0, "lista": 1649.0}]}, {"ean": "7790990003039", "nombre": "Detergente Magistral 500 ml", "categoria": "limpieza", "barata": "Vea", "min": 4390.0, "cara": "Disco", "max": 5509.0, "brecha": 25.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 4390.0, "lista": 4390.0}, {"tienda": "Carrefour", "precio": 4559.0, "lista": 4559.0}, {"tienda": "Día", "precio": 4559.0, "lista": 4559.0}, {"tienda": "Disco", "precio": 5509.0, "lista": 5509.0}, {"tienda": "Jumbo", "precio": 5509.0, "lista": 5509.0}, {"tienda": "Más Online", "precio": 5509.0, "lista": 5509.0}]}, {"ean": "7791290796829", "nombre": "Jabón en polvo Ala 800 g", "categoria": "limpieza", "barata": "Vea", "min": 3290.0, "cara": "Disco", "max": 3700.0, "brecha": 12.5, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Vea", "precio": 3290.0, "lista": 3290.0}, {"tienda": "Carrefour", "precio": 3319.0, "lista": 3319.0}, {"tienda": "Día", "precio": 3320.0, "lista": 3320.0}, {"tienda": "Más Online", "precio": 3329.0, "lista": 3329.0}, {"tienda": "Jumbo", "precio": 3650.0, "lista": 3650.0}, {"tienda": "Disco", "precio": 3700.0, "lista": 3700.0}]}, {"ean": "7790250016182", "nombre": "Papel higiénico Higienol x4", "categoria": "limpieza", "barata": "Carrefour", "min": 2499.0, "cara": "Disco", "max": 2800.0, "brecha": 12.0, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 2499.0, "lista": 2499.0}, {"tienda": "Más Online", "precio": 2499.0, "lista": 2499.0}, {"tienda": "Vea", "precio": 2590.0, "lista": 2590.0}, {"tienda": "Día", "precio": 2760.0, "lista": 2760.0}, {"tienda": "Jumbo", "precio": 2800.0, "lista": 2800.0}, {"tienda": "Disco", "precio": 2800.0, "lista": 2800.0}]}, {"ean": "7791290796683", "nombre": "Suavizante Vivere 900 ml", "categoria": "limpieza", "barata": "Carrefour", "min": 2459.25, "cara": "Disco", "max": 3600.0, "brecha": 46.4, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 2459.25, "lista": 3279.0}, {"tienda": "Día", "precio": 3280.0, "lista": 3280.0}, {"tienda": "Más Online", "precio": 3289.0, "lista": 3289.0}, {"tienda": "Vea", "precio": 3400.0, "lista": 3400.0}, {"tienda": "Jumbo", "precio": 3500.0, "lista": 3500.0}, {"tienda": "Disco", "precio": 3600.0, "lista": 3600.0}]}, {"ean": "7891150046481", "nombre": "Jabón de tocador Dove x3", "categoria": "higiene", "barata": "Carrefour", "min": 7655.0, "cara": "Vea", "max": 7890.0, "brecha": 3.1, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Día", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Disco", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Jumbo", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Más Online", "precio": 7659.0, "lista": 7659.0}, {"tienda": "Vea", "precio": 7890.0, "lista": 7890.0}]}, {"ean": "7791293045658", "nombre": "Shampoo Sedal 190 ml", "categoria": "higiene", "barata": "Carrefour", "min": 4275.0, "cara": "Disco", "max": 4800.0, "brecha": 12.3, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 4275.0, "lista": 4275.0}, {"tienda": "Más Online", "precio": 4279.0, "lista": 4279.0}, {"tienda": "Vea", "precio": 4490.0, "lista": 4490.0}, {"tienda": "Jumbo", "precio": 4650.0, "lista": 4650.0}, {"tienda": "Disco", "precio": 4800.0, "lista": 4800.0}]}, {"ean": "7509546686523", "nombre": "Pasta dental Colgate 90 g", "categoria": "higiene", "barata": "Carrefour", "min": 4146.15, "cara": "Disco", "max": 4450.0, "brecha": 7.3, "tiendas": 5, "variacion": null, "precios": [{"tienda": "Carrefour", "precio": 4146.15, "lista": 4146.15}, {"tienda": "Día", "precio": 4150.0, "lista": 4150.0}, {"tienda": "Vea", "precio": 4190.0, "lista": 4190.0}, {"tienda": "Jumbo", "precio": 4350.0, "lista": 4350.0}, {"tienda": "Disco", "precio": 4450.0, "lista": 4450.0}]}, {"ean": "7791293049496", "nombre": "Desodorante Rexona aerosol 150 ml", "categoria": "higiene", "barata": "Día", "min": 3840.0, "cara": "Más Online", "max": 5129.0, "brecha": 33.6, "tiendas": 6, "variacion": null, "precios": [{"tienda": "Día", "precio": 3840.0, "lista": 5120.0}, {"tienda": "Vea", "precio": 4990.0, "lista": 4990.0}, {"tienda": "Disco", "precio": 5119.0, "lista": 5119.0}, {"tienda": "Carrefour", "precio": 5119.0, "lista": 5119.0}, {"tienda": "Jumbo", "precio": 5119.0, "lista": 5119.0}, {"tienda": "Más Online", "precio": 5129.0, "lista": 5129.0}]}]}</script>
+<footer class="campo campo-negro pie">
+  <div class="ancho">
+    <p class="pie-nombre" aria-hidden="true">Índice Changuito</p>
+    <div class="pie-columnas">
+      <div>
+        <h2>Índice Changuito</h2>
+        <p id="actualizado"></p>
+        <p>Se actualiza todos los días al mediodía.</p>
+        <p><a href="#buscar" data-enfocar>Buscar un producto</a></p>
+      </div>
+      <div>
+        <h2>Proyecto</h2>
+        <p>Hecho por <a href="https://github.com/enri-escaray">Enrique Escaray</a>.</p>
+        <p>Código abierto con licencia MIT.</p>
+        <p><a href="https://github.com/enri-escaray/indice-changuito">Ver el código en GitHub</a></p>
+      </div>
+      <div>
+        <h2>Fotos</h2>
+        <p>Changuito: <a href="https://commons.wikimedia.org/wiki/File:Carrito_de_supermercado_sobre_se%C3%B1al%C3%A9tica.JPG">Espumakid</a>, CC BY-SA 3.0.</p>
+        <p>Góndola y supermercado: <a href="https://commons.wikimedia.org/wiki/File:Huevos_casta%C3%B1os_y_huevos_blancos_en_venta_de_g%C3%B3ndola_de_supermercado.jpg">Horacio Cambeiro</a>, CC BY 3.0 y <a href="https://commons.wikimedia.org/wiki/File:Supermercado_%22Tucangu%C3%A1%22_(Ruiz_de_Montoya).jpg">CC BY 4.0</a>.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="aviso" id="aviso" role="status" aria-live="polite"></div>
+
+<script type="application/json" id="datos">{"repositorio": "https://github.com/enri-escaray/indice-changuito", "actualizado": "2026-10-21", "inicio": "2026-10-20", "dias": 2, "productos_canasta": 49, "precios_hoy": 277, "promos_hoy": 14, "tiendas_hoy": 6, "destacado": {"tipo": "acumulada", "valor": 0.33}, "serie": [{"fecha": "2026-10-20", "valor": 100.0}, {"fecha": "2026-10-21", "valor": 100.33}], "categorias": [{"id": "pan_cereales", "nombre": "Pan, harinas y cereales", "productos": 11, "peso": 18.0, "valor": 0.46}, {"id": "lacteos", "nombre": "Lácteos", "productos": 7, "peso": 16.0, "valor": -0.04}, {"id": "aceites", "nombre": "Aceites", "productos": 3, "peso": 5.0, "valor": 0.0}, {"id": "conservas", "nombre": "Conservas y tomate", "productos": 3, "peso": 5.0, "valor": 0.0}, {"id": "azucar_dulces", "nombre": "Azúcar y dulces", "productos": 4, "peso": 8.0, "valor": 2.6}, {"id": "almacen", "nombre": "Condimentos y almacén", "productos": 3, "peso": 5.0, "valor": 0.0}, {"id": "bebidas", "nombre": "Bebidas sin alcohol", "productos": 4, "peso": 11.0, "valor": 0.18}, {"id": "infusiones", "nombre": "Yerba, café y té", "productos": 5, "peso": 8.0, "valor": 0.0}, {"id": "limpieza", "nombre": "Limpieza", "productos": 5, "peso": 13.0, "valor": 0.18}, {"id": "higiene", "nombre": "Higiene personal", "productos": 4, "peso": 11.0, "valor": 0.0}], "mensual": {"meses": ["2026-10"], "dias": [2], "series": [{"id": "general", "nombre": "Índice general", "variaciones": [null]}, {"id": "pan_cereales", "nombre": "Pan, harinas y cereales", "variaciones": [null]}, {"id": "lacteos", "nombre": "Lácteos", "variaciones": [null]}, {"id": "aceites", "nombre": "Aceites", "variaciones": [null]}, {"id": "conservas", "nombre": "Conservas y tomate", "variaciones": [null]}, {"id": "azucar_dulces", "nombre": "Azúcar y dulces", "variaciones": [null]}, {"id": "almacen", "nombre": "Condimentos y almacén", "variaciones": [null]}, {"id": "bebidas", "nombre": "Bebidas sin alcohol", "variaciones": [null]}, {"id": "infusiones", "nombre": "Yerba, café y té", "variaciones": [null]}, {"id": "limpieza", "nombre": "Limpieza", "variaciones": [null]}, {"id": "higiene", "nombre": "Higiene personal", "variaciones": [null]}]}, "tiendas": [{"nombre": "Día", "valor": -8.32}, {"nombre": "Carrefour", "valor": -1.68}, {"nombre": "Más Online", "valor": -1.05}, {"nombre": "Vea", "valor": -0.92}, {"nombre": "Jumbo", "valor": 3.05}, {"nombre": "Disco", "valor": 3.6}], "productos": [{"ean": "7790070336309", "nombre": "Fideos spaghetti Matarazzo 500 g", "categoria": "pan_cereales", "barata": "Vea", "min": 1990.0, "cara": "Día", "max": 2200.0, "brecha": 10.6, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 1990.0, "lista": 1990.0}, {"tienda": "Carrefour", "precio": 2099.0, "lista": 2099.0}, {"tienda": "Jumbo", "precio": 2099.0, "lista": 2099.0}, {"tienda": "Disco", "precio": 2099.0, "lista": 2099.0}, {"tienda": "Más Online", "precio": 2199.0, "lista": 2199.0}, {"tienda": "Día", "precio": 2200.0, "lista": 2200.0}]}, {"ean": "7790070337085", "nombre": "Fideos tirabuzón al huevo Lucchetti 500 g", "categoria": "pan_cereales", "barata": "Vea", "min": 2290.0, "cara": "Disco", "max": 2400.0, "brecha": 4.8, "tiendas": 5, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 2290.0, "lista": 2290.0}, {"tienda": "Carrefour", "precio": 2299.0, "lista": 2299.0}, {"tienda": "Más Online", "precio": 2299.0, "lista": 2299.0}, {"tienda": "Jumbo", "precio": 2350.0, "lista": 2350.0}, {"tienda": "Disco", "precio": 2400.0, "lista": 2400.0}]}, {"ean": "7790070431448", "nombre": "Arroz largo fino Gallo 1 kg", "categoria": "pan_cereales", "barata": "Vea", "min": 2390.0, "cara": "Carrefour", "max": 2619.0, "brecha": 9.6, "tiendas": 5, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 2390.0, "lista": 2390.0}, {"tienda": "Disco", "precio": 2400.0, "lista": 2400.0}, {"tienda": "Jumbo", "precio": 2400.0, "lista": 2400.0}, {"tienda": "Carrefour", "precio": 2619.0, "lista": 2619.0}, {"tienda": "Más Online", "precio": 2619.0, "lista": 2619.0}]}, {"ean": "7790070431486", "nombre": "Arroz largo fino Lucchetti 1 kg", "categoria": "pan_cereales", "barata": "Carrefour", "min": 2132.0, "cara": "Disco", "max": 2350.0, "brecha": 10.2, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 2132.0, "lista": 2132.0}, {"tienda": "Día", "precio": 2135.0, "lista": 2135.0}, {"tienda": "Más Online", "precio": 2139.0, "lista": 2139.0}, {"tienda": "Vea", "precio": 2290.0, "lista": 2290.0}, {"tienda": "Jumbo", "precio": 2350.0, "lista": 2350.0}, {"tienda": "Disco", "precio": 2350.0, "lista": 2350.0}]}, {"ean": "7790070562258", "nombre": "Harina 000 Favorita 1 kg", "categoria": "pan_cereales", "barata": "Vea", "min": 1290.0, "cara": "Día", "max": 1300.0, "brecha": 0.8, "tiendas": 6, "variacion": 4.51, "precios": [{"tienda": "Vea", "precio": 1290.0, "lista": 1290.0}, {"tienda": "Carrefour", "precio": 1299.0, "lista": 1299.0}, {"tienda": "Más Online", "precio": 1299.0, "lista": 1299.0}, {"tienda": "Día", "precio": 1300.0, "lista": 1300.0}, {"tienda": "Jumbo", "precio": 1300.0, "lista": 1300.0}, {"tienda": "Disco", "precio": 1300.0, "lista": 1300.0}]}, {"ean": "7790199000020", "nombre": "Harina 0000 Morixe 1 kg", "categoria": "pan_cereales", "barata": "Más Online", "min": 1299.0, "cara": "Disco", "max": 1650.0, "brecha": 27.0, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Más Online", "precio": 1299.0, "lista": 1559.0}, {"tienda": "Vea", "precio": 1390.0, "lista": 1390.0}, {"tienda": "Carrefour", "precio": 1509.0, "lista": 1509.0}, {"tienda": "Día", "precio": 1509.0, "lista": 1509.0}, {"tienda": "Jumbo", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Disco", "precio": 1650.0, "lista": 1650.0}]}, {"ean": "7793890258769", "nombre": "Pan lactal blanco 315 g", "categoria": "pan_cereales", "barata": "Día", "min": 2350.0, "cara": "Más Online", "max": 3612.0, "brecha": 53.7, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Día", "precio": 2350.0, "lista": 3615.0}, {"tienda": "Jumbo", "precio": 3400.0, "lista": 3400.0}, {"tienda": "Disco", "precio": 3500.0, "lista": 3500.0}, {"tienda": "Vea", "precio": 3590.0, "lista": 3590.0}, {"tienda": "Carrefour", "precio": 3600.0, "lista": 3600.0}, {"tienda": "Más Online", "precio": 3612.0, "lista": 3612.0}]}, {"ean": "7790040139015", "nombre": "Galletitas Criollitas 499 g", "categoria": "pan_cereales", "barata": "Carrefour", "min": 3389.0, "cara": "Disco", "max": 3700.0, "brecha": 9.2, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 3389.0, "lista": 3389.0}, {"tienda": "Día", "precio": 3389.0, "lista": 3389.0}, {"tienda": "Más Online", "precio": 3389.0, "lista": 3389.0}, {"tienda": "Vea", "precio": 3490.0, "lista": 3490.0}, {"tienda": "Jumbo", "precio": 3600.0, "lista": 3600.0}, {"tienda": "Disco", "precio": 3700.0, "lista": 3700.0}]}, {"ean": "7622201735296", "nombre": "Galletitas Oreo 118 g", "categoria": "pan_cereales", "barata": "Día", "min": 1480.0, "cara": "Disco", "max": 2650.0, "brecha": 79.1, "tiendas": 6, "variacion": 0.66, "precios": [{"tienda": "Día", "precio": 1480.0, "lista": 2640.0}, {"tienda": "Vea", "precio": 2590.0, "lista": 2590.0}, {"tienda": "Más Online", "precio": 2639.0, "lista": 2639.0}, {"tienda": "Carrefour", "precio": 2639.0, "lista": 2639.0}, {"tienda": "Jumbo", "precio": 2650.0, "lista": 2650.0}, {"tienda": "Disco", "precio": 2650.0, "lista": 2650.0}]}, {"ean": "7790580138738", "nombre": "Polenta Presto Pronta 490 g", "categoria": "pan_cereales", "barata": "Día", "min": 1768.0, "cara": "Disco", "max": 1900.0, "brecha": 7.5, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Día", "precio": 1768.0, "lista": 1768.0}, {"tienda": "Carrefour", "precio": 1769.0, "lista": 1769.0}, {"tienda": "Más Online", "precio": 1769.0, "lista": 1769.0}, {"tienda": "Vea", "precio": 1790.0, "lista": 1790.0}, {"tienda": "Jumbo", "precio": 1900.0, "lista": 1900.0}, {"tienda": "Disco", "precio": 1900.0, "lista": 1900.0}]}, {"ean": "7792170555499", "nombre": "Avena tradicional Quaker 280 g", "categoria": "pan_cereales", "barata": "Día", "min": 2300.0, "cara": "Disco", "max": 2450.0, "brecha": 6.5, "tiendas": 3, "variacion": 0.0, "precios": [{"tienda": "Día", "precio": 2300.0, "lista": 2300.0}, {"tienda": "Disco", "precio": 2450.0, "lista": 2450.0}, {"tienda": "Jumbo", "precio": 2450.0, "lista": 2450.0}]}, {"ean": "7790742348302", "nombre": "Leche entera La Serenísima sachet 1 l", "categoria": "lacteos", "barata": "Carrefour", "min": 2049.0, "cara": "Día", "max": 2050.0, "brecha": 0.0, "tiendas": 6, "variacion": -0.28, "precios": [{"tienda": "Carrefour", "precio": 2049.0, "lista": 2049.0}, {"tienda": "Más Online", "precio": 2049.0, "lista": 2049.0}, {"tienda": "Disco", "precio": 2050.0, "lista": 2050.0}, {"tienda": "Día", "precio": 2050.0, "lista": 2050.0}, {"tienda": "Jumbo", "precio": 2050.0, "lista": 2050.0}, {"tienda": "Vea", "precio": 2050.0, "lista": 2050.0}]}, {"ean": "7790742335500", "nombre": "Leche entera larga vida La Serenísima 1 l", "categoria": "lacteos", "barata": "Carrefour", "min": 3060.0, "cara": "Jumbo", "max": 3200.0, "brecha": 4.6, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 3060.0, "lista": 3060.0}, {"tienda": "Día", "precio": 3060.0, "lista": 3060.0}, {"tienda": "Vea", "precio": 3060.0, "lista": 3060.0}, {"tienda": "Más Online", "precio": 3069.0, "lista": 3069.0}, {"tienda": "Disco", "precio": 3100.0, "lista": 3100.0}, {"tienda": "Jumbo", "precio": 3200.0, "lista": 3200.0}]}, {"ean": "7791337010260", "nombre": "Yogur cremoso frutilla La Serenísima", "categoria": "lacteos", "barata": "Carrefour", "min": 1380.0, "cara": "Disco", "max": 1600.0, "brecha": 15.9, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 1380.0, "lista": 1380.0}, {"tienda": "Día", "precio": 1380.0, "lista": 1380.0}, {"tienda": "Más Online", "precio": 1389.0, "lista": 1389.0}, {"tienda": "Vea", "precio": 1390.0, "lista": 1390.0}, {"tienda": "Jumbo", "precio": 1550.0, "lista": 1550.0}, {"tienda": "Disco", "precio": 1600.0, "lista": 1600.0}]}, {"ean": "7791337061361", "nombre": "Queso crema Casancrem 290 g", "categoria": "lacteos", "barata": "Día", "min": 3890.0, "cara": "Más Online", "max": 5999.0, "brecha": 54.2, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Día", "precio": 3890.0, "lista": 5995.0}, {"tienda": "Vea", "precio": 5990.0, "lista": 5990.0}, {"tienda": "Disco", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Carrefour", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Jumbo", "precio": 5995.0, "lista": 5995.0}, {"tienda": "Más Online", "precio": 5999.0, "lista": 5999.0}]}, {"ean": "7793940054006", "nombre": "Manteca La Serenísima 200 g", "categoria": "lacteos", "barata": "Vea", "min": 4990.0, "cara": "Más Online", "max": 5019.0, "brecha": 0.6, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 4990.0, "lista": 4990.0}, {"tienda": "Carrefour", "precio": 5006.67, "lista": 5006.67}, {"tienda": "Disco", "precio": 5010.0, "lista": 5010.0}, {"tienda": "Día", "precio": 5010.0, "lista": 5010.0}, {"tienda": "Jumbo", "precio": 5010.0, "lista": 5010.0}, {"tienda": "Más Online", "precio": 5019.0, "lista": 5019.0}]}, {"ean": "7790742625304", "nombre": "Dulce de leche La Serenísima 400 g", "categoria": "lacteos", "barata": "Día", "min": 2609.75, "cara": "Disco", "max": 4300.0, "brecha": 64.8, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Día", "precio": 2609.75, "lista": 4015.0}, {"tienda": "Vea", "precio": 3990.0, "lista": 3990.0}, {"tienda": "Carrefour", "precio": 4013.85, "lista": 4013.85}, {"tienda": "Más Online", "precio": 4019.0, "lista": 4019.0}, {"tienda": "Jumbo", "precio": 4300.0, "lista": 4300.0}, {"tienda": "Disco", "precio": 4300.0, "lista": 4300.0}]}, {"ean": "7790742223005", "nombre": "Queso rallado La Serenísima 70 g", "categoria": "lacteos", "barata": "Vea", "min": 3690.0, "cara": "Carrefour", "max": 3700.0, "brecha": 0.3, "tiendas": 5, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 3690.0, "lista": 3690.0}, {"tienda": "Día", "precio": 3697.0, "lista": 3697.0}, {"tienda": "Disco", "precio": 3700.0, "lista": 3700.0}, {"tienda": "Carrefour", "precio": 3700.0, "lista": 3700.0}, {"tienda": "Jumbo", "precio": 3700.0, "lista": 3700.0}]}, {"ean": "7790272001029", "nombre": "Aceite de girasol Natura 1,5 l", "categoria": "aceites", "barata": "Más Online", "min": 5899.0, "cara": "Carrefour", "max": 7469.0, "brecha": 26.6, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Más Online", "precio": 5899.0, "lista": 7469.0}, {"tienda": "Vea", "precio": 7390.0, "lista": 7390.0}, {"tienda": "Día", "precio": 7460.0, "lista": 7460.0}, {"tienda": "Jumbo", "precio": 7460.0, "lista": 7460.0}, {"tienda": "Disco", "precio": 7463.0, "lista": 7463.0}, {"tienda": "Carrefour", "precio": 7469.0, "lista": 7469.0}]}, {"ean": "7790060023684", "nombre": "Aceite de girasol Cocinero 1,5 l", "categoria": "aceites", "barata": "Vea", "min": 6890.0, "cara": "Disco", "max": 6950.0, "brecha": 0.9, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 6890.0, "lista": 6890.0}, {"tienda": "Carrefour", "precio": 6925.0, "lista": 6925.0}, {"tienda": "Día", "precio": 6925.0, "lista": 6925.0}, {"tienda": "Más Online", "precio": 6929.0, "lista": 6929.0}, {"tienda": "Jumbo", "precio": 6950.0, "lista": 6950.0}, {"tienda": "Disco", "precio": 6950.0, "lista": 6950.0}]}, {"ean": "7790070231871", "nombre": "Aceite de oliva Cocinero 500 ml", "categoria": "aceites", "barata": "Vea", "min": 13590.0, "cara": "Día", "max": 14060.0, "brecha": 3.5, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 13590.0, "lista": 13590.0}, {"tienda": "Más Online", "precio": 13649.0, "lista": 13649.0}, {"tienda": "Carrefour", "precio": 13650.0, "lista": 13650.0}, {"tienda": "Disco", "precio": 13650.0, "lista": 13650.0}, {"tienda": "Jumbo", "precio": 13650.0, "lista": 13650.0}, {"tienda": "Día", "precio": 14060.0, "lista": 14060.0}]}, {"ean": "7790580146115", "nombre": "Puré de tomate Arcor 520 g", "categoria": "conservas", "barata": "Más Online", "min": 899.0, "cara": "Carrefour", "max": 1220.0, "brecha": 35.7, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Más Online", "precio": 899.0, "lista": 1229.0}, {"tienda": "Día", "precio": 915.0, "lista": 1220.0}, {"tienda": "Vea", "precio": 1190.0, "lista": 1190.0}, {"tienda": "Carrefour", "precio": 1220.0, "lista": 1220.0}, {"tienda": "Jumbo", "precio": 1220.0, "lista": 1220.0}, {"tienda": "Disco", "precio": 1220.0, "lista": 1220.0}]}, {"ean": "7790580567903", "nombre": "Tomate perita Arcor 400 g", "categoria": "conservas", "barata": "Carrefour", "min": 1579.0, "cara": "Jumbo", "max": 1700.0, "brecha": 7.7, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 1579.0, "lista": 1579.0}, {"tienda": "Día", "precio": 1582.0, "lista": 1582.0}, {"tienda": "Más Online", "precio": 1589.0, "lista": 1589.0}, {"tienda": "Disco", "precio": 1600.0, "lista": 1600.0}, {"tienda": "Vea", "precio": 1690.0, "lista": 1690.0}, {"tienda": "Jumbo", "precio": 1700.0, "lista": 1700.0}]}, {"ean": "7790580980801", "nombre": "Choclo cremoso Arcor 300 g", "categoria": "conservas", "barata": "Carrefour", "min": 2059.0, "cara": "Jumbo", "max": 2250.0, "brecha": 9.3, "tiendas": 4, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 2059.0, "lista": 2059.0}, {"tienda": "Más Online", "precio": 2069.0, "lista": 2069.0}, {"tienda": "Vea", "precio": 2190.0, "lista": 2190.0}, {"tienda": "Jumbo", "precio": 2250.0, "lista": 2250.0}]}, {"ean": "7792540250450", "nombre": "Azúcar Ledesma 1 kg", "categoria": "azucar_dulces", "barata": "Vea", "min": 1590.0, "cara": "Más Online", "max": 1639.0, "brecha": 3.1, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 1590.0, "lista": 1590.0}, {"tienda": "Disco", "precio": 1610.0, "lista": 1610.0}, {"tienda": "Jumbo", "precio": 1613.0, "lista": 1613.0}, {"tienda": "Día", "precio": 1619.0, "lista": 1619.0}, {"tienda": "Carrefour", "precio": 1619.0, "lista": 1619.0}, {"tienda": "Más Online", "precio": 1639.0, "lista": 1639.0}]}, {"ean": "7790580132170", "nombre": "Mermelada de damasco Arcor 454 g", "categoria": "azucar_dulces", "barata": "Vea", "min": 3290.0, "cara": "Disco", "max": 3600.0, "brecha": 9.4, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 3290.0, "lista": 3290.0}, {"tienda": "Día", "precio": 3340.0, "lista": 3340.0}, {"tienda": "Carrefour", "precio": 3345.0, "lista": 3345.0}, {"tienda": "Más Online", "precio": 3349.0, "lista": 3349.0}, {"tienda": "Jumbo", "precio": 3550.0, "lista": 3550.0}, {"tienda": "Disco", "precio": 3600.0, "lista": 3600.0}]}, {"ean": "8445291121881", "nombre": "Cacao Nesquik 360 g", "categoria": "azucar_dulces", "barata": "Carrefour", "min": 5100.0, "cara": "Disco", "max": 6654.0, "brecha": 30.5, "tiendas": 6, "variacion": 9.27, "precios": [{"tienda": "Carrefour", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Día", "precio": 5100.0, "lista": 5100.0}, {"tienda": "Vea", "precio": 5190.0, "lista": 5190.0}, {"tienda": "Más Online", "precio": 6519.0, "lista": 6519.0}, {"tienda": "Jumbo", "precio": 6654.0, "lista": 6654.0}, {"tienda": "Disco", "precio": 6654.0, "lista": 6654.0}]}, {"ean": "7622202328947", "nombre": "Chocolate Milka con leche 55 g", "categoria": "azucar_dulces", "barata": "Día", "min": 4100.0, "cara": "Más Online", "max": 5439.0, "brecha": 32.7, "tiendas": 3, "variacion": 1.43, "precios": [{"tienda": "Día", "precio": 4100.0, "lista": 5440.0}, {"tienda": "Vea", "precio": 5390.0, "lista": 5390.0}, {"tienda": "Más Online", "precio": 5439.0, "lista": 5439.0}]}, {"ean": "7790072001014", "nombre": "Sal fina Celusal 500 g", "categoria": "almacen", "barata": "Vea", "min": 1549.0, "cara": "Más Online", "max": 1799.0, "brecha": 16.1, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 1549.0, "lista": 1549.0}, {"tienda": "Carrefour", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Jumbo", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Día", "precio": 1650.0, "lista": 1650.0}, {"tienda": "Disco", "precio": 1700.0, "lista": 1700.0}, {"tienda": "Más Online", "precio": 1799.0, "lista": 1799.0}]}, {"ean": "7794000008595", "nombre": "Caldo de verdura Knorr x6", "categoria": "almacen", "barata": "Carrefour", "min": 1869.0, "cara": "Disco", "max": 2100.0, "brecha": 12.4, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 1869.0, "lista": 1869.0}, {"tienda": "Más Online", "precio": 1869.0, "lista": 1869.0}, {"tienda": "Día", "precio": 1873.0, "lista": 1873.0}, {"tienda": "Vea", "precio": 1990.0, "lista": 1990.0}, {"tienda": "Jumbo", "precio": 2000.0, "lista": 2000.0}, {"tienda": "Disco", "precio": 2100.0, "lista": 2100.0}]}, {"ean": "7794000006065", "nombre": "Mayonesa Hellmann's 237 g", "categoria": "almacen", "barata": "Carrefour", "min": 1795.0, "cara": "Disco", "max": 2000.0, "brecha": 11.4, "tiendas": 5, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 1795.0, "lista": 1795.0}, {"tienda": "Día", "precio": 1795.0, "lista": 1795.0}, {"tienda": "Más Online", "precio": 1799.0, "lista": 1799.0}, {"tienda": "Vea", "precio": 1890.0, "lista": 1890.0}, {"tienda": "Disco", "precio": 2000.0, "lista": 2000.0}]}, {"ean": "7790895000997", "nombre": "Coca-Cola 2,25 l", "categoria": "bebidas", "barata": "Vea", "min": 5990.0, "cara": "Carrefour", "max": 6000.0, "brecha": 0.2, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 5990.0, "lista": 5990.0}, {"tienda": "Más Online", "precio": 5999.0, "lista": 5999.0}, {"tienda": "Carrefour", "precio": 6000.0, "lista": 6000.0}, {"tienda": "Día", "precio": 6000.0, "lista": 6000.0}, {"tienda": "Jumbo", "precio": 6000.0, "lista": 6000.0}, {"tienda": "Disco", "precio": 6000.0, "lista": 6000.0}]}, {"ean": "7799155000197", "nombre": "Agua mineral Villavicencio 2 l", "categoria": "bebidas", "barata": "Día", "min": 2100.0, "cara": "Disco", "max": 3200.0, "brecha": 52.4, "tiendas": 5, "variacion": 0.0, "precios": [{"tienda": "Día", "precio": 2100.0, "lista": 3200.0}, {"tienda": "Más Online", "precio": 2559.0, "lista": 3199.0}, {"tienda": "Carrefour", "precio": 3199.0, "lista": 3199.0}, {"tienda": "Disco", "precio": 3200.0, "lista": 3200.0}, {"tienda": "Jumbo", "precio": 3200.0, "lista": 3200.0}]}, {"ean": "7622201705961", "nombre": "Jugo en polvo Tang naranja", "categoria": "bebidas", "barata": "Vea", "min": 590.0, "cara": "Jumbo", "max": 598.0, "brecha": 1.4, "tiendas": 5, "variacion": 0.71, "precios": [{"tienda": "Vea", "precio": 590.0, "lista": 590.0}, {"tienda": "Carrefour", "precio": 595.0, "lista": 595.0}, {"tienda": "Día", "precio": 595.0, "lista": 595.0}, {"tienda": "Disco", "precio": 597.0, "lista": 597.0}, {"tienda": "Jumbo", "precio": 598.0, "lista": 598.0}]}, {"ean": "7790895003295", "nombre": "Agua saborizada Aquarius pera 2,25 l", "categoria": "bebidas", "barata": "Más Online", "min": 3849.0, "cara": "Disco", "max": 4100.0, "brecha": 6.5, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Más Online", "precio": 3849.0, "lista": 3849.0}, {"tienda": "Carrefour", "precio": 3850.0, "lista": 3850.0}, {"tienda": "Día", "precio": 3850.0, "lista": 3850.0}, {"tienda": "Vea", "precio": 3890.0, "lista": 3890.0}, {"tienda": "Jumbo", "precio": 4100.0, "lista": 4100.0}, {"tienda": "Disco", "precio": 4100.0, "lista": 4100.0}]}, {"ean": "7793704000928", "nombre": "Yerba Playadito 1 kg", "categoria": "infusiones", "barata": "Vea", "min": 5190.0, "cara": "Más Online", "max": 5289.0, "brecha": 1.9, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 5190.0, "lista": 5190.0}, {"tienda": "Disco", "precio": 5202.0, "lista": 5202.0}, {"tienda": "Jumbo", "precio": 5208.0, "lista": 5208.0}, {"tienda": "Día", "precio": 5208.0, "lista": 5208.0}, {"tienda": "Carrefour", "precio": 5209.0, "lista": 5209.0}, {"tienda": "Más Online", "precio": 5289.0, "lista": 5289.0}]}, {"ean": "7790387013610", "nombre": "Yerba Taragüi 1 kg", "categoria": "infusiones", "barata": "Día", "min": 3790.0, "cara": "Disco", "max": 5950.0, "brecha": 57.0, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Día", "precio": 3790.0, "lista": 5747.0}, {"tienda": "Vea", "precio": 5590.0, "lista": 5590.0}, {"tienda": "Carrefour", "precio": 5650.0, "lista": 5650.0}, {"tienda": "Más Online", "precio": 5749.0, "lista": 5749.0}, {"tienda": "Jumbo", "precio": 5950.0, "lista": 5950.0}, {"tienda": "Disco", "precio": 5950.0, "lista": 5950.0}]}, {"ean": "7790150006351", "nombre": "Café molido La Virginia 500 g", "categoria": "infusiones", "barata": "Vea", "min": 14490.0, "cara": "Jumbo", "max": 15450.0, "brecha": 6.6, "tiendas": 5, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 14490.0, "lista": 14490.0}, {"tienda": "Carrefour", "precio": 14569.0, "lista": 14569.0}, {"tienda": "Más Online", "precio": 14569.0, "lista": 14569.0}, {"tienda": "Día", "precio": 14575.0, "lista": 14575.0}, {"tienda": "Jumbo", "precio": 15450.0, "lista": 15450.0}]}, {"ean": "7790387800142", "nombre": "Té Taragüi x50", "categoria": "infusiones", "barata": "Vea", "min": 2290.0, "cara": "Disco", "max": 2500.0, "brecha": 9.2, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 2290.0, "lista": 2290.0}, {"tienda": "Carrefour", "precio": 2300.0, "lista": 2300.0}, {"tienda": "Día", "precio": 2300.0, "lista": 2300.0}, {"tienda": "Jumbo", "precio": 2450.0, "lista": 2450.0}, {"tienda": "Más Online", "precio": 2459.0, "lista": 2459.0}, {"tienda": "Disco", "precio": 2500.0, "lista": 2500.0}]}, {"ean": "7790480090006", "nombre": "Mate cocido La Tranquera x25", "categoria": "infusiones", "barata": "Carrefour", "min": 1229.0, "cara": "Disco", "max": 1350.0, "brecha": 9.8, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 1229.0, "lista": 1229.0}, {"tienda": "Más Online", "precio": 1249.0, "lista": 1249.0}, {"tienda": "Día", "precio": 1255.0, "lista": 1255.0}, {"tienda": "Vea", "precio": 1290.0, "lista": 1290.0}, {"tienda": "Jumbo", "precio": 1350.0, "lista": 1350.0}, {"tienda": "Disco", "precio": 1350.0, "lista": 1350.0}]}, {"ean": "7790132098459", "nombre": "Lavandina Ayudín 1 l", "categoria": "limpieza", "barata": "Vea", "min": 1290.0, "cara": "Más Online", "max": 1649.0, "brecha": 27.8, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Vea", "precio": 1290.0, "lista": 1290.0}, {"tienda": "Carrefour", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Disco", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Día", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Jumbo", "precio": 1369.0, "lista": 1369.0}, {"tienda": "Más Online", "precio": 1649.0, "lista": 1649.0}]}, {"ean": "7790990003039", "nombre": "Detergente Magistral 500 ml", "categoria": "limpieza", "barata": "Vea", "min": 4490.0, "cara": "Disco", "max": 5509.0, "brecha": 22.7, "tiendas": 6, "variacion": 0.38, "precios": [{"tienda": "Vea", "precio": 4490.0, "lista": 4490.0}, {"tienda": "Carrefour", "precio": 4559.0, "lista": 4559.0}, {"tienda": "Día", "precio": 4559.0, "lista": 4559.0}, {"tienda": "Disco", "precio": 5509.0, "lista": 5509.0}, {"tienda": "Jumbo", "precio": 5509.0, "lista": 5509.0}, {"tienda": "Más Online", "precio": 5509.0, "lista": 5509.0}]}, {"ean": "7791290796829", "nombre": "Jabón en polvo Ala 800 g", "categoria": "limpieza", "barata": "Carrefour", "min": 3319.0, "cara": "Disco", "max": 3700.0, "brecha": 11.5, "tiendas": 6, "variacion": 0.5, "precios": [{"tienda": "Carrefour", "precio": 3319.0, "lista": 3319.0}, {"tienda": "Día", "precio": 3320.0, "lista": 3320.0}, {"tienda": "Más Online", "precio": 3329.0, "lista": 3329.0}, {"tienda": "Vea", "precio": 3390.0, "lista": 3390.0}, {"tienda": "Jumbo", "precio": 3650.0, "lista": 3650.0}, {"tienda": "Disco", "precio": 3700.0, "lista": 3700.0}]}, {"ean": "7790250016182", "nombre": "Papel higiénico Higienol x4", "categoria": "limpieza", "barata": "Carrefour", "min": 2499.0, "cara": "Disco", "max": 2800.0, "brecha": 12.0, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 2499.0, "lista": 2499.0}, {"tienda": "Más Online", "precio": 2499.0, "lista": 2499.0}, {"tienda": "Vea", "precio": 2590.0, "lista": 2590.0}, {"tienda": "Día", "precio": 2760.0, "lista": 2760.0}, {"tienda": "Jumbo", "precio": 2800.0, "lista": 2800.0}, {"tienda": "Disco", "precio": 2800.0, "lista": 2800.0}]}, {"ean": "7791290796683", "nombre": "Suavizante Vivere 900 ml", "categoria": "limpieza", "barata": "Carrefour", "min": 2459.25, "cara": "Disco", "max": 3600.0, "brecha": 46.4, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 2459.25, "lista": 3279.0}, {"tienda": "Día", "precio": 3280.0, "lista": 3280.0}, {"tienda": "Más Online", "precio": 3289.0, "lista": 3289.0}, {"tienda": "Vea", "precio": 3400.0, "lista": 3400.0}, {"tienda": "Jumbo", "precio": 3500.0, "lista": 3500.0}, {"tienda": "Disco", "precio": 3600.0, "lista": 3600.0}]}, {"ean": "7891150046481", "nombre": "Jabón de tocador Dove x3", "categoria": "higiene", "barata": "Carrefour", "min": 7655.0, "cara": "Vea", "max": 7890.0, "brecha": 3.1, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Día", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Disco", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Jumbo", "precio": 7655.0, "lista": 7655.0}, {"tienda": "Más Online", "precio": 7659.0, "lista": 7659.0}, {"tienda": "Vea", "precio": 7890.0, "lista": 7890.0}]}, {"ean": "7791293045658", "nombre": "Shampoo Sedal 190 ml", "categoria": "higiene", "barata": "Carrefour", "min": 4275.0, "cara": "Disco", "max": 4800.0, "brecha": 12.3, "tiendas": 5, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 4275.0, "lista": 4275.0}, {"tienda": "Más Online", "precio": 4279.0, "lista": 4279.0}, {"tienda": "Vea", "precio": 4490.0, "lista": 4490.0}, {"tienda": "Jumbo", "precio": 4650.0, "lista": 4650.0}, {"tienda": "Disco", "precio": 4800.0, "lista": 4800.0}]}, {"ean": "7509546686523", "nombre": "Pasta dental Colgate 90 g", "categoria": "higiene", "barata": "Carrefour", "min": 4146.15, "cara": "Disco", "max": 4450.0, "brecha": 7.3, "tiendas": 5, "variacion": 0.0, "precios": [{"tienda": "Carrefour", "precio": 4146.15, "lista": 4146.15}, {"tienda": "Día", "precio": 4150.0, "lista": 4150.0}, {"tienda": "Vea", "precio": 4190.0, "lista": 4190.0}, {"tienda": "Jumbo", "precio": 4350.0, "lista": 4350.0}, {"tienda": "Disco", "precio": 4450.0, "lista": 4450.0}]}, {"ean": "7791293049496", "nombre": "Desodorante Rexona aerosol 150 ml", "categoria": "higiene", "barata": "Día", "min": 3840.0, "cara": "Más Online", "max": 5129.0, "brecha": 33.6, "tiendas": 6, "variacion": 0.0, "precios": [{"tienda": "Día", "precio": 3840.0, "lista": 5120.0}, {"tienda": "Vea", "precio": 4990.0, "lista": 4990.0}, {"tienda": "Disco", "precio": 5119.0, "lista": 5119.0}, {"tienda": "Carrefour", "precio": 5119.0, "lista": 5119.0}, {"tienda": "Jumbo", "precio": 5119.0, "lista": 5119.0}, {"tienda": "Más Online", "precio": 5129.0, "lista": 5129.0}]}]}</script>
 <script>
 (() => {
   const D = JSON.parse(document.getElementById("datos").textContent);
+  const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // ---------- formatos ----------
   const numero = (v, d = 1) =>
@@ -271,10 +505,30 @@
   const aFecha = s => new Date(s + "T12:00:00");
   const fechaLarga = s => aFecha(s).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
   const fechaCorta = s => aFecha(s).toLocaleDateString("es-AR", { day: "numeric", month: "short" });
+  const diaYMes = d => d.toLocaleDateString("es-AR", { day: "numeric", month: "long" });
   const mesLargo = s => aFecha(s + "-15").toLocaleDateString("es-AR", { month: "long", year: "numeric" });
   const mesCorto = s => aFecha(s + "-15").toLocaleDateString("es-AR", { month: "short", year: "2-digit" });
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  const vacio = texto => `<p class="vacio">${texto}</p>`;
+
+  const ganador = D.tiendas.length && D.tiendas[0].valor < 0 ? D.tiendas[0] : null;
+  const comparables = D.productos.filter(p => p.tiendas > 1);
+
+  // ---------- héroe y pie ----------
+  if (ganador) {
+    document.getElementById("heroe-texto").insertAdjacentHTML("beforeend",
+      ` Hoy el más barato es <strong>${esc(ganador.nombre)}</strong>.`);
+  }
+  document.getElementById("actualizado").textContent = "Precios del " + fechaLarga(D.actualizado) + ", relevados al mediodía.";
+  // Quién es el más barato en cada producto (pueden empatar varios).
+  const conjuncion = nombres => nombres.length < 2 ? nombres.join("") : nombres.slice(0, -1).join(", ") + " y " + nombres[nombres.length - 1];
+  const masBaratos = p => p.precios.filter(t => Math.abs(t.precio - p.min) < 0.005).map(t => t.tienda);
+
+  // ---------- marquesina: los precios de hoy, de verdad ----------
+  const pista = document.getElementById("marquesina");
+  const tramo = D.productos.slice(0, 14)
+    .map(p => `<span>${esc(p.nombre)}<b>${pesos(p.min)}</b><em>en ${esc(conjuncion(masBaratos(p)))}</em></span>`).join("");
+  pista.innerHTML = tramo + tramo;
+  pista.style.setProperty("--duracion", Math.max(40, D.productos.slice(0, 14).length * 5) + "s");
 
   // ---------- tooltip compartido ----------
   function tooltipEn(contenedor) {
@@ -293,140 +547,30 @@
     };
   }
 
-  // ---------- encabezado y cifra destacada ----------
-  document.getElementById("actualizado").textContent = "Actualizado el " + fechaLarga(D.actualizado);
-
-  const dest = D.destacado;
-  let etiqueta, cifra, nota;
-  if (dest.tipo === "mensual") {
-    etiqueta = "Inflación de " + mesLargo(dest.mes) + (dest.en_curso ? " (mes en curso)" : "");
-    cifra = pct(dest.valor);
-    nota = `Promedio del mes contra el promedio del mes anterior · ${dest.dias} días relevados.`;
-  } else if (dest.tipo === "acumulada") {
-    etiqueta = "Variación desde el " + fechaLarga(D.inicio);
-    cifra = pct(dest.valor);
-    nota = "Todavía no hay dos meses de datos para calcular la inflación mensual.";
-  } else {
-    etiqueta = "Primer relevamiento";
-    cifra = numero(dest.valor, 0) + " precios";
-    nota = `Relevados el ${fechaLarga(D.actualizado)} en ${D.tiendas_hoy} supermercados. El índice arranca en 100 y desde mañana empieza a mostrar cómo cambian los precios.`;
-  }
-  document.getElementById("destacado").innerHTML =
-    `<div class="etiqueta">${etiqueta}</div><div class="cifra">${cifra}</div><p class="nota">${nota}</p>`;
-
-  const ultimo = D.serie[D.serie.length - 1].valor;
-  document.getElementById("cifras").innerHTML = [
-    ["Índice hoy", numero(ultimo, 2)],
-    ["Días relevados", numero(D.dias, 0)],
-    ["Productos en la canasta", numero(D.productos_canasta, 0)],
-    ["Precios relevados hoy", numero(D.precios_hoy, 0)],
-    ["En promoción hoy", numero(D.promos_hoy, 0)],
-  ].map(([e, v]) => `<div class="tarjeta"><div class="etiqueta">${e}</div><div class="valor">${v}</div></div>`).join("");
-
-  // ---------- gráfico de línea ----------
-  function escalaLinda(lo, hi, cantidad) {
-    const crudo = (hi - lo) / cantidad;
-    const pot = Math.pow(10, Math.floor(Math.log10(crudo)));
-    const r = crudo / pot;
-    const paso = pot * (r >= 7.5 ? 10 : r >= 3.5 ? 5 : r >= 1.5 ? 2 : 1);
-    const ticks = [];
-    for (let v = Math.floor(lo / paso) * paso; v <= hi + paso * 1e-9; v += paso) ticks.push(+v.toFixed(10));
-    return ticks;
-  }
-
-  function linea(el, puntos) {
-    if (puntos.length < 2) {
-      el.innerHTML = vacio("El gráfico aparece cuando haya al menos dos días de datos.");
-      return;
-    }
-    const NS = "http://www.w3.org/2000/svg";
-    const dibujar = () => {
-      el.innerHTML = "";
-      const W = el.clientWidth, H = 260, m = { t: 12, r: 56, b: 26, l: 44 };
-      const xs = puntos.map(p => aFecha(p.fecha).getTime());
-      const ys = puntos.map(p => p.valor);
-      const margen = Math.max((Math.max(...ys) - Math.min(...ys)) * 0.1, 0.5);
-      const ticks = escalaLinda(Math.min(...ys, 100) - margen, Math.max(...ys, 100) + margen, 4);
-      const lo = ticks[0], hi = ticks[ticks.length - 1];
-      const x = t => m.l + (t - xs[0]) / (xs[xs.length - 1] - xs[0]) * (W - m.l - m.r);
-      const y = v => m.t + (hi - v) / (hi - lo) * (H - m.t - m.b);
-
-      let svg = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Evolución del índice general">`;
-      for (const t of ticks) {
-        const color = t === 100 ? "var(--eje)" : "var(--grilla)";
-        svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(t)}" y2="${y(t)}" stroke="${color}" stroke-width="1"/>`;
-        svg += `<text x="${m.l - 8}" y="${y(t) + 4}" text-anchor="end">${numero(t, t % 1 ? 1 : 0)}</text>`;
-      }
-      const nx = Math.min(puntos.length, Math.max(2, Math.floor((W - m.l - m.r) / 90)));
-      for (let k = 0; k < nx; k++) {
-        const i = Math.round(k * (puntos.length - 1) / (nx - 1));
-        const anchor = k === 0 ? "start" : k === nx - 1 ? "end" : "middle";
-        svg += `<text x="${x(xs[i])}" y="${H - 6}" text-anchor="${anchor}">${fechaCorta(puntos[i].fecha)}</text>`;
-      }
-      const d = puntos.map((p, i) => (i ? "L" : "M") + x(xs[i]).toFixed(1) + "," + y(p.valor).toFixed(1)).join("");
-      svg += `<path d="${d}" fill="none" stroke="var(--azul)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-      const xf = x(xs[xs.length - 1]), yf = y(ys[ys.length - 1]);
-      svg += `<circle cx="${xf}" cy="${yf}" r="4" fill="var(--azul)" stroke="var(--superficie)" stroke-width="2"/>`;
-      svg += `<text x="${xf + 8}" y="${yf + 4}" style="fill: var(--tinta-2)">${numero(ys[ys.length - 1], 1)}</text>`;
-      svg += `<line class="cruz" y1="${m.t}" y2="${H - m.b}" stroke="var(--eje)" stroke-width="1" visibility="hidden"/>`;
-      svg += `<circle class="punto" r="4" fill="var(--azul)" stroke="var(--superficie)" stroke-width="2" visibility="hidden"/>`;
-      svg += `<rect x="${m.l}" y="0" width="${W - m.l - m.r}" height="${H}" fill="transparent"/>`;
-      svg += "</svg>";
-      el.innerHTML = svg;
-
-      const s = el.querySelector("svg"), cruz = s.querySelector(".cruz"), punto = s.querySelector(".punto");
-      const tip = tooltipEn(el);
-      s.querySelector("rect").addEventListener("pointermove", ev => {
-        const caja = s.getBoundingClientRect();
-        const px = (ev.clientX - caja.left) * (W / caja.width);
-        let i = 0;
-        for (let j = 1; j < xs.length; j++) if (Math.abs(x(xs[j]) - px) < Math.abs(x(xs[i]) - px)) i = j;
-        const cx = x(xs[i]), cy = y(ys[i]);
-        cruz.setAttribute("x1", cx); cruz.setAttribute("x2", cx); cruz.setAttribute("visibility", "visible");
-        punto.setAttribute("cx", cx); punto.setAttribute("cy", cy); punto.setAttribute("visibility", "visible");
-        const variacion = ys[i] - 100;
-        tip.mostrar(
-          `<strong>${numero(ys[i], 2)}</strong> <span class="sec">· ${fechaLarga(puntos[i].fecha)}<br>${pct(variacion)} desde el inicio</span>`,
-          cx * caja.width / W, cy * caja.height / H
-        );
-      });
-      s.querySelector("rect").addEventListener("pointerleave", () => {
-        cruz.setAttribute("visibility", "hidden");
-        punto.setAttribute("visibility", "hidden");
-        tip.ocultar();
-      });
-    };
-    dibujar();
-    let espera;
-    new ResizeObserver(() => { clearTimeout(espera); espera = setTimeout(dibujar, 100); }).observe(el);
-  }
-
-  // ---------- barras divergentes (rojo = sube / más caro, azul = baja / más barato) ----------
+  // ---------- barras divergentes (rojo = sube o más caro, azul = baja o más barato) ----------
   function barras(el, items, detalle, referencias) {
     const valores = items.map(i => i.valor);
     const lo = Math.min(0, ...valores), hi = Math.max(0, ...valores);
     const rango = (hi - lo) || 1;
-    // espacio extra a cada lado para que la etiqueta entre afuera de la barra
-    const dlo = lo < 0 ? lo - rango * 0.3 : 0;
-    const dhi = hi > 0 ? hi + rango * 0.3 : (lo < 0 ? 0 : 1);
+    // En pantallas angostas las etiquetas necesitan más lugar al costado de cada barra.
+    const aire = el.clientWidth < 460 ? 0.95 : 0.32;
+    const dlo = lo < 0 ? lo - rango * aire : 0;
+    const dhi = hi > 0 ? hi + rango * aire : (lo < 0 ? 0 : 1);
     const pos = v => (v - dlo) / (dhi - dlo) * 100;
     const base = pos(0);
     el.innerHTML = `<div class="barras">${items.map((it, i) => {
       const extremo = pos(it.valor);
       const clase = it.valor >= 0 ? "sube" : "baja";
-      const barra = `left:${Math.min(base, extremo)}%;width:${Math.abs(extremo - base)}%`;
-      const etiqueta = it.valor >= 0
-        ? `left:calc(${extremo}% + 6px)`
-        : `right:calc(${100 - extremo}% + 6px)`;
+      const barra = `left:${Math.min(base, extremo)}%;width:${Math.abs(extremo - base)}%;--i:${i}`;
+      const etiqueta = it.valor >= 0 ? `left:calc(${extremo}% + 8px)` : `right:calc(${100 - extremo}% + 8px)`;
       return `<div class="fila" tabindex="0" data-i="${i}">
         <span class="nombre">${esc(it.nombre)}</span>
         <div class="pista"><div class="base" style="left:${base}%"></div>
-          <div class="barra ${clase}" style="${barra}"></div>
+          <div class="barra-dato ${clase}" style="${barra}"></div>
           <span class="valor" style="${etiqueta}">${pct(it.valor)}</span></div>
       </div>`;
     }).join("")}</div>
     <div class="referencias">${referencias.map(([c, t]) => `<span style="--c:var(${c})">${t}</span>`).join("")}</div>`;
-
     const tip = tooltipEn(el);
     el.querySelectorAll(".fila").forEach(fila => {
       const mostrar = () => {
@@ -440,49 +584,167 @@
     });
   }
 
-  linea(document.getElementById("linea"), D.serie);
+  // Barras de una sola serie (peso de cada categoría): un color, sin signo.
+  function barrasSimples(el, items, formato) {
+    const max = Math.max(...items.map(i => i.valor)) || 1;
+    el.innerHTML = `<div class="barras">${items.map((it, i) => `
+      <div class="fila"><span class="nombre">${esc(it.nombre)}</span>
+        <div class="pista"><div class="barra-dato neutra" style="left:0;width:${it.valor / max * 78}%;--i:${i}"></div>
+          <span class="valor" style="left:calc(${it.valor / max * 78}% + 8px)">${formato(it)}</span></div></div>`).join("")}</div>`;
+  }
 
-  barras(
-    document.getElementById("tiendas"),
-    D.tiendas,
-    t => `<strong>${esc(t.nombre)}</strong> <span class="sec">· ${t.valor < 0 ? "más barato" : "más caro"} que la mediana: ${pct(t.valor)}</span>`,
-    [["--azul", "Más barato que la mediana"], ["--rojo", "Más caro que la mediana"]]
-  );
-
-  const elCategorias = document.getElementById("categorias");
-  document.getElementById("bajada-categorias").textContent =
-    "Variación acumulada desde el " + fechaLarga(D.inicio) + ".";
-  if (D.dias < 2) {
-    elCategorias.innerHTML = vacio("Las variaciones por categoría aparecen a partir del segundo día de datos.");
-  } else {
+  // ---------- ranking ----------
+  if (D.tiendas.length) {
+    document.getElementById("ranking-ganador").textContent = ganador
+      ? `Hoy el más barato es ${ganador.nombre}`
+      : "Hoy los precios están parejos";
+    if (ganador) {
+      const ahorro = Math.round(Math.abs(ganador.valor) * 10);
+      document.getElementById("ranking-texto").textContent =
+        `En promedio, por cada $ 1.000 de compra gastás unos $ ${ahorro} menos que en un súper típico. ` +
+        "Comparamos los mismos productos en las seis cadenas, con lo que se paga hoy en cada web, ofertas incluidas.";
+    }
     barras(
-      elCategorias,
-      [...D.categorias].sort((a, b) => b.valor - a.valor),
-      c => `<strong>${esc(c.nombre)}</strong> <span class="sec">· ${pct(c.valor)} · pesa ${numero(c.peso, 1)} % en el índice</span>`,
-      [["--rojo", "Subió"], ["--azul", "Bajó"]]
+      document.getElementById("tiendas"),
+      D.tiendas,
+      t => `<strong>${esc(t.nombre)}</strong>: ${numero(Math.abs(t.valor), 1)} % ${t.valor < 0 ? "más barato" : "más caro"} que un súper típico (el precio del medio entre las seis cadenas).`,
+      [["--baja", "Más barato que un súper típico"], ["--sube", "Más caro que un súper típico"]]
     );
   }
 
-  // ---------- tabla mensual ----------
+  // ---------- índice ----------
+  const dest = D.destacado;
+  const elCifra = document.getElementById("indice-cifra");
+  const elEtiqueta = document.getElementById("indice-etiqueta");
+  const elTexto = document.getElementById("indice-texto");
+  const manana = new Date(aFecha(D.actualizado).getTime() + 864e5);
+  const fin = aFecha(D.actualizado);
+  const proximoMes = new Date(fin.getFullYear(), fin.getMonth() + 1, 1);
+  const finProximoMes = new Date(fin.getFullYear(), fin.getMonth() + 2, 0);
+  const nombreMes = d => d.toLocaleDateString("es-AR", { month: "long" });
+  if (dest.tipo === "mensual") {
+    elCifra.textContent = pct(dest.valor);
+    elEtiqueta.textContent = "Inflación de " + mesLargo(dest.mes) + (dest.en_curso ? ", mes en curso" : "");
+    elTexto.textContent = `Promedio del mes contra el del mes anterior, con ${dest.dias} días relevados. El índice arrancó en 100 el ${fechaLarga(D.inicio)}.`;
+  } else if (dest.tipo === "acumulada") {
+    elCifra.textContent = pct(dest.valor);
+    elEtiqueta.textContent = "Desde el " + fechaLarga(D.inicio);
+    elTexto.textContent = `El índice arrancó en 100. Hoy marca ${numero(D.serie[D.serie.length - 1].valor, 2)}: la canasta está ${numero(Math.abs(dest.valor), 1)} % ${dest.valor >= 0 ? "más cara" : "más barata"}.`;
+  } else {
+    elCifra.textContent = "100";
+    elEtiqueta.textContent = "Arranque del índice, el " + fechaLarga(D.inicio);
+    elTexto.textContent = "Hoy empezamos a medir. Si mañana marca 101, la canasta está 1 % más cara. Cada día al mediodía se suma un dato.";
+  }
+
+  const panel = document.getElementById("indice-panel");
+  if (D.serie.length >= 2) {
+    panel.innerHTML = `<h3>Índice general, base 100</h3><div class="grafico" id="linea"></div>`;
+    linea(document.getElementById("linea"), D.serie);
+  } else {
+    panel.innerHTML = `<h3>Lo que viene</h3><ol class="que-viene">
+      <li><strong>${diaYMes(manana)}, 12 h</strong>La primera variación: cuánto cambió cada producto y cada categoría.</li>
+      <li><strong>${diaYMes(finProximoMes)}</strong>La primera inflación mensual completa: todo ${nombreMes(proximoMes)} contra ${nombreMes(fin)}. Desde el ${diaYMes(proximoMes)} vas a ver cómo viene el mes.</li>
+      <li><strong>Todos los días</strong>El ranking de supermercados y el precio de cada producto, actualizados.</li>
+    </ol>`;
+  }
+
+  const elCategorias = document.getElementById("categorias");
+  if (D.dias >= 2) {
+    document.getElementById("titulo-categorias").textContent = "Cuánto cambió cada categoría desde el " + fechaCorta(D.inicio);
+    barras(
+      elCategorias,
+      [...D.categorias].sort((a, b) => b.valor - a.valor),
+      c => `<strong>${esc(c.nombre)}</strong>: ${pct(c.valor)}. Pesa ${numero(c.peso, 1)} % en el índice.`,
+      [["--sube", "Subió"], ["--baja", "Bajó"]]
+    );
+  } else {
+    document.getElementById("titulo-categorias").textContent = "Qué lleva el changuito";
+    barrasSimples(elCategorias, [...D.categorias].sort((a, b) => b.peso - a.peso).map(c => ({ nombre: c.nombre, valor: c.peso, productos: c.productos })),
+      c => `${numero(c.valor, 0)} %`);
+    elCategorias.insertAdjacentHTML("beforebegin", `<p class="nota-panel">${D.productos_canasta} productos en ${D.categorias.length} categorías. Cada barra es el peso de la categoría en el índice.</p>`);
+  }
+
   const M = D.mensual;
-  const conDatos = M.meses.map((_, j) => M.series[0].variaciones[j] !== null);
-  const columnas = M.meses.map((m, j) => j).filter(j => conDatos[j]).slice(-12);
+  const columnas = M.meses.map((_, j) => j).filter(j => M.series[0].variaciones[j] !== null).slice(-12);
+  const elMensual = document.getElementById("mensual");
   if (!columnas.length) {
-    document.getElementById("mensual").innerHTML =
-      vacio("La primera inflación mensual aparece cuando haya datos de dos meses distintos.");
+    elMensual.innerHTML = `<p>La primera inflación mensual completa sale el ${diaYMes(finProximoMes)}, cuando se pueda comparar todo ${nombreMes(proximoMes)} con ${nombreMes(fin)}. Desde el ${diaYMes(proximoMes)} se ve cómo viene el mes.</p>`;
   } else {
     const cab = columnas.map(j => `<th class="num">${mesCorto(M.meses[j])}</th>`).join("");
     const filas = M.series.map(s =>
       `<tr class="${s.id === "general" ? "general" : ""}"><td>${esc(s.nombre)}</td>${
         columnas.map(j => `<td class="num">${s.variaciones[j] === null ? "–" : pct(s.variaciones[j])}</td>`).join("")
       }</tr>`).join("");
-    document.getElementById("mensual").innerHTML =
-      `<div class="tabla-scroll"><table><thead><tr><th>Serie</th>${cab}</tr></thead><tbody>${filas}</tbody></table></div>`;
+    elMensual.innerHTML = `<div class="tabla-scroll"><table><thead><tr><th>Serie</th>${cab}</tr></thead><tbody>${filas}</tbody></table></div>`;
+  }
+
+  // ---------- gráfico de línea ----------
+  function escalaLinda(lo, hi, cantidad) {
+    const crudo = (hi - lo) / cantidad;
+    const pot = Math.pow(10, Math.floor(Math.log10(crudo)));
+    const r = crudo / pot;
+    const paso = pot * (r >= 7.5 ? 10 : r >= 3.5 ? 5 : r >= 1.5 ? 2 : 1);
+    const ticks = [];
+    for (let v = Math.floor(lo / paso) * paso; v <= hi + paso * 1e-9; v += paso) ticks.push(+v.toFixed(10));
+    return ticks;
+  }
+
+  function linea(el, puntos) {
+    const dibujar = () => {
+      el.innerHTML = "";
+      const W = el.clientWidth, H = 280, m = { t: 12, r: 56, b: 28, l: 44 };
+      const xs = puntos.map(p => aFecha(p.fecha).getTime());
+      const ys = puntos.map(p => p.valor);
+      const margen = Math.max((Math.max(...ys) - Math.min(...ys)) * 0.1, 0.5);
+      const ticks = escalaLinda(Math.min(...ys, 100) - margen, Math.max(...ys, 100) + margen, 4);
+      const lo = ticks[0], hi = ticks[ticks.length - 1];
+      const x = t => m.l + (t - xs[0]) / (xs[xs.length - 1] - xs[0]) * (W - m.l - m.r);
+      const y = v => m.t + (hi - v) / (hi - lo) * (H - m.t - m.b);
+      let svg = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Evolución del índice general">`;
+      for (const t of ticks) {
+        svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(t)}" y2="${y(t)}" stroke="currentColor" stroke-opacity="${t === 100 ? 0.45 : 0.15}" stroke-width="1"/>`;
+        svg += `<text x="${m.l - 8}" y="${y(t) + 4}" text-anchor="end">${numero(t, t % 1 ? 1 : 0)}</text>`;
+      }
+      const nx = Math.min(puntos.length, Math.max(2, Math.floor((W - m.l - m.r) / 90)));
+      for (let k = 0; k < nx; k++) {
+        const i = Math.round(k * (puntos.length - 1) / (nx - 1));
+        const anchor = k === 0 ? "start" : k === nx - 1 ? "end" : "middle";
+        svg += `<text x="${x(xs[i])}" y="${H - 6}" text-anchor="${anchor}">${fechaCorta(puntos[i].fecha)}</text>`;
+      }
+      const d = puntos.map((p, i) => (i ? "L" : "M") + x(xs[i]).toFixed(1) + "," + y(p.valor).toFixed(1)).join("");
+      svg += `<path d="${d}" fill="none" stroke="var(--amarillo)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+      const xf = x(xs[xs.length - 1]), yf = y(ys[ys.length - 1]);
+      svg += `<circle cx="${xf}" cy="${yf}" r="5" fill="var(--amarillo)" stroke="var(--panel)" stroke-width="2"/>`;
+      svg += `<text x="${xf + 10}" y="${yf + 4}" style="opacity:1;font-weight:700">${numero(ys[ys.length - 1], 1)}</text>`;
+      svg += `<line class="cruz" y1="${m.t}" y2="${H - m.b}" stroke="currentColor" stroke-opacity="0.5" stroke-width="1" visibility="hidden"/>`;
+      svg += `<circle class="punto" r="5" fill="var(--amarillo)" stroke="var(--panel)" stroke-width="2" visibility="hidden"/>`;
+      svg += `<rect x="${m.l}" y="0" width="${W - m.l - m.r}" height="${H}" fill="transparent"/></svg>`;
+      el.innerHTML = svg;
+      const s = el.querySelector("svg"), cruz = s.querySelector(".cruz"), punto = s.querySelector(".punto");
+      const tip = tooltipEn(el);
+      s.querySelector("rect").addEventListener("pointermove", ev => {
+        const caja = s.getBoundingClientRect();
+        const px = (ev.clientX - caja.left) * (W / caja.width);
+        let i = 0;
+        for (let j = 1; j < xs.length; j++) if (Math.abs(x(xs[j]) - px) < Math.abs(x(xs[i]) - px)) i = j;
+        const cx = x(xs[i]), cy = y(ys[i]);
+        cruz.setAttribute("x1", cx); cruz.setAttribute("x2", cx); cruz.setAttribute("visibility", "visible");
+        punto.setAttribute("cx", cx); punto.setAttribute("cy", cy); punto.setAttribute("visibility", "visible");
+        tip.mostrar(`<strong>${numero(ys[i], 2)}</strong> el ${fechaLarga(puntos[i].fecha)}. ${pct(ys[i] - 100)} desde el inicio.`,
+          cx * caja.width / W, cy * caja.height / H);
+      });
+      s.querySelector("rect").addEventListener("pointerleave", () => {
+        cruz.setAttribute("visibility", "hidden"); punto.setAttribute("visibility", "hidden"); tip.ocultar();
+      });
+    };
+    dibujar();
+    let espera;
+    new ResizeObserver(() => { clearTimeout(espera); espera = setTimeout(dibujar, 100); }).observe(el);
   }
 
   // ---------- buscador de productos ----------
   const nombreCategoria = Object.fromEntries(D.categorias.map(c => [c.id, c.nombre]));
-  const sinTildes = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const sinTildes = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const enPromo = t => t.lista !== null && t.precio < t.lista - 0.005;
   const productos = D.productos.map((p, i) => ({
     ...p,
@@ -493,84 +755,135 @@
   }));
   const hayAumentos = D.dias > 1;
   const ORDENES = {
-    categoria: (a, b) => a.orden - b.orden,
     diferencia: (a, b) => b.brecha - a.brecha,
     precio: (a, b) => a.min - b.min,
+    categoria: (a, b) => a.orden - b.orden,
     aumento: (a, b) => (b.variacion ?? -Infinity) - (a.variacion ?? -Infinity),
   };
+  const POR_DEFECTO = "diferencia";
+  // En el celular, menos filas de entrada para que el buscador no ocupe varias pantallas.
+  const VISTA_CORTA = innerWidth < 600 ? 5 : 8;
 
   const elQ = document.getElementById("q");
   const elChips = document.getElementById("chips");
   const elOrden = document.getElementById("orden");
   const elLista = document.getElementById("productos");
   const elContador = document.getElementById("contador");
+  const elOfertas = document.getElementById("solo-ofertas");
+  // Palabras que el buscador entiende como "mostrame lo que está en oferta".
+  const PALABRAS_OFERTA = new Set(["oferta", "ofertas", "promo", "promos", "promocion", "promociones", "descuento", "descuentos"]);
   if (!hayAumentos) elOrden.querySelector('[value="aumento"]').remove();
 
-  const comparables = productos.filter(p => p.tiendas > 1);
-  const mayor = comparables.reduce((a, b) => (b.brecha > a.brecha ? b : a), comparables[0]);
+  // La brecha que se anuncia se mide sin ofertas, para que una promo puntual no la infle.
+  const brechaLista = p => {
+    const listas = p.precios.map(t => t.lista ?? t.precio);
+    return (Math.max(...listas) / Math.min(...listas) - 1) * 100;
+  };
+  const brechaMaxima = comparables.length ? Math.max(...comparables.map(brechaLista)) : 0;
   document.getElementById("bajada-productos").textContent =
-    `Los ${productos.length} productos de la canasta, con su precio en cada supermercado.` +
-    (mayor ? ` El mismo producto puede costar hasta ${numero(mayor.brecha, 0)} % más según dónde lo compres.` : "");
+    `Los ${productos.length} productos de la canasta con su precio en cada súper.` +
+    (brechaMaxima ? ` Sin contar ofertas, el mismo producto llega a costar hasta ${numero(brechaMaxima, 0)} % más según dónde lo compres.` : "");
 
   // El estado vive en la URL (#q=yerba&cat=infusiones&promo=1) para poder compartir una búsqueda.
-  const estado = { q: "", cat: "", promo: false, orden: "categoria" };
+  const estado = { q: "", cat: "", promo: false, orden: POR_DEFECTO, todos: false };
   function leerUrl() {
     const url = new URLSearchParams(location.hash.slice(1));
     const orden = url.get("orden");
     estado.q = url.get("q") || "";
     estado.cat = nombreCategoria[url.get("cat")] ? url.get("cat") : "";
     estado.promo = url.get("promo") === "1";
-    estado.orden = ORDENES[orden] && (orden !== "aumento" || hayAumentos) ? orden : "categoria";
+    estado.orden = ORDENES[orden] && (orden !== "aumento" || hayAumentos) ? orden : POR_DEFECTO;
     elQ.value = estado.q;
     elOrden.value = estado.orden;
   }
-  leerUrl();
+  const hayFiltros = () => Boolean(estado.q || estado.cat || estado.promo);
 
   function guardarEnUrl() {
     const p = new URLSearchParams();
     if (estado.q) p.set("q", estado.q);
     if (estado.cat) p.set("cat", estado.cat);
     if (estado.promo) p.set("promo", "1");
-    if (estado.orden !== "categoria") p.set("orden", estado.orden);
+    if (estado.orden !== POR_DEFECTO) p.set("orden", estado.orden);
     const hash = p.toString();
     history.replaceState(null, "", hash ? "#" + hash : location.pathname + location.search);
   }
 
-  function dibujarChips() {
-    const cuantos = id => productos.filter(p => p.categoria === id).length;
-    const opciones = [["", "Todas", productos.length], ...D.categorias.map(c => [c.id, c.nombre, cuantos(c.id)])];
+  const coincide = (p, palabras) => palabras.every(w => (PALABRAS_OFERTA.has(w) ? p.promo : p.texto.includes(w)));
+
+  function dibujarChips(palabras) {
+    const base = productos.filter(p => coincide(p, palabras) && (!estado.promo || p.promo));
+    const cuantos = id => base.filter(p => !id || p.categoria === id).length;
+    const opciones = [["", "Todas"], ...D.categorias.map(c => [c.id, c.nombre])];
+    const ofertas = productos.filter(p => coincide(p, palabras) && p.promo && (!estado.cat || p.categoria === estado.cat)).length;
     elChips.innerHTML =
-      opciones.map(([id, nombre, n]) =>
-        `<button type="button" class="chip" data-cat="${id}" aria-pressed="${estado.cat === id}">${esc(nombre)}<span class="n">${n}</span></button>`
-      ).join("") +
-      `<span class="separador" aria-hidden="true"></span>` +
-      `<button type="button" class="chip" data-promo aria-pressed="${estado.promo}">En promoción<span class="n">${productos.filter(p => p.promo).length}</span></button>`;
+      opciones.map(([id, nombre]) =>
+        `<button type="button" class="chip" data-cat="${id}" aria-pressed="${estado.cat === id}">${esc(nombre)}<span class="n">${cuantos(id)}</span></button>`
+      ).join("");
+    elOfertas.setAttribute("aria-pressed", String(estado.promo));
+    elOfertas.querySelector(".n").textContent = ofertas;
   }
 
   function filaPorTienda(t, mejor) {
     const promo = enPromo(t);
+    const leer = promo
+      ? `<span class="oculto">${esc(t.tienda)}: ${pesos(t.precio)} con oferta del ${numero((1 - t.precio / t.lista) * 100, 0)} %, sin oferta ${pesos(t.lista)}.</span>`
+      : "";
     return `<li class="${mejor ? "mejor" : ""}">
-        <span>${esc(t.tienda)}${mejor ? '<span class="marca">más barato</span>' : ""}</span>
-        <span class="valor">${promo ? `<s>${pesos(t.lista)}</s>` : ""}${pesos(t.precio)}${
-          promo ? `<span class="marca">promo ${pct((t.precio / t.lista - 1) * 100, 0)}</span>` : ""}</span>
+        <span>${esc(t.tienda)}${mejor ? '<span class="marca-chica">Más barato</span>' : ""}</span>
+        <span class="valor" ${promo ? 'aria-hidden="true"' : ""}>${promo ? `<s>${pesos(t.lista)}</s>` : ""}${pesos(t.precio)}${
+          promo ? `<span class="marca-chica promo">Oferta ${pct((t.precio / t.lista - 1) * 100, 0)}</span>` : ""}</span>${leer}
       </li>`;
   }
 
   function filaProducto(p) {
-    const partes = [esc(nombreCategoria[p.categoria])];
-    partes.push(p.tiendas > 1
-      ? `${p.tiendas} súper · hasta ${numero(p.brecha, 0)} % más caro en ${esc(p.cara)}`
-      : `solo en ${esc(p.barata)}`);
-    if (p.variacion !== null && p.variacion !== undefined) partes.push(`${pct(p.variacion)} desde el ${fechaCorta(D.inicio)}`);
+    const baratos = masBaratos(p);
+    const ofertaEnElMejor = p.precios.some(t => baratos.includes(t.tienda) && enPromo(t));
+    const conOferta = p.precios.filter(enPromo).map(t => t.tienda).filter(n => !baratos.includes(n));
+    let meta = nombreCategoria[p.categoria] + ". ";
+    meta += p.tiendas > 1
+      ? (baratos.length === p.tiendas ? "Mismo precio en todos." : `Más caro en ${p.cara}: ${pesos(p.max)}.`)
+      : `Hoy solo en ${p.barata}.`;
+    if (conOferta.length) meta += ` Hay oferta en ${conjuncion(conOferta)}.`;
+    if (p.variacion !== null && p.variacion !== undefined) meta += ` ${pct(p.variacion)} desde el ${fechaCorta(D.inicio)}.`;
+    const detalle = p.tiendas > 1
+      ? `<ul class="por-tienda">${p.precios.map(t => filaPorTienda(t, baratos.length < p.tiendas && baratos.includes(t.tienda))).join("")}</ul>`
+      : `<ul class="por-tienda">${filaPorTienda(p.precios[0], false)}<li>Hoy no aparece en las otras cadenas, así que no hay con qué compararlo.</li></ul>`;
     return `<li><details>
         <summary>
-          <div><div class="nombre">${esc(p.nombre)}</div><div class="meta">${partes.join(" · ")}</div></div>
-          <div class="desde"><strong>${pesos(p.min)}</strong><span>en ${esc(p.barata)}</span></div>
-          <svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+          <div><div class="nombre">${esc(p.nombre)}</div><div class="meta">${esc(meta)}</div></div>
+          <div class="desde"><span class="precio-grande">${pesos(p.min)}</span><span class="donde">en ${esc(conjuncion(baratos))}</span>${
+            ofertaEnElMejor ? '<span class="marca-chica promo">Oferta</span>' : ""}</div>
+          <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>
         </summary>
-        <ul class="por-tienda">${p.precios.map((t, i) => filaPorTienda(t, i === 0 && p.tiendas > 1)).join("")}</ul>
+        ${detalle}
         <p class="ean">Código de barras ${esc(p.ean)}</p>
       </details></li>`;
+  }
+
+  function sinResultados() {
+    const cat = estado.cat ? nombreCategoria[estado.cat] : "";
+    let texto, boton, accion;
+    if (estado.promo) {
+      texto = estado.q
+        ? `Hoy no hay “${estado.q}” en oferta${cat ? ` en ${cat}` : ""}.`
+        : (cat ? `Hoy no hay productos de ${cat} en oferta.` : "Hoy no hay productos en oferta. Las ofertas se revisan todos los días al mediodía.");
+      boton = "Quitar el filtro de ofertas"; accion = "promo";
+    } else if (sinTildes(estado.q).split(/\s+/).some(w => PALABRAS_OFERTA.has(w))) {
+      // Buscó algo "en oferta": la respuesta es que hoy no hay, no que no existe.
+      const loBuscado = estado.q.split(/\s+/).filter(w => !PALABRAS_OFERTA.has(sinTildes(w))).join(" ");
+      texto = loBuscado ? `Hoy no hay “${loBuscado}” en oferta.` : "Hoy no hay productos en oferta.";
+      boton = "Ver todas las ofertas"; accion = "ofertas";
+    } else if (estado.cat) {
+      texto = `No encontramos “${estado.q}” en ${cat}.`;
+      boton = "Buscar en todas las categorías"; accion = "cat";
+    } else {
+      texto = `No encontramos “${estado.q}” entre los ${productos.length} productos de la canasta. Probá con otra palabra, una marca o el código de barras.`;
+      if (/carne|pollo|asado|fruta|verdura|tomate fresco|papa|cebolla|banana|manzana/.test(sinTildes(estado.q))) {
+        texto += " La canasta no incluye carnes, frutas ni verduras frescas porque se venden por peso y no tienen un código de barras común.";
+      }
+      boton = "Ver todos los productos"; accion = "todo";
+    }
+    return `<li class="sin-resultados"><p>${esc(texto)}</p><button type="button" class="boton" data-limpiar="${accion}">${boton}</button></li>`;
   }
 
   function actualizar() {
@@ -579,20 +892,21 @@
     const enNombre = p => palabras.every(w => p.textoNombre.includes(w));
     const visibles = productos
       .filter(p => (!estado.cat || p.categoria === estado.cat) && (!estado.promo || p.promo))
-      .filter(p => palabras.every(w => p.texto.includes(w)))
+      .filter(p => coincide(p, palabras))
       .sort((a, b) => enNombre(b) - enNombre(a) || ORDENES[estado.orden](a, b));
-    elContador.textContent = visibles.length === productos.length
-      ? `${productos.length} productos`
-      : `${visibles.length} de ${productos.length} productos`;
-    if (visibles.length) {
-      elLista.innerHTML = visibles.map(filaProducto).join("");
-    } else {
-      const donde = estado.cat ? ` en ${nombreCategoria[estado.cat]}` : "";
-      const que = estado.q ? ` con “${esc(estado.q)}”` : "";
-      elLista.innerHTML = `<li class="sin-resultados">No hay productos${que}${donde}${estado.promo ? " en promoción" : ""}.
-        <button type="button" class="enlace" data-limpiar>Ver todos</button></li>`;
-    }
-    dibujarChips();
+    const recortar = !hayFiltros() && !estado.todos && visibles.length > VISTA_CORTA;
+    const mostrados = recortar ? visibles.slice(0, VISTA_CORTA) : visibles;
+    const n = visibles.length;
+    elContador.textContent = (hayFiltros()
+      ? `${n} de ${productos.length} productos`
+      : `${n} ${n === 1 ? "producto" : "productos"}`) + (estado.promo ? ", solo ofertas" : "");
+    elLista.innerHTML = mostrados.length ? mostrados.map(filaProducto).join("") : sinResultados();
+    const ver = document.getElementById("ver-todos");
+    if (recortar) {
+      if (!ver) elLista.insertAdjacentHTML("afterend", `<button type="button" class="boton ver-todos" id="ver-todos">Ver los ${n} productos</button>`);
+      else ver.textContent = `Ver los ${n} productos`;
+    } else if (ver) ver.remove();
+    dibujarChips(palabras);
     guardarEnUrl();
   }
 
@@ -601,15 +915,24 @@
   elChips.addEventListener("click", ev => {
     const chip = ev.target.closest(".chip");
     if (!chip) return;
-    if (chip.hasAttribute("data-promo")) estado.promo = !estado.promo;
-    else estado.cat = chip.dataset.cat;
+    estado.cat = chip.dataset.cat;
     actualizar();
-    elChips.querySelector(chip.hasAttribute("data-promo") ? "[data-promo]" : `[data-cat="${estado.cat}"]`).focus();
+    elChips.querySelector(`[data-cat="${estado.cat}"]`).focus();
   });
-  elLista.addEventListener("click", ev => {
-    if (!ev.target.closest("[data-limpiar]")) return;
-    Object.assign(estado, { q: "", cat: "", promo: false });
-    elQ.value = "";
+  elOfertas.addEventListener("click", () => { estado.promo = !estado.promo; actualizar(); });
+  // "Buscá un producto" deja el cursor en la caja de búsqueda, después de bajar.
+  document.querySelectorAll("[data-enfocar]").forEach(a =>
+    a.addEventListener("click", () => setTimeout(() => elQ.focus({ preventScroll: true }), reducido ? 0 : 450)));
+  document.getElementById("buscar").addEventListener("click", ev => {
+    if (ev.target.id === "ver-todos") { estado.todos = true; actualizar(); return; }
+    const limpiar = ev.target.closest("[data-limpiar]");
+    if (!limpiar) return;
+    const accion = limpiar.dataset.limpiar;
+    if (accion === "promo") estado.promo = false;
+    else if (accion === "ofertas") Object.assign(estado, { q: "", promo: true });
+    else if (accion === "cat") estado.cat = "";
+    else Object.assign(estado, { q: "", cat: "", promo: false });
+    elQ.value = estado.q;
     actualizar();
     elQ.focus();
   });
@@ -620,19 +943,69 @@
       elQ.focus();
     }
   });
-  // Si alguien pega otro enlace de búsqueda sin recargar la página.
   window.addEventListener("hashchange", () => {
     leerUrl();
     actualizar();
-    document.getElementById("buscador").scrollIntoView();
+    document.getElementById("buscar").scrollIntoView();
   });
+  leerUrl();
   actualizar();
-  if (location.hash) document.getElementById("buscador").scrollIntoView();
+  if (hayFiltros() || estado.orden !== POR_DEFECTO) document.getElementById("buscar").scrollIntoView();
 
-  // ---------- enlace al repositorio ----------
-  if (D.repositorio) {
-    document.getElementById("repo").innerHTML =
-      `Código abierto y datos en <a href="${esc(D.repositorio)}">${esc(D.repositorio.replace("https://", ""))}</a>.`;
+  // ---------- compartir ----------
+  const aviso = document.getElementById("aviso");
+  let ocultarAviso;
+  function avisar(texto) {
+    aviso.textContent = texto;
+    aviso.classList.add("visible");
+    clearTimeout(ocultarAviso);
+    ocultarAviso = setTimeout(() => aviso.classList.remove("visible"), 3200);
+  }
+  document.getElementById("compartir").addEventListener("click", async () => {
+    const url = location.href;
+    const texto = ganador
+      ? `Hoy el súper más barato, en promedio, es ${ganador.nombre}, según el Índice Changuito. Buscá cualquier producto y mirá cuánto sale en 6 cadenas:`
+      : "Índice Changuito: el precio de cada producto en 6 supermercados, todos los días.";
+    if (navigator.share) {
+      try { await navigator.share({ title: document.title, text: texto, url }); } catch (e) { /* cancelado */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      avisar(hayFiltros() ? "Enlace copiado con tu búsqueda" : "Enlace copiado");
+    } catch (e) {
+      avisar("No se pudo copiar el enlace. Copialo desde la barra de direcciones.");
+    }
+  });
+
+  // ---------- movimiento ----------
+  // Entradas: una sola vez, al entrar en pantalla; si el observador no anda, todo se muestra igual.
+  const entran = document.querySelectorAll("[data-entra], .grafico");
+  if (reducido || !("IntersectionObserver" in window)) {
+    entran.forEach(el => el.classList.add("is-in"));
+  } else {
+    const io = new IntersectionObserver(entradas => {
+      for (const e of entradas) if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); }
+    }, { rootMargin: "0px 0px -10% 0px", threshold: 0.08 });
+    entran.forEach(el => io.observe(el));
+    addEventListener("load", () => setTimeout(() => entran.forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) el.classList.add("is-in");
+    }), 2500));
+  }
+  // La foto del changuito se desliza apenas con el scroll.
+  const foto = document.querySelector(".heroe-foto img");
+  if (!reducido && foto) {
+    let pendiente = false;
+    addEventListener("scroll", () => {
+      if (pendiente) return;
+      pendiente = true;
+      requestAnimationFrame(() => {
+        const y = Math.min(scrollY, innerHeight);
+        foto.style.transform = `translateY(${y * 0.12}px) scale(${1 + y * 0.00015})`;
+        pendiente = false;
+      });
+    }, { passive: true });
   }
 })();
 </script>
