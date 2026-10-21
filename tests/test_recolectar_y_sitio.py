@@ -79,6 +79,13 @@ def test_de_punta_a_punta(monkeypatch, canasta, tmp_path):
     assert datos["destacado"] == {"tipo": "mensual", "valor": 5.0, "mes": "2026-02", "en_curso": True, "dias": 1}
     assert len(datos["productos"]) == 3
 
+    # La descarga directa trae solo el último día, con nombres legibles.
+    csv = (tmp_path / "docs" / "datos" / "precios-hoy.csv").read_text(encoding="utf-8").splitlines()
+    assert csv[0] == "fecha,tienda,ean,producto,categoria,precio,precio_lista"
+    assert len(csv) == 1 + 2 * 3
+    assert all(linea.startswith("2026-02-15,") for linea in csv[1:])
+    assert any(linea.startswith("2026-02-15,Carrefour,111,Uno,Categoría A,105") for linea in csv)
+
 
 def test_primer_dia_muestra_cantidad_de_precios(monkeypatch, canasta, tmp_path):
     recolectar_dia(monkeypatch, canasta, tmp_path / "precios", date(2026, 1, 1), 100)

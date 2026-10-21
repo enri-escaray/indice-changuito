@@ -130,6 +130,7 @@
   .marquesina-pista { display: flex; width: max-content; }
   .marquesina-pista span { font-stretch: 62%; font-weight: 800; text-transform: uppercase; font-size: var(--paso-medio); line-height: 1; white-space: nowrap; padding-right: 0.9em; }
   .marquesina-pista b { color: var(--amarillo); font-weight: 800; margin-left: 0.3em; }
+  .marquesina-pista em { font-style: normal; margin-left: 0.3em; }
   @media (prefers-reduced-motion: no-preference) {
     .marquesina-pista { animation: desfile var(--duracion, 70s) linear infinite; }
     .marquesina:hover .marquesina-pista { animation-play-state: paused; }
@@ -161,7 +162,10 @@
   .chip:active { transform: scale(0.96); }
   .chip[aria-pressed="true"] { background: var(--tinta); color: var(--fondo); }
   .chip[aria-pressed="true"] .n { color: inherit; opacity: 0.75; }
-  .chip-promo[aria-pressed="true"] { background: var(--rojo); color: #FFF; }
+  .chip-oferta[aria-pressed="true"] { background: var(--rojo); color: #FFF; }
+  .opciones-busqueda { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin-top: 16px; }
+  .opciones-busqueda select { margin-left: 8px; }
+  .regla { font-size: 0.9375rem; }
   .barra-resultados { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin: 18px 0 8px; }
   .barra-resultados select {
     font: 500 1rem var(--fuente); color: var(--tinta); background: var(--fondo); border: 2px solid var(--tinta); border-radius: 0;
@@ -180,12 +184,13 @@
   .productos .meta { font-size: var(--paso-chico); color: var(--tinta-2); margin-top: 2px; }
   .productos .desde { text-align: right; }
   .precio-grande { display: block; font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem); line-height: 0.9; font-variant-numeric: tabular-nums; }
-  .productos .desde span:last-child { font-size: var(--paso-chico); color: var(--tinta-2); }
+  .productos .desde .donde { display: block; font-size: 0.9375rem; font-weight: 600; color: var(--tinta); margin-top: 4px; }
+  .productos .desde .marca-chica { margin: 6px 0 0; }
   .chev { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: square; transition: transform 200ms var(--ease-out); }
   details[open] .chev { transform: rotate(180deg); }
   .por-tienda { list-style: none; margin: 0; padding: 4px clamp(14px, 1.6vw, 22px) 18px; }
-  .por-tienda li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid color-mix(in srgb, var(--tinta) 14%, transparent); } /* taste-skill-ignore: lista dentro del buscador (data-ui) */
-  .por-tienda .valor { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .por-tienda li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; padding: 8px 0; border-top: 1px solid color-mix(in srgb, var(--tinta) 14%, transparent); } /* taste-skill-ignore: lista dentro del buscador (data-ui) */
+  .por-tienda .valor { text-align: right; font-variant-numeric: tabular-nums; margin-left: auto; }
   .por-tienda s { color: var(--tinta-2); margin-right: 8px; }
   .por-tienda .mejor { font-weight: 700; }
   .marca-chica { display: inline-block; font-size: 0.8125rem; font-weight: 600; line-height: 1.6; padding: 0 8px; margin-left: 8px; background: var(--amarillo); color: #000; vertical-align: 2px; }
@@ -264,6 +269,11 @@
   .abierto-foto img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
   .abierto-foto figcaption { font-size: var(--paso-chico); margin-top: 10px; color: var(--tinta-2); }
   .abierto-acciones { display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; margin-top: 36px; }
+  .metodo { margin-top: 40px; }
+  .metodo summary { cursor: pointer; font-size: var(--paso-lead); font-weight: 600; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+  .metodo ul { margin: 24px 0 0; padding-left: 1.2em; max-width: 72ch; }
+  .metodo li { margin-bottom: 12px; }
+  .metodo .cita { max-width: 72ch; margin: 20px 0 0; }
 
   /* ---------- pie ---------- */
   .pie { padding-bottom: 40px; }
@@ -297,7 +307,8 @@
     <a href="#buscar">Buscar</a>
     <a href="#ranking">Súper más barato</a>
     <a href="#indice">Índice</a>
-    <a href="#como">Cómo funciona</a>
+    <a href="#titulo-como">Cómo funciona</a>
+    <a href="__URL_REPO__">GitHub</a>
   </nav>
   <button class="compartir" type="button" id="compartir">Compartir</button>
 </header>
@@ -312,7 +323,7 @@
       <div class="heroe-pie">
         <p class="lead" id="heroe-texto">Todos los días a las 12 comparamos el precio de __N_PRODUCTOS__ productos en Carrefour, Día, Jumbo, Disco, Vea y Más Online.</p>
         <div class="heroe-acciones">
-          <a class="boton boton-grande" href="#buscar">Buscá un producto</a>
+          <a class="boton boton-grande" href="#buscar" data-enfocar>Buscá un producto</a>
           <a class="enlace-fuerte" href="#ranking">Ver el súper más barato</a>
         </div>
       </div>
@@ -333,9 +344,8 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/></svg>
           <input type="search" id="q" placeholder="Yerba, aceite, La Serenísima…" autocomplete="off" spellcheck="false">
         </label>
-        <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
-        <div class="barra-resultados">
-          <span id="contador" aria-live="polite"></span>
+        <div class="opciones-busqueda">
+          <button type="button" class="chip chip-oferta" id="solo-ofertas" aria-pressed="false">Solo ofertas<span class="n"></span></button>
           <label>Ordenar por
             <select id="orden">
               <option value="diferencia">Mayor diferencia entre súper</option>
@@ -344,6 +354,11 @@
               <option value="aumento">Mayor aumento</option>
             </select>
           </label>
+        </div>
+        <div class="chips" id="chips" role="group" aria-label="Filtrar por categoría"></div>
+        <div class="barra-resultados">
+          <span id="contador" aria-live="polite"></span>
+          <span class="regla">Precios de hoy en cada web, con sus ofertas. Sin 2x1 ni descuentos con tarjeta.</span>
         </div>
         <ul class="productos" id="productos"></ul>
         <noscript><p>Para usar el buscador hace falta JavaScript. Los precios de hoy también están en GitHub, en la carpeta data/precios.</p></noscript>
@@ -356,10 +371,11 @@
       <div>
         <h2 class="titulo" id="titulo-ranking" data-entra>¿Qué súper sale menos?</h2>
         <p class="declaracion" id="ranking-ganador" data-entra style="--i:1"></p>
-        <p class="lead" data-entra style="--i:2">Comparamos los mismos productos en las seis cadenas, con las promos de hoy, contra el precio del medio (la mediana).</p>
+        <p class="lead" id="ranking-texto" data-entra style="--i:2">Comparamos los mismos productos en las seis cadenas, con lo que se paga hoy en cada web, ofertas incluidas.</p>
+        <p class="lead" data-entra style="--i:3">Tu compra puede dar distinto: <a class="enlace-fuerte" href="#buscar" data-enfocar>buscá lo que llevás</a>.</p>
       </div>
       <div class="panel" data-ui data-entra style="--i:3">
-        <h3>Cuánto más barato o más caro, en promedio</h3>
+        <h3>Cuánto más barato o más caro que un súper típico</h3>
         <div class="grafico" id="tiendas"></div>
       </div>
     </div>
@@ -392,38 +408,52 @@
   <section class="campo campo-blanco" id="como" aria-labelledby="titulo-como">
     <figure class="foto-sangre">
       <img src="img/gondola-huevos.jpg" width="1600" height="1200" loading="lazy" alt="Góndola de supermercado con maples de huevos y carteles de precio impresos en el estante rojo.">
-      <figcaption>Carteles de precio en la góndola de un supermercado argentino.</figcaption>
+      <figcaption>Carteles de precio en la góndola de un súper argentino. Los huevos y los productos frescos todavía no entran en el índice.</figcaption>
     </figure>
     <div class="ancho">
       <div class="como">
         <div>
           <h2 class="titulo" id="titulo-como" data-entra>Cómo funciona</h2>
-          <p class="lead" data-entra style="--i:1">Mismo producto, mismo código de barras, todos los días. Así se puede comparar sin trampa.</p>
+          <p class="lead" data-entra style="--i:1">Mismo producto, mismo código de barras, todos los días. Los precios que ves incluyen las ofertas de hoy; la inflación se mide sin ofertas, para que una oferta que termina no parezca una suba.</p>
         </div>
         <ol class="pasos">
-          <li data-entra><h3>Junta los precios</h3><p>Todos los días a las 12, un robot consulta el precio online de __N_PRODUCTOS__ productos en seis cadenas.</p></li>
-          <li data-entra style="--i:1"><h3>Compara lo mismo con lo mismo</h3><p>Busca cada producto por su código de barras, así compara exactamente el mismo en todas las cadenas. El índice usa el precio de lista, para que una promo que termina no parezca una suba.</p></li>
-          <li data-entra style="--i:2"><h3>Publica los resultados</h3><p>Calcula el índice con un método parecido al del INDEC, arma el ranking de supermercados y actualiza esta página. Los datos quedan públicos en GitHub.</p></li>
+          <li data-entra><h3>Junta los precios</h3><p>Todos los días al mediodía, un robot consulta el precio de __N_PRODUCTOS__ productos en las tiendas online de las seis cadenas, sin elegir sucursal ni código postal.</p></li>
+          <li data-entra style="--i:1"><h3>Compara lo mismo con lo mismo</h3><p>Busca cada producto por su código de barras, así compara exactamente el mismo en todas las cadenas.</p></li>
+          <li data-entra style="--i:2"><h3>Publica los resultados</h3><p>Calcula la inflación con el precio sin ofertas, arma el ranking con el precio de hoy, ofertas incluidas, y actualiza esta página. Los datos quedan públicos en GitHub.</p></li>
         </ol>
       </div>
       <div class="limites" data-entra>
         <h3>Lo que todavía no mide</h3>
-        <p>El índice cubre productos envasados: no incluye carnes, frutas ni verduras frescas, que se venden por peso. Usa precios online, sin 2x1 ni descuentos bancarios, que pueden no coincidir con la góndola. El peso de cada categoría es provisorio, y en Jumbo, Disco y Vea alguna promo puede colarse en el índice. Si ves un error, avisanos en GitHub.</p>
+        <p>Cubre productos envasados, incluidos limpieza e higiene: no incluye carnes, frutas, verduras ni huevos. Usa precios online sin elegir sucursal, que pueden variar en tu zona, sin 2x1 ni descuentos con tarjeta. El peso de cada categoría es provisorio. En Jumbo, Disco y Vea alguna oferta puede colarse en la inflación, porque esas webs no informan el precio sin oferta. Si ves un error, <a href="__URL_REPO__/issues">avisanos</a>.</p>
       </div>
+      <details class="metodo" data-entra>
+        <summary>Metodología completa y cómo citar</summary>
+        <ul>
+          <li><strong>Canasta.</strong> __N_PRODUCTOS__ productos envasados en __N_CATEGORIAS__ categorías, identificados por código de barras. Limpieza e higiene pesan __PESO_NO_ALIMENTOS__ %: no es un índice solo de alimentos.</li>
+          <li><strong>Pesos.</strong> Propios y provisorios; no son los del IPC del INDEC.</li>
+          <li><strong>Variación diaria.</strong> Para cada producto, media geométrica (Jevons) de la variación del precio sin oferta en cada súper. Si falta un precio, se usa el último conocido durante hasta 7 días.</li>
+          <li><strong>Índice.</strong> Cada categoría es la media geométrica de sus productos, encadenada día a día; el índice general es el promedio ponderado de las categorías. Base 100: __INICIO__.</li>
+          <li><strong>Inflación mensual.</strong> Promedio del índice en el mes contra el promedio del mes anterior, como hace el INDEC. El primer mes arranca el __INICIO__, así que tiene pocos días.</li>
+          <li><strong>Ranking.</strong> Para cada súper, cuánto se aleja en promedio (media geométrica) del precio del medio (la mediana) de las seis cadenas, con el precio de hoy y solo en productos que están en al menos tres.</li>
+          <li><strong>¿Es comparable con el IPC?</strong> No directamente: mide productos envasados de seis cadenas online, sin frescos, servicios ni regiones, y con pesos propios.</li>
+          <li><strong>Datos.</strong> <a href="datos/precios-hoy.csv" download>precios-hoy.csv</a> trae fecha, tienda, ean (código de barras), producto, categoría, precio (con oferta) y precio_lista (sin oferta). El historial completo está en GitHub.</li>
+        </ul>
+        <p class="cita"><strong>Cómo citar:</strong> «Índice Changuito, relevamiento propio de precios online de supermercados (__URL_SITIO__), datos del __ACTUALIZADO__».</p>
+      </details>
     </div>
   </section>
 
   <section class="campo campo-amarillo" id="abierto" aria-labelledby="titulo-abierto">
     <div class="ancho dos-columnas">
       <div>
-        <h2 class="titulo" id="titulo-abierto" data-entra>Código y datos abiertos</h2>
+        <h2 class="titulo" id="titulo-abierto" data-entra>Quién lo hace</h2>
         <div class="texto lead" data-entra style="--i:1">
-          <p>El código y cada precio relevado están en GitHub, con su historial completo, para que cualquiera pueda revisarlos o usarlos.</p>
-          <p>Es un proyecto independiente: no tiene relación con ningún supermercado, no tiene publicidad y no rastrea tus visitas.</p>
+          <p>Lo hace <a href="https://github.com/enri-escaray">Enrique Escaray</a>, de forma independiente: no tiene relación con ningún supermercado ni con el gobierno, y no tiene publicidad ni analíticas.</p>
+          <p>El código y cada precio relevado están abiertos en GitHub, con su historial completo, para que cualquiera pueda revisarlos o usarlos.</p>
         </div>
         <div class="abierto-acciones" data-entra style="--i:2">
-          <a class="boton" href="__URL_REPO__">Ver el código en GitHub</a>
-          <a class="enlace-fuerte" href="__URL_REPO__/tree/main/data/precios">Descargar los precios</a>
+          <a class="boton" href="datos/precios-hoy.csv" download>Descargar los precios de hoy</a>
+          <a class="enlace-fuerte" href="__URL_REPO__">Ver el código en GitHub</a>
         </div>
       </div>
       <figure class="abierto-foto" data-entra style="--i:2">
@@ -441,10 +471,12 @@
       <div>
         <h2>Índice Changuito</h2>
         <p id="actualizado"></p>
-        <p>Se actualiza todos los días a las 12.</p>
+        <p>Se actualiza todos los días al mediodía.</p>
+        <p><a href="#buscar" data-enfocar>Buscar un producto</a></p>
       </div>
       <div>
         <h2>Proyecto</h2>
+        <p>Hecho por <a href="https://github.com/enri-escaray">Enrique Escaray</a>.</p>
         <p>Código abierto con licencia MIT.</p>
         <p><a href="__URL_REPO__">Ver el código en GitHub</a></p>
       </div>
@@ -480,19 +512,21 @@
 
   const ganador = D.tiendas.length && D.tiendas[0].valor < 0 ? D.tiendas[0] : null;
   const comparables = D.productos.filter(p => p.tiendas > 1);
-  const mayor = comparables.reduce((a, b) => (b.brecha > a.brecha ? b : a), comparables[0]);
 
   // ---------- héroe y pie ----------
   if (ganador) {
     document.getElementById("heroe-texto").insertAdjacentHTML("beforeend",
       ` Hoy el más barato es <strong>${esc(ganador.nombre)}</strong>.`);
   }
-  document.getElementById("actualizado").textContent = "Precios del " + fechaLarga(D.actualizado) + ".";
+  document.getElementById("actualizado").textContent = "Precios del " + fechaLarga(D.actualizado) + ", relevados al mediodía.";
+  // Quién es el más barato en cada producto (pueden empatar varios).
+  const conjuncion = nombres => nombres.length < 2 ? nombres.join("") : nombres.slice(0, -1).join(", ") + " y " + nombres[nombres.length - 1];
+  const masBaratos = p => p.precios.filter(t => Math.abs(t.precio - p.min) < 0.005).map(t => t.tienda);
 
   // ---------- marquesina: los precios de hoy, de verdad ----------
   const pista = document.getElementById("marquesina");
   const tramo = D.productos.slice(0, 14)
-    .map(p => `<span>${esc(p.nombre)}<b>${pesos(p.min)}</b></span>`).join("");
+    .map(p => `<span>${esc(p.nombre)}<b>${pesos(p.min)}</b><em>en ${esc(conjuncion(masBaratos(p)))}</em></span>`).join("");
   pista.innerHTML = tramo + tramo;
   pista.style.setProperty("--duracion", Math.max(40, D.productos.slice(0, 14).length * 5) + "s");
 
@@ -562,13 +596,19 @@
   // ---------- ranking ----------
   if (D.tiendas.length) {
     document.getElementById("ranking-ganador").textContent = ganador
-      ? `Hoy gana ${ganador.nombre}: ${numero(Math.abs(ganador.valor), 1)} % menos`
+      ? `Hoy el más barato es ${ganador.nombre}`
       : "Hoy los precios están parejos";
+    if (ganador) {
+      const ahorro = Math.round(Math.abs(ganador.valor) * 10);
+      document.getElementById("ranking-texto").textContent =
+        `En promedio, por cada $ 1.000 de compra gastás unos $ ${ahorro} menos que en un súper típico. ` +
+        "Comparamos los mismos productos en las seis cadenas, con lo que se paga hoy en cada web, ofertas incluidas.";
+    }
     barras(
       document.getElementById("tiendas"),
       D.tiendas,
-      t => `<strong>${esc(t.nombre)}</strong>: ${numero(Math.abs(t.valor), 1)} % ${t.valor < 0 ? "más barato" : "más caro"} que la mediana.`,
-      [["--baja", "Más barato que la mediana"], ["--sube", "Más caro que la mediana"]]
+      t => `<strong>${esc(t.nombre)}</strong>: ${numero(Math.abs(t.valor), 1)} % ${t.valor < 0 ? "más barato" : "más caro"} que un súper típico (el precio del medio entre las seis cadenas).`,
+      [["--baja", "Más barato que un súper típico"], ["--sube", "Más caro que un súper típico"]]
     );
   }
 
@@ -580,6 +620,8 @@
   const manana = new Date(aFecha(D.actualizado).getTime() + 864e5);
   const fin = aFecha(D.actualizado);
   const proximoMes = new Date(fin.getFullYear(), fin.getMonth() + 1, 1);
+  const finProximoMes = new Date(fin.getFullYear(), fin.getMonth() + 2, 0);
+  const nombreMes = d => d.toLocaleDateString("es-AR", { month: "long" });
   if (dest.tipo === "mensual") {
     elCifra.textContent = pct(dest.valor);
     elEtiqueta.textContent = "Inflación de " + mesLargo(dest.mes) + (dest.en_curso ? ", mes en curso" : "");
@@ -591,7 +633,7 @@
   } else {
     elCifra.textContent = "100";
     elEtiqueta.textContent = "Arranque del índice, el " + fechaLarga(D.inicio);
-    elTexto.textContent = "Si mañana marca 101, la canasta está 1 % más cara. Cada día a las 12 se suma un dato.";
+    elTexto.textContent = "Hoy empezamos a medir. Si mañana marca 101, la canasta está 1 % más cara. Cada día al mediodía se suma un dato.";
   }
 
   const panel = document.getElementById("indice-panel");
@@ -601,7 +643,7 @@
   } else {
     panel.innerHTML = `<h3>Lo que viene</h3><ol class="que-viene">
       <li><strong>${diaYMes(manana)}, 12 h</strong>La primera variación: cuánto cambió cada producto y cada categoría.</li>
-      <li><strong>${diaYMes(proximoMes)}</strong>La primera inflación mensual, que compara ${proximoMes.toLocaleDateString("es-AR", { month: "long" })} con ${fin.toLocaleDateString("es-AR", { month: "long" })}.</li>
+      <li><strong>${diaYMes(finProximoMes)}</strong>La primera inflación mensual completa: todo ${nombreMes(proximoMes)} contra ${nombreMes(fin)}. Desde el ${diaYMes(proximoMes)} vas a ver cómo viene el mes.</li>
       <li><strong>Todos los días</strong>El ranking de supermercados y el precio de cada producto, actualizados.</li>
     </ol>`;
   }
@@ -626,7 +668,7 @@
   const columnas = M.meses.map((_, j) => j).filter(j => M.series[0].variaciones[j] !== null).slice(-12);
   const elMensual = document.getElementById("mensual");
   if (!columnas.length) {
-    elMensual.innerHTML = `<p>La primera inflación mensual aparece en ${proximoMes.toLocaleDateString("es-AR", { month: "long" })}, cuando se pueda comparar su promedio con el de ${fin.toLocaleDateString("es-AR", { month: "long" })}.</p>`;
+    elMensual.innerHTML = `<p>La primera inflación mensual completa sale el ${diaYMes(finProximoMes)}, cuando se pueda comparar todo ${nombreMes(proximoMes)} con ${nombreMes(fin)}. Desde el ${diaYMes(proximoMes)} se ve cómo viene el mes.</p>`;
   } else {
     const cab = columnas.map(j => `<th class="num">${mesCorto(M.meses[j])}</th>`).join("");
     const filas = M.series.map(s =>
@@ -702,7 +744,7 @@
 
   // ---------- buscador de productos ----------
   const nombreCategoria = Object.fromEntries(D.categorias.map(c => [c.id, c.nombre]));
-  const sinTildes = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const sinTildes = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const enPromo = t => t.lista !== null && t.precio < t.lista - 0.005;
   const productos = D.productos.map((p, i) => ({
     ...p,
@@ -719,18 +761,28 @@
     aumento: (a, b) => (b.variacion ?? -Infinity) - (a.variacion ?? -Infinity),
   };
   const POR_DEFECTO = "diferencia";
-  const VISTA_CORTA = 8;
+  // En el celular, menos filas de entrada para que el buscador no ocupe varias pantallas.
+  const VISTA_CORTA = innerWidth < 600 ? 5 : 8;
 
   const elQ = document.getElementById("q");
   const elChips = document.getElementById("chips");
   const elOrden = document.getElementById("orden");
   const elLista = document.getElementById("productos");
   const elContador = document.getElementById("contador");
+  const elOfertas = document.getElementById("solo-ofertas");
+  // Palabras que el buscador entiende como "mostrame lo que está en oferta".
+  const PALABRAS_OFERTA = new Set(["oferta", "ofertas", "promo", "promos", "promocion", "promociones", "descuento", "descuentos"]);
   if (!hayAumentos) elOrden.querySelector('[value="aumento"]').remove();
 
+  // La brecha que se anuncia se mide sin ofertas, para que una promo puntual no la infle.
+  const brechaLista = p => {
+    const listas = p.precios.map(t => t.lista ?? t.precio);
+    return (Math.max(...listas) / Math.min(...listas) - 1) * 100;
+  };
+  const brechaMaxima = comparables.length ? Math.max(...comparables.map(brechaLista)) : 0;
   document.getElementById("bajada-productos").textContent =
     `Los ${productos.length} productos de la canasta con su precio en cada súper.` +
-    (mayor ? ` Hoy, el mismo producto llega a costar hasta ${numero(mayor.brecha, 0)} % más según dónde lo compres.` : "");
+    (brechaMaxima ? ` Sin contar ofertas, el mismo producto llega a costar hasta ${numero(brechaMaxima, 0)} % más según dónde lo compres.` : "");
 
   // El estado vive en la URL (#q=yerba&cat=infusiones&promo=1) para poder compartir una búsqueda.
   const estado = { q: "", cat: "", promo: false, orden: POR_DEFECTO, todos: false };
@@ -756,43 +808,51 @@
     history.replaceState(null, "", hash ? "#" + hash : location.pathname + location.search);
   }
 
-  const coincide = (p, palabras) => palabras.every(w => p.texto.includes(w));
+  const coincide = (p, palabras) => palabras.every(w => (PALABRAS_OFERTA.has(w) ? p.promo : p.texto.includes(w)));
 
   function dibujarChips(palabras) {
     const base = productos.filter(p => coincide(p, palabras) && (!estado.promo || p.promo));
     const cuantos = id => base.filter(p => !id || p.categoria === id).length;
     const opciones = [["", "Todas"], ...D.categorias.map(c => [c.id, c.nombre])];
-    const promos = productos.filter(p => coincide(p, palabras) && p.promo && (!estado.cat || p.categoria === estado.cat)).length;
+    const ofertas = productos.filter(p => coincide(p, palabras) && p.promo && (!estado.cat || p.categoria === estado.cat)).length;
     elChips.innerHTML =
       opciones.map(([id, nombre]) =>
         `<button type="button" class="chip" data-cat="${id}" aria-pressed="${estado.cat === id}">${esc(nombre)}<span class="n">${cuantos(id)}</span></button>`
-      ).join("") +
-      `<button type="button" class="chip chip-promo" data-promo aria-pressed="${estado.promo}">En promoción<span class="n">${promos}</span></button>`;
+      ).join("");
+    elOfertas.setAttribute("aria-pressed", String(estado.promo));
+    elOfertas.querySelector(".n").textContent = ofertas;
   }
 
   function filaPorTienda(t, mejor) {
     const promo = enPromo(t);
     const leer = promo
-      ? `<span class="oculto">${esc(t.tienda)}: ${pesos(t.precio)} con promo del ${numero((1 - t.precio / t.lista) * 100, 0)} %, precio de lista ${pesos(t.lista)}.</span>`
+      ? `<span class="oculto">${esc(t.tienda)}: ${pesos(t.precio)} con oferta del ${numero((1 - t.precio / t.lista) * 100, 0)} %, sin oferta ${pesos(t.lista)}.</span>`
       : "";
     return `<li class="${mejor ? "mejor" : ""}">
         <span>${esc(t.tienda)}${mejor ? '<span class="marca-chica">Más barato</span>' : ""}</span>
         <span class="valor" ${promo ? 'aria-hidden="true"' : ""}>${promo ? `<s>${pesos(t.lista)}</s>` : ""}${pesos(t.precio)}${
-          promo ? `<span class="marca-chica promo">Promo ${pct((t.precio / t.lista - 1) * 100, 0)}</span>` : ""}</span>${leer}
+          promo ? `<span class="marca-chica promo">Oferta ${pct((t.precio / t.lista - 1) * 100, 0)}</span>` : ""}</span>${leer}
       </li>`;
   }
 
   function filaProducto(p) {
+    const baratos = masBaratos(p);
+    const ofertaEnElMejor = p.precios.some(t => baratos.includes(t.tienda) && enPromo(t));
+    const conOferta = p.precios.filter(enPromo).map(t => t.tienda).filter(n => !baratos.includes(n));
     let meta = nombreCategoria[p.categoria] + ". ";
-    meta += p.tiendas > 1 ? `Hasta ${numero(p.brecha, 0)} % más caro en ${p.cara}.` : `Hoy solo en ${p.barata}.`;
+    meta += p.tiendas > 1
+      ? (baratos.length === p.tiendas ? "Mismo precio en todos." : `Más caro en ${p.cara}: ${pesos(p.max)}.`)
+      : `Hoy solo en ${p.barata}.`;
+    if (conOferta.length) meta += ` Hay oferta en ${conjuncion(conOferta)}.`;
     if (p.variacion !== null && p.variacion !== undefined) meta += ` ${pct(p.variacion)} desde el ${fechaCorta(D.inicio)}.`;
     const detalle = p.tiendas > 1
-      ? `<ul class="por-tienda">${p.precios.map((t, i) => filaPorTienda(t, i === 0)).join("")}</ul>`
+      ? `<ul class="por-tienda">${p.precios.map(t => filaPorTienda(t, baratos.length < p.tiendas && baratos.includes(t.tienda))).join("")}</ul>`
       : `<ul class="por-tienda">${filaPorTienda(p.precios[0], false)}<li>Hoy no aparece en las otras cadenas, así que no hay con qué compararlo.</li></ul>`;
     return `<li><details>
         <summary>
           <div><div class="nombre">${esc(p.nombre)}</div><div class="meta">${esc(meta)}</div></div>
-          <div class="desde"><span class="precio-grande">${pesos(p.min)}</span><span>en ${esc(p.barata)}</span></div>
+          <div class="desde"><span class="precio-grande">${pesos(p.min)}</span><span class="donde">en ${esc(conjuncion(baratos))}</span>${
+            ofertaEnElMejor ? '<span class="marca-chica promo">Oferta</span>' : ""}</div>
           <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5"/></svg>
         </summary>
         ${detalle}
@@ -803,9 +863,16 @@
   function sinResultados() {
     const cat = estado.cat ? nombreCategoria[estado.cat] : "";
     let texto, boton, accion;
-    if (estado.promo && !estado.q) {
-      texto = cat ? `Hoy no hay productos de ${cat} en promoción.` : "Hoy no hay productos en promoción. Las promos se revisan todos los días a las 12.";
-      boton = "Quitar el filtro de promoción"; accion = "promo";
+    if (estado.promo) {
+      texto = estado.q
+        ? `Hoy no hay “${estado.q}” en oferta${cat ? ` en ${cat}` : ""}.`
+        : (cat ? `Hoy no hay productos de ${cat} en oferta.` : "Hoy no hay productos en oferta. Las ofertas se revisan todos los días al mediodía.");
+      boton = "Quitar el filtro de ofertas"; accion = "promo";
+    } else if (sinTildes(estado.q).split(/\s+/).some(w => PALABRAS_OFERTA.has(w))) {
+      // Buscó algo "en oferta": la respuesta es que hoy no hay, no que no existe.
+      const loBuscado = estado.q.split(/\s+/).filter(w => !PALABRAS_OFERTA.has(sinTildes(w))).join(" ");
+      texto = loBuscado ? `Hoy no hay “${loBuscado}” en oferta.` : "Hoy no hay productos en oferta.";
+      boton = "Ver todas las ofertas"; accion = "ofertas";
     } else if (estado.cat) {
       texto = `No encontramos “${estado.q}” en ${cat}.`;
       boton = "Buscar en todas las categorías"; accion = "cat";
@@ -830,9 +897,9 @@
     const recortar = !hayFiltros() && !estado.todos && visibles.length > VISTA_CORTA;
     const mostrados = recortar ? visibles.slice(0, VISTA_CORTA) : visibles;
     const n = visibles.length;
-    elContador.textContent = hayFiltros()
-      ? `${n} de ${productos.length} ${productos.length === 1 ? "producto" : "productos"}`
-      : `${n} ${n === 1 ? "producto" : "productos"}`;
+    elContador.textContent = (hayFiltros()
+      ? `${n} de ${productos.length} productos`
+      : `${n} ${n === 1 ? "producto" : "productos"}`) + (estado.promo ? ", solo ofertas" : "");
     elLista.innerHTML = mostrados.length ? mostrados.map(filaProducto).join("") : sinResultados();
     const ver = document.getElementById("ver-todos");
     if (recortar) {
@@ -848,18 +915,21 @@
   elChips.addEventListener("click", ev => {
     const chip = ev.target.closest(".chip");
     if (!chip) return;
-    const esPromo = chip.hasAttribute("data-promo");
-    if (esPromo) estado.promo = !estado.promo;
-    else estado.cat = chip.dataset.cat;
+    estado.cat = chip.dataset.cat;
     actualizar();
-    elChips.querySelector(esPromo ? "[data-promo]" : `[data-cat="${estado.cat}"]`).focus();
+    elChips.querySelector(`[data-cat="${estado.cat}"]`).focus();
   });
+  elOfertas.addEventListener("click", () => { estado.promo = !estado.promo; actualizar(); });
+  // "Buscá un producto" deja el cursor en la caja de búsqueda, después de bajar.
+  document.querySelectorAll("[data-enfocar]").forEach(a =>
+    a.addEventListener("click", () => setTimeout(() => elQ.focus({ preventScroll: true }), reducido ? 0 : 450)));
   document.getElementById("buscar").addEventListener("click", ev => {
     if (ev.target.id === "ver-todos") { estado.todos = true; actualizar(); return; }
     const limpiar = ev.target.closest("[data-limpiar]");
     if (!limpiar) return;
     const accion = limpiar.dataset.limpiar;
     if (accion === "promo") estado.promo = false;
+    else if (accion === "ofertas") Object.assign(estado, { q: "", promo: true });
     else if (accion === "cat") estado.cat = "";
     else Object.assign(estado, { q: "", cat: "", promo: false });
     elQ.value = estado.q;
@@ -894,7 +964,7 @@
   document.getElementById("compartir").addEventListener("click", async () => {
     const url = location.href;
     const texto = ganador
-      ? `Hoy el súper más barato es ${ganador.nombre}, según el Índice Changuito. Buscá cualquier producto y mirá cuánto sale en 6 cadenas:`
+      ? `Hoy el súper más barato, en promedio, es ${ganador.nombre}, según el Índice Changuito. Buscá cualquier producto y mirá cuánto sale en 6 cadenas:`
       : "Índice Changuito: el precio de cada producto en 6 supermercados, todos los días.";
     if (navigator.share) {
       try { await navigator.share({ title: document.title, text: texto, url }); } catch (e) { /* cancelado */ }
