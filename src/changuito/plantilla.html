@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Índice Changuito: inflación y precios de supermercados</title>
-<meta name="description" content="Inflación de supermercados en Argentina, medida todos los días. Compará el precio de __N_PRODUCTOS__ productos en Carrefour, Día, Jumbo, Disco, Vea y Más Online.">
+<meta name="description" content="Inflación de supermercados en Argentina, medida todos los días. Compará el precio de __N_PRODUCTOS__ productos en __N_CADENAS__ cadenas de supermercados.">
 <meta name="theme-color" content="#FFE11A">
 <link rel="canonical" href="__URL_SITIO__">
 <meta property="og:type" content="website">
@@ -12,7 +12,7 @@
 <meta property="og:locale" content="es_AR">
 <meta property="og:url" content="__URL_SITIO__">
 <meta property="og:title" content="Cuánto sube el súper y dónde conviene comprar">
-<meta property="og:description" content="Precios de __N_PRODUCTOS__ productos en 6 cadenas, revisados todos los días a las 12. Buscá un producto y mirá en qué súper sale menos.">
+<meta property="og:description" content="Precios de __N_PRODUCTOS__ productos en __N_CADENAS__ cadenas, revisados todos los días a las 12. Buscá un producto y mirá en qué súper sale menos.">
 <meta property="og:image" content="__URL_SITIO__img/changuito.jpg">
 <meta property="og:image:alt" content="Un changuito de supermercado vacío, de perfil, sobre la vereda.">
 <meta name="twitter:card" content="summary_large_image">
@@ -342,7 +342,7 @@
         <img src="img/changuito.jpg" width="1600" height="1200" alt="Un changuito de supermercado vacío, de perfil, sobre la vereda." fetchpriority="high">
       </figure>
       <div class="heroe-pie">
-        <p class="lead" id="heroe-texto">Todos los días a las 12 comparamos el precio de __N_PRODUCTOS__ productos en Carrefour, Día, Jumbo, Disco, Vea y Más Online.</p>
+        <p class="lead" id="heroe-texto">Todos los días a las 12 comparamos el precio de __N_PRODUCTOS__ productos en __CADENAS__.</p>
         <div class="heroe-acciones">
           <a class="boton boton-grande" href="#buscar" data-enfocar>Buscá un producto</a>
           <a class="enlace-fuerte" href="#ranking">Ver el súper más barato</a>
@@ -392,7 +392,7 @@
       <div>
         <h2 class="titulo" id="titulo-ranking" data-entra>¿Qué súper sale menos?</h2>
         <p class="declaracion" id="ranking-ganador" data-entra style="--i:1"></p>
-        <p class="lead" id="ranking-texto" data-entra style="--i:2">Comparamos los mismos productos en las seis cadenas, con lo que se paga hoy en cada web, ofertas incluidas.</p>
+        <p class="lead" id="ranking-texto" data-entra style="--i:2">Comparamos los mismos productos en todas las cadenas, con lo que se paga hoy en cada web, ofertas incluidas.</p>
         <p class="lead" data-entra style="--i:3">Tu compra puede dar distinto: <a class="enlace-fuerte" href="#buscar" data-enfocar>buscá lo que llevás</a>.</p>
       </div>
       <div class="panel" data-ui data-entra style="--i:3">
@@ -433,7 +433,7 @@
           <h2 class="titulo" id="titulo-como" data-entra>Cómo funciona</h2>
           <p class="lead" data-entra style="--i:1">Mismo producto, mismo código de barras, todos los días. Los precios que ves incluyen las ofertas de hoy; la inflación se mide sin ofertas, para que una oferta que termina no parezca una suba.</p>
         <ol class="pasos">
-          <li data-entra><h3>Junta los precios</h3><p>Todos los días al mediodía, un robot consulta el precio de __N_PRODUCTOS__ productos en las tiendas online de las seis cadenas, sin elegir sucursal ni código postal.</p></li>
+          <li data-entra><h3>Junta los precios</h3><p>Todos los días al mediodía, un robot consulta el precio de __N_PRODUCTOS__ productos en las tiendas online de __N_CADENAS__ cadenas, sin elegir sucursal ni código postal.</p></li>
           <li data-entra style="--i:1"><h3>Compara lo mismo con lo mismo</h3><p>Busca cada producto por su código de barras, así compara exactamente el mismo en todas las cadenas.</p></li>
           <li data-entra style="--i:2"><h3>Publica los resultados</h3><p>Calcula la inflación con el precio sin ofertas, arma el ranking con el precio de hoy, ofertas incluidas, y actualiza esta página. Los datos quedan públicos en GitHub.</p></li>
         </ol>
@@ -452,8 +452,8 @@
           <li><strong>Variación diaria.</strong> Para cada producto, media geométrica (Jevons) de la variación del precio sin oferta en cada súper. Si falta un precio, se usa el último conocido durante hasta 7 días.</li>
           <li><strong>Índice.</strong> Cada categoría es la media geométrica de sus productos, encadenada día a día; el índice general es el promedio ponderado de las categorías. Base 100: __INICIO__.</li>
           <li><strong>Inflación mensual.</strong> Promedio del índice en el mes contra el promedio del mes anterior, como hace el INDEC. El primer mes arranca el __INICIO__, así que tiene pocos días.</li>
-          <li><strong>Ranking.</strong> Para cada súper, cuánto se aleja en promedio (media geométrica) del precio del medio (la mediana) de las seis cadenas, con el precio de hoy y solo en productos que están en al menos tres.</li>
-          <li><strong>¿Es comparable con el IPC?</strong> No directamente: mide productos envasados de seis cadenas online, sin frescos, servicios ni regiones, y con pesos propios.</li>
+          <li><strong>Ranking.</strong> Para cada súper, cuánto se aleja en promedio (media geométrica) del precio del medio (la mediana) de todas las cadenas, con el precio de hoy y solo en productos que están en al menos tres.</li>
+          <li><strong>¿Es comparable con el IPC?</strong> No directamente: mide productos envasados de __N_CADENAS__ cadenas online (dos de ellas regionales), sin frescos ni servicios, y con pesos propios.</li>
           <li><strong>Datos.</strong> <a href="datos/precios-hoy.csv" download>precios-hoy.csv</a> trae fecha, tienda, ean (código de barras), producto, categoría, precio (con oferta) y precio_lista (sin oferta). El historial completo está en GitHub.</li>
         </ul>
         <p class="cita"><strong>Cómo citar:</strong> «Índice Changuito, relevamiento propio de precios online de supermercados (__URL_SITIO__), datos del __ACTUALIZADO__».</p>
@@ -528,7 +528,10 @@
   const mesCorto = s => aFecha(s + "-15").toLocaleDateString("es-AR", { month: "short", year: "2-digit" });
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-  const ganador = D.tiendas.length && D.tiendas[0].valor < 0 ? D.tiendas[0] : null;
+  // El titular elige entre las cadenas nacionales; las regionales se muestran con su zona.
+  const ganador = D.tiendas.find(t => !t.region && t.valor < 0) || null;
+  const regionalMasBarata = D.tiendas.find(t => t.region && t.valor < 0 && (!ganador || t.valor < ganador.valor));
+  const conZona = t => (t.region ? `${t.nombre} (${t.region})` : t.nombre);
   const comparables = D.productos.filter(p => p.tiendas > 1);
 
   // ---------- héroe y pie ----------
@@ -620,12 +623,13 @@
       const ahorro = Math.round(Math.abs(ganador.valor) * 10);
       document.getElementById("ranking-texto").textContent =
         `En promedio, por cada $ 1.000 de compra gastás unos $ ${ahorro} menos que en un súper típico. ` +
-        "Comparamos los mismos productos en las seis cadenas, con lo que se paga hoy en cada web, ofertas incluidas.";
+        "Comparamos los mismos productos en todas las cadenas, con lo que se paga hoy en cada web, ofertas incluidas." +
+        (regionalMasBarata ? ` Entre las cadenas regionales, ${conZona(regionalMasBarata)} sale ${numero(Math.abs(regionalMasBarata.valor), 1)} % menos que el súper típico.` : "");
     }
     barras(
       document.getElementById("tiendas"),
-      D.tiendas,
-      t => `<strong>${esc(t.nombre)}</strong>: ${numero(Math.abs(t.valor), 1)} % ${t.valor < 0 ? "más barato" : "más caro"} que un súper típico (el precio del medio entre las seis cadenas).`,
+      D.tiendas.map(t => ({ ...t, nombre: conZona(t) })),
+      t => `<strong>${esc(t.nombre)}</strong>: ${numero(Math.abs(t.valor), 1)} % ${t.valor < 0 ? "más barato" : "más caro"} que un súper típico (el precio del medio entre las cadenas).`,
       [["--baja", "Más barato que un súper típico"], ["--sube", "Más caro que un súper típico"]]
     );
   }
@@ -1015,7 +1019,7 @@
   document.getElementById("compartir").addEventListener("click", async () => {
     const url = location.href;
     const texto = ganador
-      ? `Hoy el súper más barato, en promedio, es ${ganador.nombre}, según el Índice Changuito. Buscá cualquier producto y mirá cuánto sale en 6 cadenas:`
+      ? `Hoy el súper más barato, en promedio, es ${ganador.nombre}, según el Índice Changuito. Buscá cualquier producto y mirá cuánto sale en ${D.tiendas_hoy} cadenas:`
       : "Índice Changuito: el precio de cada producto en 6 supermercados, todos los días.";
     if (navigator.share) {
       try { await navigator.share({ title: document.title, text: texto, url }); } catch (e) { /* cancelado */ }

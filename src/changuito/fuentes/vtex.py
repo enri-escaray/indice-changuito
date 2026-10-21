@@ -22,6 +22,9 @@ TIENDAS: dict[str, str] = {
     "disco": "https://www.disco.com.ar",
     "vea": "https://www.vea.com.ar",
     "masonline": "https://www.masonline.com.ar",
+    # Cadenas regionales: Córdoba y Mar del Plata.
+    "cordiez": "https://www.cordiez.com.ar",
+    "toledo": "https://www.toledodigital.com.ar",
 }
 
 USER_AGENT = "Mozilla/5.0 (compatible; indice-changuito/0.1; medicion de precios open source)"

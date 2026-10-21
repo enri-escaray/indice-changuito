@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import unicodedata
 from importlib import resources
 from pathlib import Path
 
@@ -20,7 +21,21 @@ NOMBRES_TIENDAS = {
     "disco": "Disco",
     "vea": "Vea",
     "masonline": "Más Online",
+    "coto": "Coto",
+    "cordiez": "Cordiez",
+    "toledo": "Toledo",
 }
+# Cadenas que solo están en una región: en los textos se aclara dónde.
+REGIONES = {"cordiez": "Córdoba", "toledo": "Mar del Plata"}
+
+
+def lista_de_cadenas(tiendas) -> str:
+    """'Carrefour, Coto, …, Cordiez (Córdoba) y Toledo (Mar del Plata)': nacionales primero."""
+    sin_tildes = lambda s: unicodedata.normalize("NFD", s).encode("ascii", "ignore").decode().lower()
+    nacionales = sorted((NOMBRES_TIENDAS.get(t, t) for t in tiendas if t not in REGIONES), key=sin_tildes)
+    regionales = sorted((f"{NOMBRES_TIENDAS.get(t, t)} ({REGIONES[t]})" for t in tiendas if t in REGIONES), key=sin_tildes)
+    nombres = nacionales + regionales
+    return nombres[0] if len(nombres) == 1 else ", ".join(nombres[:-1]) + " y " + nombres[-1]
 
 # Si no corre en GitHub Actions, se usa el repo original para los enlaces y la vista previa al compartir.
 REPO_POR_DEFECTO = "enri-escaray/indice-changuito"
@@ -124,7 +139,7 @@ def armar_datos(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Can
         ],
         "mensual": {"meses": meses, "dias": [int(d) for d in dias_por_mes], "series": series_mensuales},
         "tiendas": [
-            {"nombre": NOMBRES_TIENDAS.get(tienda, tienda), "valor": _redondear(pct)}
+            {"nombre": NOMBRES_TIENDAS.get(tienda, tienda), "valor": _redondear(pct), "region": REGIONES.get(tienda)}
             for tienda, pct in indice.nivel_por_tienda(del_dia).items()
         ],
         "productos": [
@@ -183,10 +198,14 @@ def generar(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Canasta
     repo = repositorio()
     # Estos valores van en el HTML fijo (metadatos para compartir y texto sin JavaScript).
     pesos = canasta.pesos
+    ultima_fecha = resultado.diario.index[-1]
+    tiendas_del_dia = sorted(precios.loc[precios["fecha"] == ultima_fecha, "tienda"].unique())
     reemplazos = {
         "__URL_SITIO__": url_sitio(repo),
         "__URL_REPO__": f"https://github.com/{repo}",
         "__N_PRODUCTOS__": str(len(canasta.eans)),
+        "__N_CADENAS__": str(len(tiendas_del_dia)),
+        "__CADENAS__": lista_de_cadenas(tiendas_del_dia),
         "__N_CATEGORIAS__": str(len(canasta.categorias)),
         "__PESO_NO_ALIMENTOS__": str(round((pesos.get("limpieza", 0) + pesos.get("higiene", 0)) * 100)),
         "__INICIO__": fecha_larga(resultado.diario.index[0]),

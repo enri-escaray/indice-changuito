@@ -8,7 +8,8 @@
 👉 **Sitio:** [enri-escaray.github.io/indice-changuito](https://enri-escaray.github.io/indice-changuito/)
 
 Todos los días a las 12, un robot de GitHub Actions consulta el precio online de 49 productos
-en seis cadenas: Carrefour, Día, Jumbo, Disco, Vea y Más Online. Con esos precios calcula un índice
+en nueve cadenas: Carrefour, Coto, Día, Disco, Jumbo, Más Online y Vea, más Cordiez (Córdoba) y
+Toledo (Mar del Plata). Con esos precios calcula un índice
 con un método parecido al del IPC y publica un sitio con los gráficos. Todo corre gratis en GitHub,
 sin servidores.
 
@@ -33,9 +34,12 @@ flowchart LR
     F --> G[GitHub Pages]
 ```
 
-- **Fuente:** las tiendas online de las seis cadenas usan la plataforma VTEX, que tiene una API
-  pública de catálogo. Cada producto se busca por su código de barras (EAN), así que en todas
-  las cadenas se compara exactamente el mismo producto.
+- **Fuente:** ocho cadenas usan la plataforma VTEX, que tiene una API pública de catálogo: cada
+  producto se busca por su código de barras (EAN), así que en todas se compara exactamente el
+  mismo producto. Coto usa otro buscador (Oracle Endeca) que devuelve JSON: ahí se busca por
+  nombre y se confirma por el código de barras.
+- **Ofertas en Coto:** cuenta solo el descuento directo ("35%Dto"); las promos por cantidad
+  ("2do al 70%") y los descuentos con tarjeta se ignoran, igual que en el resto del índice.
 - **Datos versionados:** cada día se guarda un CSV en `data/precios/AAAA/MM/`. El historial de
   precios queda en el historial de git (técnica conocida como *git scraping*).
 - **Cálculo:** DuckDB lee todos los CSV de una vez y pandas calcula el índice.
