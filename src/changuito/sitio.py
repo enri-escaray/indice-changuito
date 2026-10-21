@@ -36,6 +36,15 @@ def url_sitio(repo: str) -> str:
     return f"https://{usuario.lower()}.github.io/{nombre}/"
 
 
+MESES = ("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+         "septiembre", "octubre", "noviembre", "diciembre")
+
+
+def fecha_larga(fecha) -> str:
+    """20 de octubre de 2026."""
+    return f"{fecha.day} de {MESES[fecha.month - 1]} de {fecha.year}"
+
+
 def _limpio(valor):
     """Convierte NaN en None para que el JSON quede válido."""
     if isinstance(valor, float) and math.isnan(valor):
@@ -144,17 +153,44 @@ def armar_datos(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Can
     }
 
 
+def exportar_precios_del_dia(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Canasta, ruta: Path) -> None:
+    """CSV con los precios del último día, para descargar directo desde el sitio."""
+    ultima_fecha = resultado.diario.index[-1]
+    del_dia = precios[(precios["fecha"] == ultima_fecha) & precios["ean"].isin(canasta.eans)]
+    productos = {p.ean: p for p in canasta.productos}
+    categorias = {c.id: c.nombre for c in canasta.categorias}
+    tabla = pd.DataFrame(
+        {
+            "fecha": del_dia["fecha"].dt.strftime("%Y-%m-%d"),
+            "tienda": del_dia["tienda"].map(lambda t: NOMBRES_TIENDAS.get(t, t)),
+            "ean": del_dia["ean"],
+            "producto": del_dia["ean"].map(lambda e: productos[e].nombre),
+            "categoria": del_dia["ean"].map(lambda e: categorias[productos[e].categoria]),
+            "precio": del_dia["precio"].round(2),
+            "precio_lista": del_dia["precio_lista"].round(2),
+        }
+    ).sort_values(["categoria", "producto", "tienda"])
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    tabla.to_csv(ruta, index=False, lineterminator="\n")
+
+
 def generar(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Canasta, dir_salida: Path) -> Path:
     datos = armar_datos(resultado, precios, canasta)
+    exportar_precios_del_dia(resultado, precios, canasta, dir_salida / "datos" / "precios-hoy.csv")
     # "<\/" evita que un texto con "</script>" corte el bloque de datos.
     json_datos = json.dumps(datos, ensure_ascii=False).replace("</", "<\\/")
     plantilla = resources.files("changuito").joinpath("plantilla.html").read_text(encoding="utf-8")
     repo = repositorio()
     # Estos valores van en el HTML fijo (metadatos para compartir y texto sin JavaScript).
+    pesos = canasta.pesos
     reemplazos = {
         "__URL_SITIO__": url_sitio(repo),
         "__URL_REPO__": f"https://github.com/{repo}",
         "__N_PRODUCTOS__": str(len(canasta.eans)),
+        "__N_CATEGORIAS__": str(len(canasta.categorias)),
+        "__PESO_NO_ALIMENTOS__": str(round((pesos.get("limpieza", 0) + pesos.get("higiene", 0)) * 100)),
+        "__INICIO__": fecha_larga(resultado.diario.index[0]),
+        "__ACTUALIZADO__": fecha_larga(resultado.diario.index[-1]),
     }
     for marca, valor in reemplazos.items():
         plantilla = plantilla.replace(marca, valor)
