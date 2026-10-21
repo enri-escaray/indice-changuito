@@ -6,11 +6,13 @@ import csv
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import date
-from functools import partial
 from pathlib import Path
 
 from changuito.canasta import Canasta
-from changuito.fuentes import vtex
+from changuito.fuentes import coto, vtex
+
+# Todas las tiendas que se relevan: las VTEX (por código de barras) y Coto (por nombre + código).
+TIENDAS = [*vtex.TIENDAS, coto.TIENDA]
 
 COLUMNAS = ("fecha", "tienda", "ean", "nombre", "precio", "precio_lista")
 
@@ -32,8 +34,13 @@ def recolectar(
     canasta: Canasta, fecha: date, tiendas: list[str] | None = None, pausa: float = 0.3
 ) -> Recoleccion:
     """Consulta todas las tiendas en paralelo (pero cada tienda de a un pedido por vez)."""
-    tiendas = tiendas or list(vtex.TIENDAS)
-    consultar = partial(vtex.precios_de_tienda, eans=canasta.eans, pausa=pausa)
+    tiendas = tiendas or TIENDAS
+
+    def consultar(tienda: str):
+        if tienda == coto.TIENDA:
+            return coto.precios_de_tienda(canasta.productos, pausa=pausa)
+        return vtex.precios_de_tienda(tienda, eans=canasta.eans, pausa=pausa)
+
     resultado = Recoleccion(fecha=fecha)
     with ThreadPoolExecutor(max_workers=len(tiendas)) as ejecutor:
         for tienda, (precios, errores) in zip(tiendas, ejecutor.map(consultar, tiendas)):

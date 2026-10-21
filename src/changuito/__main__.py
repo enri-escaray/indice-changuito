@@ -80,7 +80,7 @@ def main(argv: list[str] | None = None) -> int:
 
     def con_opciones_de_recoleccion(p: argparse.ArgumentParser) -> None:
         p.add_argument("--fecha", help="AAAA-MM-DD (por defecto, hoy en Argentina)")
-        p.add_argument("--tiendas", nargs="+", choices=list(vtex.TIENDAS), default=list(vtex.TIENDAS))
+        p.add_argument("--tiendas", nargs="+", choices=recolectar.TIENDAS, default=recolectar.TIENDAS)
         p.add_argument("--pausa", type=float, default=0.3, help="segundos entre pedidos a una tienda")
 
     con_opciones_de_recoleccion(sub.add_parser("recolectar", help="bajar los precios de hoy"))
