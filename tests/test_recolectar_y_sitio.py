@@ -95,6 +95,23 @@ def test_primer_dia_muestra_cantidad_de_precios(monkeypatch, canasta, tmp_path):
     assert all(p["variacion"] is None for p in datos["productos"])
 
 
+def test_configuracion_de_la_comunidad(monkeypatch, tmp_path):
+    config = tmp_path / "sitio.json"
+    config.write_text('{"url": "https://ejemplo.workers.dev/", "turnstile_site_key": "clave-publica"}', encoding="utf-8")
+    monkeypatch.setattr(sitio, "CONFIG_COMUNIDAD", config)
+    monkeypatch.delenv("CHANGUITO_COMUNIDAD_URL", raising=False)
+    monkeypatch.delenv("CHANGUITO_TURNSTILE_SITE_KEY", raising=False)
+    assert sitio.config_comunidad() == {"url": "https://ejemplo.workers.dev", "turnstile_site_key": "clave-publica"}
+    # Las variables de entorno pisan el archivo (para probar con un servidor local).
+    monkeypatch.setenv("CHANGUITO_COMUNIDAD_URL", "http://127.0.0.1:8787")
+    assert sitio.config_comunidad()["url"] == "http://127.0.0.1:8787"
+
+
+def test_lista_de_cadenas():
+    assert sitio.lista_de_cadenas(["vea", "dia", "toledo", "coto", "cordiez"]) == "Coto, Día, Vea, Cordiez (Córdoba) y Toledo (Mar del Plata)"
+    assert sitio.lista_de_cadenas(["coto"]) == "Coto"
+
+
 def test_datos_del_buscador(canasta):
     precios = armar_precios(
         [

@@ -31,6 +31,14 @@ jobs:
       - name: Recolectar precios, calcular el índice y generar el sitio
         run: changuito actualizar
 
+      - name: Bajar los precios de la comunidad
+        run: |
+          URL=$(python -c "import json; print(json.load(open('comunidad/sitio.json'))['url'])")
+          if [ -n "$URL" ]; then
+            mkdir -p data/comunidad
+            curl -sfL "$URL/exportar.csv" -o data/comunidad/precios.csv || echo "No se pudo bajar la exportación de la comunidad"
+          fi
+
       - name: Guardar los datos en el repo
         run: |
           git config user.name "github-actions[bot]"

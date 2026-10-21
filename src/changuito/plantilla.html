@@ -295,6 +295,46 @@
   .aviso { position: fixed; left: 50%; bottom: 24px; z-index: 20; transform: translate(-50%, 120%); background: #000; color: #FFF; padding: 14px 20px; font-weight: 500; visibility: hidden; transition: transform 240ms var(--ease-out), visibility 0s 240ms; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); } /* taste-skill-ignore: aviso flotante */
   .aviso.visible { transform: translate(-50%, 0); visibility: visible; transition: transform 240ms var(--ease-out); }
 
+  /* ---------- formulario de la comunidad ---------- */
+  .formulario {
+    background: var(--blanco); color: #000; padding: clamp(20px, 3vw, 36px);
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px;
+  }
+  .formulario .ancho-completo { grid-column: 1 / -1; }
+  @media (max-width: 560px) { .formulario { grid-template-columns: 1fr; } }
+  .campo-form { display: grid; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0; }
+  .campo-form[hidden] { display: none; }
+  .campo-form > label, .campo-form > legend { font-weight: 600; }
+  .opcional { font-weight: 400; color: #4A4A44; }
+  .formulario input:not([type="radio"]):not([type="checkbox"]):not([type="file"]), .formulario select {
+    font: 500 var(--paso-texto) var(--fuente); min-height: 52px; padding: 0 18px; width: 100%;
+    border: 2px solid #000; border-radius: 999px; background: #FFF; color: #000;
+  }
+  .formulario input[type="file"] { font: inherit; width: 100%; max-width: 100%; min-width: 0; }
+  .formulario input[type="file"]::file-selector-button {
+    font: 600 var(--paso-texto) var(--fuente); margin-right: 12px; padding: 10px 18px;
+    border: 2px solid #000; border-radius: 999px; background: #FFF; color: #000; cursor: pointer;
+  }
+  .formulario :focus-visible { outline: 3px solid var(--rojo); outline-offset: 2px; }
+  .unidades { display: flex; flex-wrap: wrap; gap: 8px; }
+  .unidades legend { width: 100%; margin-bottom: 6px; }
+  .unidades label { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 2px solid #000; border-radius: 999px; cursor: pointer; }
+  .unidades label:has(input:checked) { background: #000; color: var(--amarillo); }
+  .unidades input, .casilla input { accent-color: #000; width: 20px; height: 20px; }
+  .casilla { display: flex; align-items: center; gap: 10px; min-height: 48px; cursor: pointer; }
+  .acciones-form { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+  .estado-form { margin: 0; font-weight: 600; }
+  .estado-form.error { color: var(--rojo); }
+  .pronto { margin: 0; }
+  .comunidad-producto { padding: 0 clamp(14px, 1.6vw, 22px) 6px; font-size: 0.9375rem; }
+  .comunidad-producto h4 { margin: 4px 0; font-size: 0.9375rem; }
+  .comunidad-producto ul { list-style: none; margin: 0; padding: 0; }
+  .comunidad-producto li { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
+  .enlace-boton {
+    font: 600 0.9375rem var(--fuente); color: inherit; background: none; border: 0; cursor: pointer;
+    padding: 4px clamp(14px, 1.6vw, 22px) 16px; text-decoration: underline; text-underline-offset: 4px;
+  }
+
   /* ---------- formas: hojas con un radio grande, controles en píldora ---------- */
   :root { --radio: clamp(22px, 2.4vw, 32px); --radio-hoja: clamp(28px, 4vw, 56px); --radio-chico: 16px; }
   /* Cada sección es una hoja que se apoya sobre la anterior. */
@@ -303,7 +343,7 @@
   .boton, .chip, .buscar input, .barra-resultados select, .opciones-busqueda select, .marca-chica, .tooltip, .aviso { border-radius: 999px; }
   .boton-grande { padding: 0 40px; }
   .marca-chica { padding: 0 10px; }
-  .buscador, .panel, .limites, .ticket, .abierto-foto img { border-radius: var(--radio); }
+  .buscador, .panel, .limites, .ticket, .formulario, .abierto-foto img { border-radius: var(--radio); }
   .heroe-foto { clip-path: none; border-radius: var(--radio); overflow: hidden; }
   .productos details, .productos summary, .sin-resultados { border-radius: var(--radio-chico); }
 
@@ -326,7 +366,7 @@
   <a class="marca" href="#arriba">Índice Changuito</a>
   <nav aria-label="Secciones">
     <a href="#buscar">Buscar</a>
-    <a href="#ranking">Súper más barato</a>
+    <a href="#cargar">Cargá un precio</a>
     <a href="#indice">Índice</a>
     <a href="#titulo-como">Cómo funciona</a>
     <a href="__URL_REPO__">GitHub</a>
@@ -384,6 +424,63 @@
         <ul class="productos" id="productos"></ul>
         <noscript><p>Para usar el buscador hace falta JavaScript. Los precios de hoy también están en GitHub, en la carpeta data/precios.</p></noscript>
       </div>
+    </div>
+  </section>
+
+  <section class="campo campo-amarillo" id="cargar" aria-labelledby="titulo-cargar">
+    <div class="ancho dos-columnas">
+      <div>
+        <h2 class="titulo" id="titulo-cargar" data-entra>Cargá un precio</h2>
+        <p class="lead" data-entra style="--i:1">¿Viste un precio en el súper, la verdulería o la carnicería? Cargalo y nos ayudás a medir lo que las webs no muestran: frescos, almacenes de barrio y otras ciudades.</p>
+        <p class="texto" data-entra style="--i:2">No hace falta cuenta. Un precio se publica cuando otra persona carga el mismo o cuando lo revisamos con la foto del ticket o del cartel. No guardamos tu nombre ni tu IP.</p>
+      </div>
+      <form class="formulario" id="form-precio" data-entra style="--i:2" novalidate>
+        <div class="campo-form ancho-completo">
+          <label for="f-producto">Producto</label>
+          <input id="f-producto" name="producto" list="f-productos" autocomplete="off" required placeholder="Yerba Playadito 1 kg, asado de tira…">
+          <datalist id="f-productos"></datalist>
+        </div>
+        <div class="campo-form">
+          <label for="f-precio">Precio</label>
+          <input id="f-precio" name="precio" inputmode="decimal" autocomplete="off" required placeholder="$ 0">
+        </div>
+        <div class="campo-form">
+          <label for="f-ean">Código de barras <span class="opcional">(opcional)</span></label>
+          <input id="f-ean" name="ean" inputmode="numeric" autocomplete="off" placeholder="7790…">
+        </div>
+        <fieldset class="campo-form ancho-completo unidades">
+          <legend>El precio es</legend>
+          <label><input type="radio" name="unidad" value="unidad" checked> por unidad</label>
+          <label><input type="radio" name="unidad" value="kg"> por kilo</label>
+          <label><input type="radio" name="unidad" value="litro"> por litro</label>
+        </fieldset>
+        <div class="campo-form">
+          <label for="f-tienda">Dónde</label>
+          <select id="f-tienda" name="tienda" required></select>
+        </div>
+        <div class="campo-form" id="f-otra-caja" hidden>
+          <label for="f-otra">Nombre del lugar</label>
+          <input id="f-otra" name="otra" autocomplete="off">
+        </div>
+        <div class="campo-form">
+          <label for="f-provincia">Provincia</label>
+          <select id="f-provincia" name="provincia" required></select>
+        </div>
+        <div class="campo-form">
+          <label for="f-localidad">Localidad <span class="opcional">(opcional)</span></label>
+          <input id="f-localidad" name="localidad" autocomplete="address-level2">
+        </div>
+        <label class="casilla ancho-completo"><input type="checkbox" name="oferta"> Estaba en oferta</label>
+        <div class="campo-form ancho-completo">
+          <label for="f-foto">Foto del ticket o del cartel <span class="opcional">(opcional, ayuda a publicarlo antes)</span></label>
+          <input id="f-foto" name="foto" type="file" accept="image/*" capture="environment">
+        </div>
+        <div class="ancho-completo" id="f-captcha"></div>
+        <div class="ancho-completo acciones-form">
+          <button class="boton boton-grande" type="submit">Enviar precio</button>
+          <p class="estado-form" id="f-estado" role="status" aria-live="polite"></p>
+        </div>
+      </form>
     </div>
   </section>
 
@@ -514,6 +611,9 @@
 (() => {
   const D = JSON.parse(document.getElementById("datos").textContent);
   const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Servidor de la comunidad: si no está configurado, el formulario avisa que abre pronto.
+  const C = D.comunidad || {};
+  const comunidadActiva = Boolean(C.url && C.turnstile_site_key);
 
   // ---------- formatos ----------
   const numero = (v, d = 1) =>
@@ -880,6 +980,8 @@
         </summary>
         ${detalle}
         <p class="ean">Código de barras ${esc(p.ean)}</p>
+        ${comunidadActiva ? `<div class="comunidad-producto" data-ean="${esc(p.ean)}"></div>
+        <button type="button" class="enlace-boton" data-cargar="${esc(p.ean)}" data-nombre="${esc(p.nombre)}">¿Lo viste a otro precio? Cargalo</button>` : ""}
       </details></li>`;
   }
 
@@ -1005,6 +1107,131 @@
     document.getElementById("ticket").innerHTML = `<h3>${esc(ejemplo.nombre)}</h3>${codigoDeBarras(ejemplo.ean)}
       <ol>${ejemplo.precios.map(t => `<li class="${baratos.includes(t.tienda) ? "mejor" : ""}"><span>${esc(t.tienda)}</span><span>${pesos(t.precio)}</span></li>`).join("")}</ol>
       <figcaption>El mismo código de barras en ${ejemplo.tiendas} cadenas, con el precio de hoy.</figcaption>`;
+  }
+
+  // ---------- comunidad: cargar precios ----------
+  const PROVINCIAS = ["Ciudad de Buenos Aires", "Buenos Aires", "Catamarca", "Chaco", "Chubut", "Córdoba", "Corrientes",
+    "Entre Ríos", "Formosa", "Jujuy", "La Pampa", "La Rioja", "Mendoza", "Misiones", "Neuquén", "Río Negro", "Salta",
+    "San Juan", "San Luis", "Santa Cruz", "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán"];
+  const form = document.getElementById("form-precio");
+  const estadoForm = document.getElementById("f-estado");
+  const mostrarEstado = (texto, error = false) => { estadoForm.textContent = texto; estadoForm.classList.toggle("error", error); };
+  const eanPorNombre = Object.fromEntries(D.productos.map(p => [p.nombre, p.ean]));
+
+  if (!comunidadActiva) {
+    form.innerHTML = '<p class="ancho-completo pronto">La carga de precios abre en los próximos días. Mientras tanto, buscá un producto para ver cuánto sale en cada súper.</p>';
+  } else {
+    document.getElementById("f-productos").innerHTML = D.productos.map(p => `<option value="${esc(p.nombre)}">`).join("");
+    const selTienda = document.getElementById("f-tienda");
+    selTienda.innerHTML = '<option value="">Elegí</option>' + (C.super || []).map(s => `<option>${esc(s)}</option>`).join("") + '<option value="__otro">Otro lugar</option>';
+    document.getElementById("f-provincia").innerHTML = '<option value="">Elegí</option>' + PROVINCIAS.map(p => `<option>${p}</option>`).join("");
+    selTienda.addEventListener("change", () => { document.getElementById("f-otra-caja").hidden = selTienda.value !== "__otro"; });
+    // Si el nombre es el de un producto de la canasta, el código de barras se completa solo.
+    document.getElementById("f-producto").addEventListener("change", ev => {
+      const ean = eanPorNombre[ev.target.value];
+      if (ean) document.getElementById("f-ean").value = ean;
+    });
+
+    // El captcha (Cloudflare Turnstile) se carga recién cuando el formulario está por verse.
+    let token = "", widget = null;
+    function cargarCaptcha() {
+      if (document.getElementById("turnstile-js")) return;
+      window.alCargarTurnstile = () => {
+        widget = window.turnstile.render("#f-captcha", {
+          sitekey: C.turnstile_site_key, language: "es",
+          callback: t => { token = t; }, "expired-callback": () => { token = ""; },
+        });
+      };
+      const s = document.createElement("script");
+      s.id = "turnstile-js";
+      s.async = true;
+      s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=alCargarTurnstile";
+      document.head.appendChild(s);
+    }
+    form.addEventListener("focusin", cargarCaptcha, { once: true });
+    form.addEventListener("pointerdown", cargarCaptcha, { once: true });
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(entradas => {
+        if (entradas.some(e => e.isIntersecting)) { cargarCaptcha(); io.disconnect(); }
+      }, { rootMargin: "300px" });
+      io.observe(form);
+    }
+
+    // La foto se achica en el teléfono antes de mandarla: JPEG de hasta 300 KB.
+    async function fotoEnBase64(archivo) {
+      const imagen = await createImageBitmap(archivo);
+      const escala = Math.min(1, 1280 / Math.max(imagen.width, imagen.height));
+      const lienzo = document.createElement("canvas");
+      lienzo.width = Math.round(imagen.width * escala);
+      lienzo.height = Math.round(imagen.height * escala);
+      lienzo.getContext("2d").drawImage(imagen, 0, 0, lienzo.width, lienzo.height);
+      for (const calidad of [0.75, 0.6, 0.45, 0.3]) {
+        const b64 = lienzo.toDataURL("image/jpeg", calidad).split(",")[1];
+        if ((b64.length * 3) / 4 <= 300 * 1024) return b64;
+      }
+      throw new Error("La foto es muy pesada. Probá con otra.");
+    }
+
+    form.addEventListener("submit", async ev => {
+      ev.preventDefault();
+      const f = new FormData(form);
+      const datos = {
+        producto: f.get("producto"), ean: f.get("ean"), precio: f.get("precio"), unidad: f.get("unidad"),
+        tienda: f.get("tienda") === "__otro" ? String(f.get("otra") || "").trim() : f.get("tienda"),
+        provincia: f.get("provincia"), localidad: f.get("localidad"), oferta: f.get("oferta") === "on", captcha: token,
+      };
+      if (!token) { cargarCaptcha(); mostrarEstado("Esperá a que termine la verificación de abajo y volvé a enviar.", true); return; }
+      const boton = form.querySelector('button[type="submit"]');
+      boton.disabled = true;
+      mostrarEstado("Enviando…");
+      try {
+        const archivo = f.get("foto");
+        if (archivo && archivo.size) datos.foto = await fotoEnBase64(archivo);
+        const r = await fetch(C.url + "/precios", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(datos) });
+        const respuesta = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          mostrarEstado((respuesta.errores || ["No se pudo enviar. Probá de nuevo."]).join(" "), true);
+        } else {
+          mostrarEstado(respuesta.estado === "confirmado"
+            ? "Gracias. Coincide con lo que cargó otra persona, así que ya quedó confirmado."
+            : "Gracias. Tu precio queda pendiente hasta que otra persona lo confirme o lo revisemos.");
+          form.reset();
+          document.getElementById("f-otra-caja").hidden = true;
+        }
+      } catch (error) {
+        mostrarEstado(error.message.startsWith("La foto") ? error.message : "No se pudo enviar. Revisá tu conexión y probá de nuevo.", true);
+      } finally {
+        boton.disabled = false;
+        token = "";
+        if (window.turnstile && widget !== null) window.turnstile.reset(widget);
+      }
+    });
+
+    // En cada producto: los precios que ya confirmó la comunidad (se piden al abrirlo).
+    elLista.addEventListener("toggle", async ev => {
+      const caja = ev.target.open && ev.target.querySelector(".comunidad-producto");
+      if (!caja || caja.dataset.listo) return;
+      caja.dataset.listo = "1";
+      try {
+        const r = await fetch(`${C.url}/precios?ean=${encodeURIComponent(caja.dataset.ean)}`);
+        const { precios = [] } = await r.json();
+        if (precios.length) {
+          caja.innerHTML = `<h4>Precios de la comunidad</h4><ul>${precios.slice(0, 5).map(x =>
+            `<li><span>${esc(x.tienda)}, ${x.localidad ? esc(x.localidad) + ", " : ""}${esc(x.provincia)} (${fechaCorta(x.fecha)})</span><span>${pesos(x.precio)}</span></li>`
+          ).join("")}</ul>`;
+        }
+      } catch (e) { /* sin conexión con el servidor: no se muestra nada */ }
+    }, true);
+
+    // "¿Lo viste a otro precio?" lleva al formulario con el producto ya cargado.
+    elLista.addEventListener("click", ev => {
+      const b = ev.target.closest("[data-cargar]");
+      if (!b) return;
+      document.getElementById("f-producto").value = b.dataset.nombre;
+      document.getElementById("f-ean").value = b.dataset.cargar;
+      document.getElementById("cargar").scrollIntoView({ behavior: reducido ? "auto" : "smooth" });
+      setTimeout(() => document.getElementById("f-precio").focus({ preventScroll: true }), reducido ? 0 : 500);
+    });
   }
 
   // ---------- compartir ----------

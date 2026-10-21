@@ -45,6 +45,24 @@ def repositorio() -> str:
     return os.environ.get("GITHUB_REPOSITORY") or REPO_POR_DEFECTO
 
 
+# Configuración pública del servidor de la comunidad (URL y Site Key de Turnstile; ninguna es secreta).
+# Las variables de entorno la pisan, útil para probar con un servidor local.
+# Se busca desde la carpeta donde corre el comando (la raíz del repo), también con `pip install .`.
+CONFIG_COMUNIDAD = Path("comunidad") / "sitio.json"
+# Súper que se ofrecen en el formulario además de los que se relevan.
+OTROS_SUPER = ("ChangoMás", "Cooperativa Obrera", "La Anónima", "Libertad", "Átomo", "Super Mami", "Josimar",
+               "Almacén o autoservicio de barrio", "Verdulería", "Carnicería", "Feria o mercado")
+
+
+def config_comunidad() -> dict:
+    config = {"url": "", "turnstile_site_key": ""}
+    if CONFIG_COMUNIDAD.exists():
+        config.update(json.loads(CONFIG_COMUNIDAD.read_text(encoding="utf-8")))
+    config["url"] = os.environ.get("CHANGUITO_COMUNIDAD_URL", config["url"]).rstrip("/")
+    config["turnstile_site_key"] = os.environ.get("CHANGUITO_TURNSTILE_SITE_KEY", config["turnstile_site_key"])
+    return config
+
+
 def url_sitio(repo: str) -> str:
     """URL de GitHub Pages del repo: usuario.github.io/repo/."""
     usuario, nombre = repo.split("/", 1)
@@ -116,6 +134,10 @@ def armar_datos(resultado: indice.Resultado, precios: pd.DataFrame, canasta: Can
 
     return {
         "repositorio": f"https://github.com/{repositorio()}",
+        "comunidad": {
+            **config_comunidad(),
+            "super": sorted({*NOMBRES_TIENDAS.values(), *OTROS_SUPER}, key=lambda s: unicodedata.normalize("NFD", s).lower()),
+        },
         "actualizado": f"{ultima_fecha:%Y-%m-%d}",
         "inicio": f"{diario.index[0]:%Y-%m-%d}",
         "dias": len(diario),
