@@ -22,3 +22,6 @@ jobs:
 
       - name: Correr tests
         run: pytest -q
+
+      - name: Correr tests del servidor de la comunidad
+        run: node --test comunidad/test/reglas.test.js
