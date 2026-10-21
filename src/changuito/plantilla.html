@@ -164,7 +164,10 @@
   .chip[aria-pressed="true"] .n { color: inherit; opacity: 0.75; }
   .chip-oferta[aria-pressed="true"] { background: var(--rojo); color: #FFF; }
   .opciones-busqueda { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin-top: 16px; }
-  .opciones-busqueda select { margin-left: 8px; }
+  .opciones-busqueda select {
+    font: 500 1rem var(--fuente); color: var(--tinta); background: var(--fondo); border: 2px solid var(--tinta);
+    min-height: 44px; padding: 0 14px; margin-left: 8px;
+  }
   .regla { font-size: 0.9375rem; }
   .barra-resultados { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin: 18px 0 8px; }
   .barra-resultados select {
@@ -252,10 +255,16 @@
   tr.general td { font-weight: 700; }
 
   /* ---------- cómo funciona ---------- */
-  .foto-sangre { position: relative; margin: calc(-1 * var(--entre-secciones)) calc(-1 * var(--margen)) 0; }
-  .foto-sangre img { width: 100%; height: clamp(320px, 52vw, 720px); object-fit: cover; object-position: 50% 45%; }
-  .foto-sangre figcaption { position: absolute; left: var(--margen); bottom: 0; background: var(--rojo); color: #FFF; padding: 14px 20px; font-size: var(--paso-chico); max-width: calc(100% - 2 * var(--margen)); }
-  .como { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 48px clamp(40px, 6vw, 112px); margin-top: clamp(64px, 8vw, 128px); }
+  .como { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px clamp(40px, 6vw, 112px); align-items: start; }
+  .como .pasos { margin-top: clamp(40px, 5vw, 72px); }
+  .ticket { margin: 0; background: var(--panel); padding: clamp(22px, 3vw, 40px); }
+  .ticket h3 { font-size: var(--paso-lead); font-weight: 600; line-height: 1.2; margin: 0; }
+  .ticket .codigo { display: block; width: 100%; max-width: 380px; height: auto; margin: 20px 0 24px; color: var(--tinta); }
+  .ticket .codigo text { font: 500 11px var(--fuente); fill: currentColor; letter-spacing: 0.08em; }
+  .ticket ol { list-style: none; margin: 0; padding: 0; }
+  .ticket li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px dashed color-mix(in srgb, var(--tinta) 30%, transparent); font-variant-numeric: tabular-nums; } /* taste-skill-ignore: renglones del ticket (data-ui) */
+  .ticket li.mejor { font-weight: 700; }
+  .ticket figcaption { font-size: 0.9375rem; margin-top: 16px; }
   @media (max-width: 960px) { .como { grid-template-columns: 1fr; } }
   .pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 40px; }
   .pasos h3, .limites h3 { font-stretch: 62%; font-weight: 800; text-transform: uppercase; font-size: var(--paso-medio); line-height: 0.9; margin: 0 0 12px; }
@@ -285,6 +294,18 @@
 
   .aviso { position: fixed; left: 50%; bottom: 24px; z-index: 20; transform: translate(-50%, 120%); background: #000; color: #FFF; padding: 14px 20px; font-weight: 500; visibility: hidden; transition: transform 240ms var(--ease-out), visibility 0s 240ms; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); } /* taste-skill-ignore: aviso flotante */
   .aviso.visible { transform: translate(-50%, 0); visibility: visible; transition: transform 240ms var(--ease-out); }
+
+  /* ---------- formas: hojas con un radio grande, controles en píldora ---------- */
+  :root { --radio: clamp(22px, 2.4vw, 32px); --radio-hoja: clamp(28px, 4vw, 56px); --radio-chico: 16px; }
+  /* Cada sección es una hoja que se apoya sobre la anterior. */
+  main > .campo:not(.heroe), .pie { position: relative; border-radius: var(--radio-hoja) var(--radio-hoja) 0 0; margin-top: calc(-1 * var(--radio-hoja)); }
+  .marquesina { padding-bottom: calc(22px + var(--radio-hoja)); }
+  .boton, .chip, .buscar input, .barra-resultados select, .opciones-busqueda select, .marca-chica, .tooltip, .aviso { border-radius: 999px; }
+  .boton-grande { padding: 0 40px; }
+  .marca-chica { padding: 0 10px; }
+  .buscador, .panel, .limites, .ticket, .abierto-foto img { border-radius: var(--radio); }
+  .heroe-foto { clip-path: none; border-radius: var(--radio); overflow: hidden; }
+  .productos details, .productos summary, .sin-resultados { border-radius: var(--radio-chico); }
 
   /* ---------- movimiento: entradas una sola vez, nunca dejan contenido oculto ---------- */
   @media (prefers-reduced-motion: no-preference) {
@@ -406,21 +427,18 @@
   </section>
 
   <section class="campo campo-blanco" id="como" aria-labelledby="titulo-como">
-    <figure class="foto-sangre">
-      <img src="img/gondola-huevos.jpg" width="1600" height="1200" loading="lazy" alt="Góndola de supermercado con maples de huevos y carteles de precio impresos en el estante rojo.">
-      <figcaption>Carteles de precio en la góndola de un súper argentino. Los huevos y los productos frescos todavía no entran en el índice.</figcaption>
-    </figure>
     <div class="ancho">
       <div class="como">
         <div>
           <h2 class="titulo" id="titulo-como" data-entra>Cómo funciona</h2>
           <p class="lead" data-entra style="--i:1">Mismo producto, mismo código de barras, todos los días. Los precios que ves incluyen las ofertas de hoy; la inflación se mide sin ofertas, para que una oferta que termina no parezca una suba.</p>
-        </div>
         <ol class="pasos">
           <li data-entra><h3>Junta los precios</h3><p>Todos los días al mediodía, un robot consulta el precio de __N_PRODUCTOS__ productos en las tiendas online de las seis cadenas, sin elegir sucursal ni código postal.</p></li>
           <li data-entra style="--i:1"><h3>Compara lo mismo con lo mismo</h3><p>Busca cada producto por su código de barras, así compara exactamente el mismo en todas las cadenas.</p></li>
           <li data-entra style="--i:2"><h3>Publica los resultados</h3><p>Calcula la inflación con el precio sin ofertas, arma el ranking con el precio de hoy, ofertas incluidas, y actualiza esta página. Los datos quedan públicos en GitHub.</p></li>
         </ol>
+        </div>
+        <figure class="ticket" id="ticket" data-ui data-entra style="--i:2"></figure>
       </div>
       <div class="limites" data-entra>
         <h3>Lo que todavía no mide</h3>
@@ -483,7 +501,7 @@
       <div>
         <h2>Fotos</h2>
         <p>Changuito: <a href="https://commons.wikimedia.org/wiki/File:Carrito_de_supermercado_sobre_se%C3%B1al%C3%A9tica.JPG">Espumakid</a>, CC BY-SA 3.0.</p>
-        <p>Góndola y supermercado: <a href="https://commons.wikimedia.org/wiki/File:Huevos_casta%C3%B1os_y_huevos_blancos_en_venta_de_g%C3%B3ndola_de_supermercado.jpg">Horacio Cambeiro</a>, CC BY 3.0 y <a href="https://commons.wikimedia.org/wiki/File:Supermercado_%22Tucangu%C3%A1%22_(Ruiz_de_Montoya).jpg">CC BY 4.0</a>.</p>
+        <p>Supermercado: <a href="https://commons.wikimedia.org/wiki/File:Supermercado_%22Tucangu%C3%A1%22_(Ruiz_de_Montoya).jpg">Horacio Cambeiro</a>, CC BY 4.0.</p>
       </div>
     </div>
   </div>
@@ -844,7 +862,8 @@
       ? (baratos.length === p.tiendas ? "Mismo precio en todos." : `Más caro en ${p.cara}: ${pesos(p.max)}.`)
       : `Hoy solo en ${p.barata}.`;
     if (conOferta.length) meta += ` Hay oferta en ${conjuncion(conOferta)}.`;
-    if (p.variacion !== null && p.variacion !== undefined) meta += ` ${pct(p.variacion)} desde el ${fechaCorta(D.inicio)}.`;
+    // Solo se menciona el cambio cuando lo hubo (un 0,0 % en cada fila es ruido).
+    if (p.variacion !== null && p.variacion !== undefined && Math.abs(p.variacion) >= 0.05) meta += ` ${pct(p.variacion)} desde el ${fechaCorta(D.inicio)}.`;
     const detalle = p.tiendas > 1
       ? `<ul class="por-tienda">${p.precios.map(t => filaPorTienda(t, baratos.length < p.tiendas && baratos.includes(t.tienda))).join("")}</ul>`
       : `<ul class="por-tienda">${filaPorTienda(p.precios[0], false)}<li>Hoy no aparece en las otras cadenas, así que no hay con qué compararlo.</li></ul>`;
@@ -951,6 +970,38 @@
   leerUrl();
   actualizar();
   if (hayFiltros() || estado.orden !== POR_DEFECTO) document.getElementById("buscar").scrollIntoView();
+
+  // ---------- código de barras real (EAN-13) en "Cómo funciona" ----------
+  const L = ["0001101", "0011001", "0010011", "0111101", "0100011", "0110001", "0101111", "0111011", "0110111", "0001011"];
+  const G = ["0100111", "0110011", "0011011", "0100001", "0011101", "0111001", "0000101", "0010001", "0001001", "0010111"];
+  const R = L.map(c => [...c].map(b => (b === "0" ? "1" : "0")).join(""));
+  const PARIDAD = ["LLLLLL", "LLGLGG", "LLGGLG", "LLGGGL", "LGLLGG", "LGGLLG", "LGGGLL", "LGLGLG", "LGLGGL", "LGGLGL"];
+  function codigoDeBarras(ean) {
+    const d = [...ean].map(Number);
+    let bits = "101";
+    for (let i = 1; i <= 6; i++) bits += (PARIDAD[d[0]][i - 1] === "L" ? L : G)[d[i]];
+    bits += "01010";
+    for (let i = 7; i <= 12; i++) bits += R[d[i]];
+    bits += "101";
+    const guardas = new Set([0, 1, 2, 45, 46, 47, 48, 49, 92, 93, 94]);
+    const margen = 11, alto = 60, largo = 68;
+    let barras = "";
+    for (let i = 0; i < bits.length; i++) {
+      if (bits[i] === "1") barras += `<rect x="${margen + i}" y="0" width="1" height="${guardas.has(i) ? largo : alto}"/>`;
+    }
+    const texto = `<text x="4" y="${alto + 12}">${ean[0]}</text>` +
+      `<text x="${margen + 3}" y="${alto + 12}" textLength="39">${ean.slice(1, 7)}</text>` +
+      `<text x="${margen + 50}" y="${alto + 12}" textLength="39">${ean.slice(7)}</text>`;
+    return `<svg class="codigo" viewBox="0 0 ${95 + 2 * margen} ${alto + 14}" role="img" aria-label="Código de barras ${ean}"><g fill="currentColor">${barras}</g>${texto}</svg>`;
+  }
+  const ejemplo = ["7793704000928", "7790742335500"].map(e => D.productos.find(p => p.ean === e && p.tiendas >= 5)).find(Boolean)
+    || [...D.productos].sort((a, b) => b.tiendas - a.tiendas)[0];
+  if (ejemplo && /^\d{13}$/.test(ejemplo.ean)) {
+    const baratos = masBaratos(ejemplo);
+    document.getElementById("ticket").innerHTML = `<h3>${esc(ejemplo.nombre)}</h3>${codigoDeBarras(ejemplo.ean)}
+      <ol>${ejemplo.precios.map(t => `<li class="${baratos.includes(t.tienda) ? "mejor" : ""}"><span>${esc(t.tienda)}</span><span>${pesos(t.precio)}</span></li>`).join("")}</ol>
+      <figcaption>El mismo código de barras en ${ejemplo.tiendas} cadenas, con el precio de hoy.</figcaption>`;
+  }
 
   // ---------- compartir ----------
   const aviso = document.getElementById("aviso");
